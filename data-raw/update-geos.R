@@ -78,6 +78,8 @@ stopifnot(
 print_next <- function() {
   cli::cat_rule("Manual modifications")
   cli::cat_bullet("inst/include/geos/version.h: Required header that isn't in sources")
+  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics")
+  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas")
 }
 
 print_next()
