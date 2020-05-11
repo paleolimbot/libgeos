@@ -29,3 +29,8 @@ remotes::install_github("paleolimbot/libgeos")
 ## Example
 
 (currently this package does nothing)
+
+``` r
+libgeos:::libgeos_version()
+#> [1] "3.8.1-CAPI-1.13.3"
+```

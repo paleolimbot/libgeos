@@ -70,6 +70,10 @@ stopifnot(
   file.copy(
     file.path(geos_dir, "capi/geos_c.cpp"),
     "src/geos_c.cpp"
+  ),
+  file.copy(
+    file.path(geos_dir, "capi/geos_ts_c.cpp"),
+    "src/geos_ts_c.cpp"
   )
 )
 

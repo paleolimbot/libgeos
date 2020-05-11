@@ -33,3 +33,7 @@ remotes::install_github("paleolimbot/libgeos")
 ## Example
 
 (currently this package does nothing)
+
+```{r}
+libgeos:::libgeos_version()
+```
