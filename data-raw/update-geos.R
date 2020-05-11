@@ -80,6 +80,10 @@ print_next <- function() {
   cli::cat_bullet("inst/include/geos/version.h: Required header that isn't in sources")
   cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics")
   cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas")
+  cli::cat_bullet("src/noding__snapround__SimpleSnapRounder.cpp: Replace cerr with cpp_compat_cerr")
+  cli::cat_bullet("src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr")
+  cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
+  cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
 }
 
 print_next()

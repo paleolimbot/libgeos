@@ -1,3 +1,4 @@
+#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -96,7 +97,7 @@ SimpleSnapRounder::checkCorrectness(
             delete *i;
         }
 
-        std::cerr << ex.what() << std::endl;
+        cpp_compat_cerr << ex.what() << std::endl;
         throw;
     }
 
