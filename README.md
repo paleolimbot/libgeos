@@ -12,7 +12,9 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 The goal of libgeos is to provide access to the GEOS C API for
 high-performance geometry operations within the R package framework.
 This package contains a copy of the GEOS sources rather than linking to
-the installed GEOS version. This is highly experimental.
+the installed GEOS version. This is functionally impractical, since
+binaries of the GEOS library is widely available. Thus, this package is
+more of an excercise than anything else.
 
 ## Installation
 
