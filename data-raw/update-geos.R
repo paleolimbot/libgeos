@@ -65,7 +65,7 @@ stopifnot(
   # also need to copy the C API cpp and header
   file.copy(
     file.path(geos_dir, "capi/geos_c.h"),
-    "inst/include/geos/geos_c.h"
+    "inst/include/geos_c.h"
   ),
   file.copy(
     file.path(geos_dir, "capi/geos_c.cpp"),
@@ -77,15 +77,7 @@ stopifnot(
 # for build/CMD check to succeed
 print_next <- function() {
   cli::cat_rule("Manual modifications")
-  cli::cat_bullet(
-    "inst/include/s2/base/logging.h: ",
-    "Added a 'getter' for `S2LogMessage::_severity` (silences -Wunused_member)"
-  )
-
-  cli::cat_bullet("Replace `abort()` with `cpp_compat_abort()`")
-  cli::cat_bullet("Replace `cerr`/`cout` with `cpp_compat_cerr`/`cpp_compat_cout`")
-  cli::cat_bullet("Replace `srandom()` with `cpp_compat_srandom()`")
-  cli::cat_bullet("Replace `random()` with `cpp_compat_random()`")
+  cli::cat_bullet("inst/include/geos/version.h: Required header that isn't in sources")
 }
 
 print_next()
