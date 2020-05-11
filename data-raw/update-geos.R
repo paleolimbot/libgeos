@@ -77,6 +77,11 @@ stopifnot(
   )
 )
 
+# need to update objects, because they aren't autodetected on windows
+objects <- list.files("src", pattern = "\\.cpp$") %>%
+  gsub("\\.cpp$", ".o", .) %>%
+  paste("    ", ., "\\", collapse = "\n")
+
 # reminders about manual modifications that are needed
 # for build/CMD check to succeed
 print_next <- function() {
@@ -89,6 +94,8 @@ print_next <- function() {
   cli::cat_bullet("src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
+  cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
+  clipr::write_clip(objects)
 }
 
 print_next()
