@@ -7,37 +7,40 @@ curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
 
 # make sure the dir exists
-s2_dir <- list.files("data-raw", "^s2geometry-[0-9.]+", include.dirs = TRUE, full.names = TRUE)
-stopifnot(dir.exists(s2_dir), length(s2_dir) == 1)
-src_dir <- file.path(s2_dir, "src/s2")
+geos_dir <- list.files("data-raw", "^geos-[0-9.]+", include.dirs = TRUE, full.names = TRUE)
+stopifnot(dir.exists(geos_dir), length(geos_dir) == 1)
+src_dir <- file.path(geos_dir, "src/s2")
 
 # headers live in inst/include
 # keeping the directory structure means that
 # we don't have to update any source files (beause of header locations)
 headers <- tibble(
-  path = list.files(file.path(s2_dir, "src", "s2"), "\\.(h|inc)$", full.names = TRUE, recursive = TRUE),
-  final_path = str_replace(path, ".*?s2/", "inst/include/s2/")
+  path = list.files(
+    file.path(geos_dir, "include", "geos"), "\\.(h)$",
+    full.names = TRUE,
+    recursive = TRUE
+  ),
+  final_path = str_replace(path, ".*?geos/", "inst/include/geos/")
 )
 
 # If source files are in src/ with no subdirectories
 # We can use the built-in R Makefile with few modifications
 # in Makevars. Here, we replace "/" with "__"
 source_files <- tibble(
-  path = list.files(file.path(s2_dir, "src", "s2"), "\\.cc$", full.names = TRUE, recursive = TRUE),
+  path = list.files(file.path(geos_dir, "src"), "\\.cpp$", full.names = TRUE, recursive = TRUE),
   final_path = str_replace(path, ".*?src/", "src/") %>%
     str_replace_all("/", "__") %>%
-    str_replace("^.*?s2__", "src/")
-) %>%
-  filter(!str_detect(path, "_test\\."))
+    str_replace("src__", "src/")
+)
 
 # clean source dir
 current_source_files <- tibble(
   path = list.files("src", "\\.(h|hpp|cpp|o|cc)$", full.names = TRUE, recursive = TRUE)
 ) %>%
-  filter(!str_detect(path, "^src/(libs2-|Rcpp|Makevars)"))
+  filter(!str_detect(path, "^src/(libgeos-|Rcpp|Makevars)"))
 
 unlink(current_source_files$path)
-unlink("inst/include/s2", recursive = TRUE)
+unlink("inst/include/geos", recursive = TRUE)
 
 # create destination dirs
 dest_dirs <- c(
