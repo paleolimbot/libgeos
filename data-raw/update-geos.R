@@ -54,25 +54,24 @@ dest_dirs[!dir.exists(dest_dirs)] %>% walk(dir.create, recursive = TRUE)
 # copy source files
 stopifnot(
   file.copy(headers$path, headers$final_path),
-  file.copy(source_files$path, source_files$final_path)
+  file.copy(source_files$path, source_files$final_path),
+
+  # there is one errant header file in the sources that is needed for compile
+  file.copy(
+    file.path(geos_dir, "src/operation/valid/IndexedNestedRingTester.h"),
+    "src/IndexedNestedRingTester.h"
+  )
 )
 
 # reminders about manual modifications that are needed
-# for build to succeed
+# for build/CMD check to succeed
 print_next <- function() {
   cli::cat_rule("Manual modifications")
   cli::cat_bullet(
     "inst/include/s2/base/logging.h: ",
     "Added a 'getter' for `S2LogMessage::_severity` (silences -Wunused_member)"
   )
-  cli::cat_bullet(
-    "inst/include/s2/third_party/absl/base/dynamic_annotations.h: ",
-    "Remove pragma suppressing diagnostics"
-  )
-  cli::cat_bullet(
-    "inst/include/s2/base/port.h: ",
-    "Add `|| defined(_WIN32)` to `#if defined(__ANDROID__) || defined(__ASYLO__)` (2 lines)"
-  )
+
   cli::cat_bullet("Replace `abort()` with `cpp_compat_abort()`")
   cli::cat_bullet("Replace `cerr`/`cout` with `cpp_compat_cerr`/`cpp_compat_cout`")
   cli::cat_bullet("Replace `srandom()` with `cpp_compat_srandom()`")

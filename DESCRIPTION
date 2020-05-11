@@ -1,6 +1,6 @@
 Package: libgeos
 Title: Open Source Geometry Engine C API
-Version: 3.8.0.9000
+Version: 3.8.1
 Authors@R: 
     person(given = "Dewey",
            family = "Dunnington",
