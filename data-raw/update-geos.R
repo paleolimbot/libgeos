@@ -16,7 +16,7 @@ src_dir <- file.path(geos_dir, "src/s2")
 # we don't have to update any source files (beause of header locations)
 headers <- tibble(
   path = list.files(
-    file.path(geos_dir, "include", "geos"), "\\.(h)$",
+    file.path(geos_dir, "include", "geos"), "\\.(h|inl)$",
     full.names = TRUE,
     recursive = TRUE
   ),
