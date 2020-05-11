@@ -60,6 +60,16 @@ stopifnot(
   file.copy(
     file.path(geos_dir, "src/operation/valid/IndexedNestedRingTester.h"),
     "src/IndexedNestedRingTester.h"
+  ),
+
+  # also need to copy the C API cpp and header
+  file.copy(
+    file.path(geos_dir, "capi/geos_c.h"),
+    "inst/include/geos/geos_c.h"
+  ),
+  file.copy(
+    file.path(geos_dir, "capi/geos_c.cpp"),
+    "src/geos_c.cpp"
   )
 )
 
