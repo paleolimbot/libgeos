@@ -28,8 +28,7 @@ headers <- tibble(
 # in Makevars. Here, we replace "/" with "__"
 source_files <- tibble(
   path = list.files(file.path(geos_dir, "src"), "\\.cpp$", full.names = TRUE, recursive = TRUE),
-  final_path = str_replace(path, ".*?src/", "src/") %>%
-    str_replace_all("/", "__") %>%
+  final_path = str_replace(path, ".*?src/", "src/geos/") %>%
     str_replace("src__", "src/")
 )
 
@@ -41,6 +40,7 @@ current_source_files <- tibble(
 
 unlink(current_source_files$path)
 unlink("inst/include/geos", recursive = TRUE)
+unlink("src/geos", recursive = TRUE)
 
 # create destination dirs
 dest_dirs <- c(
@@ -59,7 +59,7 @@ stopifnot(
   # there is one errant header file in the sources that is needed for compile
   file.copy(
     file.path(geos_dir, "src/operation/valid/IndexedNestedRingTester.h"),
-    "src/IndexedNestedRingTester.h"
+    "src/geos/operation/valid/IndexedNestedRingTester.h"
   ),
 
   # also need to copy the C API cpp and header
@@ -69,17 +69,18 @@ stopifnot(
   ),
   file.copy(
     file.path(geos_dir, "capi/geos_c.cpp"),
-    "src/geos_c.cpp"
+    "src/geos/geos_c.cpp"
   ),
   file.copy(
     file.path(geos_dir, "capi/geos_ts_c.cpp"),
-    "src/geos_ts_c.cpp"
+    "src/geos/geos_ts_c.cpp"
   )
 )
 
 # need to update objects, because they aren't autodetected on windows
-objects <- list.files("src", pattern = "\\.cpp$") %>%
+objects <- list.files("src", pattern = "\\.cpp$", recursive = TRUE, full.names = TRUE) %>%
   gsub("\\.cpp$", ".o", .) %>%
+  gsub("src/", "", .) %>%
   paste("    ", ., "\\", collapse = "\n")
 
 # reminders about manual modifications that are needed

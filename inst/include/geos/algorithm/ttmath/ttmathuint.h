@@ -4,20 +4,20 @@
  * Author: Tomasz Sowa <t.sowa@ttmath.org>
  */
 
-/*
+/* 
  * Copyright (c) 2006-2017, Tomasz Sowa
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *  * Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- *
+ *    
  *  * Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
- *
+ *    
  *  * Neither the name Tomasz Sowa nor the names of contributors to this
  *    project may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
@@ -61,7 +61,7 @@
 namespace ttmath
 {
 
-/*!
+/*! 
 	\brief UInt implements a big integer value without a sign
 
 	value_size - how many bytes specify our value
@@ -103,19 +103,19 @@ public:
 		for(int i=value_size-1 ; i>=0 ; --i)
 		{
 			output << "0x" << std::setfill('0');
-
+			
 			#ifdef TTMATH_PLATFORM32
 				output << std::setw(8);
 			#else
 				output << std::setw(16);
 			#endif
-
+				
 			output << std::hex << table[i];
-
+			
 			if( i>0 )
 			{
-				output << ", ";
-
+				output << ", ";		
+			
 				if( ++c > columns )
 				{
 					output << std::endl;
@@ -123,7 +123,7 @@ public:
 				}
 			}
 		}
-
+		
 		output << std::dec << std::endl;
 	}
 
@@ -255,8 +255,8 @@ public:
 		from our table)
 
 		we copy as many words as it is possible
-
-		if temp_table_len is bigger than value_size we'll try to round
+		
+		if temp_table_len is bigger than value_size we'll try to round 
 		the lowest word from table depending on the last not used bit in temp_table
 		(this rounding isn't a perfect rounding -- look at the description below)
 
@@ -283,7 +283,7 @@ public:
 					we're rouding the lowest word in the table
 
 					in fact there should be a normal addition but
-					we don't use Add() or AddTwoInts() because these methods
+					we don't use Add() or AddTwoInts() because these methods 
 					can set a carry and then there'll be a small problem
 					for optimization
 				*/
@@ -312,8 +312,8 @@ public:
 		***this method is created only on a 64bit platform***
 
 		we copy as many words as it is possible
-
-		if temp_table_len is bigger than value_size we'll try to round
+		
+		if temp_table_len is bigger than value_size we'll try to round 
 		the lowest word from table depending on the last not used bit in temp_table
 		(this rounding isn't a perfect rounding -- look at the description below)
 
@@ -349,7 +349,7 @@ public:
 					we're rouding the lowest word in the table
 
 					in fact there should be a normal addition but
-					we don't use Add() or AddTwoInts() because these methods
+					we don't use Add() or AddTwoInts() because these methods 
 					can set a carry and then there'll be a small problem
 					for optimization
 				*/
@@ -401,7 +401,7 @@ public:
 private:
 
 
-	/*!
+	/*!    
 		an auxiliary method for moving bits into the left hand side
 
 		this method moves only words
@@ -426,10 +426,10 @@ private:
 			rest_bits = 0;
 		}
 		else
-		if( all_words > 0 )
+		if( all_words > 0 )  
 		{
 			// 0 < all_words < value_size
-
+	
 			sint first, second;
 			last_c = table[value_size - all_words] & 1; // all_words is greater than 0
 
@@ -444,7 +444,7 @@ private:
 
 		TTMATH_LOG("UInt::RclMoveAllWords")
 	}
-
+	
 public:
 
 	/*!
@@ -497,7 +497,7 @@ public:
 
 private:
 
-	/*!
+	/*!    
 		an auxiliary method for moving bits into the right hand side
 
 		this method moves only words
@@ -556,7 +556,7 @@ public:
 	{
 	uint last_c    = 0;
 	uint rest_bits = bits;
-
+	
 		if( bits == 0 )
 			return 0;
 
@@ -635,7 +635,7 @@ public:
 
 	/*!
 		this method looks for the highest set bit
-
+		
 		result:
 		-  	if 'this' is not zero:
 				return value - true,
@@ -657,7 +657,7 @@ public:
 
 		return false;
 		}
-
+		
 		// table[table_id] is different from 0
 		index = FindLeadingBitInWord( table[table_id] );
 
@@ -667,7 +667,7 @@ public:
 
 	/*!
 		this method looks for the smallest set bit
-
+		
 		result:
 		-  	if 'this' is not zero:
 				return value - true,
@@ -690,7 +690,7 @@ public:
 
 		return false;
 		}
-
+		
 		// table[table_id] is different from 0
 		index = FindLowestBitInWord( table[table_id] );
 
@@ -738,7 +738,7 @@ public:
 
 
 	/*!
-		this method performs a bitwise operation AND
+		this method performs a bitwise operation AND 
 	*/
 	void BitAnd(const UInt<value_size> & ss2)
 	{
@@ -750,7 +750,7 @@ public:
 
 
 	/*!
-		this method performs a bitwise operation OR
+		this method performs a bitwise operation OR 
 	*/
 	void BitOr(const UInt<value_size> & ss2)
 	{
@@ -762,7 +762,7 @@ public:
 
 
 	/*!
-		this method performs a bitwise operation XOR
+		this method performs a bitwise operation XOR 
 	*/
 	void BitXor(const UInt<value_size> & ss2)
 	{
@@ -887,7 +887,7 @@ public:
 		}
 
 		if( value_size > 2 )
-		{
+		{	
 			// if the value_size is smaller than or equal to 2
 			// there is no sense to set x1size and x1start to another values
 
@@ -943,13 +943,13 @@ public:
 	/*!
 		the multiplication 'result' = 'this' * ss2
 
-		since the 'result' is twice bigger than 'this' and 'ss2'
+		since the 'result' is twice bigger than 'this' and 'ss2' 
 		this method never returns a carry
 
 		algorithm: 100 - means automatically choose the fastest algorithm
 	*/
 	void MulBig(const UInt<value_size> & ss2,
-				UInt<value_size*2> & result,
+				UInt<value_size*2> & result, 
 				uint algorithm = 100)
 	{
 		switch( algorithm )
@@ -990,7 +990,7 @@ private:
 	TTMATH_REFERENCE_ASSERT( ss2 )
 
 	UInt<value_size> ss1( *this );
-	SetZero();
+	SetZero();	
 
 		for(uint i=0; i < value_size*TTMATH_BITS_PER_UINT ; ++i)
 		{
@@ -1033,12 +1033,12 @@ public:
 		}
 	}
 
-
+	
 	/*!
 		multiplication: result = this * ss2
 
 		result is twice bigger than 'this' and 'ss2'
-		this method never returns carry
+		this method never returns carry			
 	*/
 	void Mul1Big(const UInt<value_size> & ss2_, UInt<value_size*2> & result)
 	{
@@ -1085,7 +1085,7 @@ public:
 	uint i, c = 0;
 
 		Mul2Big(ss2, result);
-
+	
 		// copying result
 		for(i=0 ; i<value_size ; ++i)
 			table[i] = result.table[i];
@@ -1108,7 +1108,7 @@ public:
 		multiplication: result = this * ss2
 
 		result is twice bigger than this and ss2
-		this method never returns carry
+		this method never returns carry			
 	*/
 	void Mul2Big(const UInt<value_size> & ss2, UInt<value_size*2> & result)
 	{
@@ -1121,7 +1121,7 @@ public:
 private:
 
 	/*!
-		an auxiliary method for calculating the multiplication
+		an auxiliary method for calculating the multiplication 
 
 		arguments we're taking as pointers (this is to improve the Mul3Big2()- avoiding
 		unnecessary copying objects), the result should be taken as a pointer too,
@@ -1134,7 +1134,7 @@ private:
 	uint x1start = 0,       x2start = 0;
 
 		if( ss_size > 2 )
-		{
+		{	
 			// if the ss_size is smaller than or equal to 2
 			// there is no sense to set x1size (and others) to another values
 
@@ -1151,7 +1151,7 @@ private:
 
 
 	/*!
-		an auxiliary method for calculating the multiplication
+		an auxiliary method for calculating the multiplication 
 	*/
 	template<uint ss_size>
 	void Mul2Big3(const uint * ss1, const uint * ss2, UInt<ss_size*2> & result, uint x1start, uint x1size, uint x2start, uint x2size)
@@ -1204,7 +1204,7 @@ public:
 
 			z1 = (x1 + x0)*(y1 + y0) - z2 - z0    / z1 = (x1*y1 + x1*y0 + x0*y1 + x0*y0) - x1*y1 - x0*y0 = x1*y0 + x0*y1 /
 
-		and to calculate the multiplication we need only three multiplications (with some additions and subtractions)
+		and to calculate the multiplication we need only three multiplications (with some additions and subtractions)			
 
 		Our objects 'this' and 'ss2' we divide into two parts and by using recurrence we calculate the multiplication.
 		Karatsuba multiplication has O( n^(ln(3)/ln(2)) )
@@ -1215,7 +1215,7 @@ public:
 	uint i, c = 0;
 
 		Mul3Big(ss2, result);
-
+	
 		// copying result
 		for(i=0 ; i<value_size ; ++i)
 			table[i] = result.table[i];
@@ -1269,8 +1269,17 @@ private:
 			UInt<ss_size*2> res;
 			Mul2Big2<ss_size>(ss1, ss2, res);
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
+
 			for(uint i=0 ; i<ss_size*2 ; ++i)
 				result[i] = res.table[i];
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 		return;
 		}
@@ -1299,7 +1308,7 @@ private:
 			y0 = ss2;
 			x1 = ss1 + ss_size / 2;
 			y1 = ss2 + ss_size / 2;
-
+			
 			// all four vectors (x0 x1 y0 y1) are equal in size
 			Mul3Big3<ss_size/2, ss_size/2, ss_size*2>(x1, x0, y1, y0, result);
 		}
@@ -1313,6 +1322,12 @@ private:
 //we have the stop point in Mul3Big2() method
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
+
 	/*!
 		an auxiliary method for calculating the Karatsuba multiplication
 
@@ -1324,7 +1339,7 @@ private:
 
 			x*y = (x1*B^m + x0)(y1*B^m + y0) = z2*B^(2m) + z1*B^m + z0
 		      where
-			   z0 = x0*y0
+			   z0 = x0*y0 
 			   z2 = x1*y1
 			   z1 = (x1 + x0)*(y1 + y0) - z2 - z0
 	*/
@@ -1343,17 +1358,17 @@ private:
 		// now we calculate z1
 		// temp  = (x0 + x1)
 		// temp2 = (y0 + y1)
-		// we're using temp and temp2 with UInt<first_size>, although there can be a carry but
+		// we're using temp and temp2 with UInt<first_size>, although there can be a carry but 
 		// we simple remember it in xc and yc (xc and yc can be either 0 or 1),
 		// and (x0 + x1)*(y0 + y1) we calculate in this way (schoolbook algorithm):
-		//
+		// 
 		//                 xc     |     temp
 		//                 yc     |     temp2
 		//               --------------------
 		//               (temp    *   temp2)
 		//               xc*temp2 |
 		//               yc*temp  |
-		//       xc*yc |
+		//       xc*yc |                     
 		//       ----------     z1     --------
 		//
 		// and the result is never larger in size than 3*first_size
@@ -1363,10 +1378,19 @@ private:
 
 		Mul3Big2<first_size>(temp.table, temp2.table, z1.table);
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
+
 		// clearing the rest of z1
 		for(i=first_size*2 ; i<first_size*3 ; ++i)
 			z1.table[i] = 0;
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+		
 		if( xc )
 		{
 			c = AddVector(z1.table+first_size, temp2.table, first_size*3-first_size, first_size, z1.table+first_size);
@@ -1382,10 +1406,18 @@ private:
 
 		if( xc && yc )
 		{
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
 
 			for( i=first_size*2 ; i<first_size*3 ; ++i )
 				if( ++z1.table[i] != 0 )
- 					break;  // break if there was no carry
+ 					break;  // break if there was no carry 
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 		}
 
 		// z1 = z1 - z2
@@ -1404,11 +1436,20 @@ private:
 			uint z1_size = result_size - first_size;
 			TTMATH_ASSERT( z1_size <= first_size*3 )
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
+
 			for(i=z1_size ; i<first_size*3 ; ++i)
 			{
 				TTMATH_ASSERT( z1.table[i] == 0 )
 			}
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+ 			
 			c = AddVector(result+first_size, z1.table, result_size-first_size, z1_size, result+first_size);
 			TTMATH_ASSERT(c==0)
 		}
@@ -1418,6 +1459,11 @@ private:
 			TTMATH_ASSERT(c==0)
 		}
 	}
+
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef _MSC_VER
 #pragma warning (default : 4717)
@@ -1436,7 +1482,7 @@ public:
 	uint i, c = 0;
 
 		MulFastestBig(ss2, result);
-
+	
 		// copying result
 		for(i=0 ; i<value_size ; ++i)
 			table[i] = result.table[i];
@@ -1510,7 +1556,7 @@ public:
 	 *
 	 *
 	*/
-
+	
 public:
 
 
@@ -1543,7 +1589,7 @@ public:
 
 		UInt<value_size> dividend(*this);
 		SetZero();
-
+		
 		sint i;  // i must be with a sign
 		uint r = 0;
 
@@ -1570,7 +1616,7 @@ public:
 
 	/*!
 		division this = this / ss2
-
+		
 		return values:
 		-  0 - ok
 		-  1 - division by zero
@@ -1685,7 +1731,7 @@ private:
 		{
 			uint i;
 			for(i = n ; i!=0 && table[i]==v.table[i] ; --i);
-
+			
 			if( table[i] < v.table[i] )
 				return 3;
 			else
@@ -1714,7 +1760,7 @@ public:
 		if( !remainder )
 		{
 			UInt<value_size> rem;
-
+	
 		return Div1_Calculate(divisor, rem);
 		}
 
@@ -1751,7 +1797,7 @@ private:
 	uint Div1_CalculateRef(const UInt<value_size> & divisor, UInt<value_size> & rest)
 	{
 	TTMATH_REFERENCE_ASSERT( divisor )
-
+	
 	sint loop;
 	sint c;
 
@@ -1759,7 +1805,7 @@ private:
 		loop = value_size * TTMATH_BITS_PER_UINT;
 		c = 0;
 
-
+		
 	div_a:
 		c = Rcl(1, c);
 		c = rest.Add(rest,c);
@@ -1802,7 +1848,7 @@ private:
 
 	return 0;
 	}
-
+	
 
 public:
 
@@ -1898,7 +1944,7 @@ private:
 			TTMATH_LOG("UInt::Div2_Calculate")
 			return status;
 		}
-
+		
 		// here we know that 'this' is greater than divisor
 		// then 'index' is greater or equal 'divisor_index'
 		bits_diff = index - divisor_index;
@@ -1941,7 +1987,7 @@ private:
 		if(	!FindLeadingBit(table_id, index) )
 		{
 			// zero is divided by something
-
+			
 			SetZero();
 
 			if( remainder )
@@ -1951,7 +1997,7 @@ private:
 
 		return 0;
 		}
-
+	
 		divisor_index += divisor_table_id * TTMATH_BITS_PER_UINT;
 		index         += table_id         * TTMATH_BITS_PER_UINT;
 
@@ -1972,7 +2018,7 @@ private:
 
 		return 0;
 		}
-
+	
 
 		if( Div2_DivisorGreaterOrEqual(	divisor, remainder,
 										table_id, index,
@@ -1994,7 +2040,7 @@ private:
 		-  true if divisor is equal or greater than 'this'
 	*/
 	bool Div2_DivisorGreaterOrEqual(	const UInt<value_size> & divisor,
-										UInt<value_size> * remainder,
+										UInt<value_size> * remainder, 
 										uint table_id, uint index,
 										uint divisor_index  )
 	{
@@ -2018,7 +2064,7 @@ private:
 
 			uint i;
 			for(i = table_id ; i!=0 && table[i]==divisor.table[i] ; --i);
-
+			
 			if( table[i] < divisor.table[i] )
 			{
 				// divisor is greater than 'this'
@@ -2089,7 +2135,7 @@ private:
 
 		this algorithm is described in the following book:
 			"The art of computer programming 2" (4.3.1 page 272)
-			Donald E. Knuth
+			Donald E. Knuth 
 		!! give the description here (from the book)
 	*/
 	uint Div3Ref(const UInt<value_size> & v, UInt<value_size> * remainder = 0)
@@ -2117,11 +2163,11 @@ private:
 		}
 
 
-		// we can only use the third division algorithm when
+		// we can only use the third division algorithm when 
 		// the divisor is greater or equal 2^32 (has more than one 32-bit word)
 		++m;
 		++n;
-		m = m - n;
+		m = m - n; 
 		Div3_Division(v, remainder, m, n);
 
 		TTMATH_LOG("UInt::Div3")
@@ -2140,8 +2186,8 @@ private:
 
 	UInt<value_size+1> uu, vv;
 	UInt<value_size> q;
-	uint d, u_value_size, u0, u1, u2, v1, v0, j=m;
-
+	uint d, u_value_size, u0, u1, u2, v1, v0, j=m;	
+	
 		u_value_size = Div3_Normalize(v, n, d);
 
 		if( j+n == value_size )
@@ -2218,7 +2264,7 @@ private:
 
 
 	/*!
-		we're making the new 'vv'
+		we're making the new 'vv' 
 		the value is actually the same but the 'table' is bigger (value_size+1)
 	*/
 	void Div3_MakeBiggerV(const UInt<value_size> & v, UInt<value_size+1> & vv)
@@ -2230,7 +2276,7 @@ private:
 
 		TTMATH_LOG("UInt::Div3_MakeBiggerV")
 	}
-
+	
 
 	/*!
 		we're moving all bits from 'v' into the left side of the n-1 word
@@ -2281,7 +2327,7 @@ private:
 
 
 	uint Div3_Calculate(uint u2, uint u1, uint u0, uint v1, uint v0)
-	{
+	{	
 	UInt<2> u_temp;
 	uint rp;
 	bool next_test;
@@ -2341,10 +2387,10 @@ private:
 		UInt<value_size+1> vv_temp(vv);
 		vv_temp.MulInt(qp);
 
-		if( uu.Sub(vv_temp) )
+		if( uu.Sub(vv_temp) )  
 		{
 			// there was a carry
-
+			
 			//
 			// !!! this part of code was not tested
 			//
@@ -2352,7 +2398,7 @@ private:
 			--qp;
 			uu.Add(vv);
 
-			// can be a carry from this additions but it should be ignored
+			// can be a carry from this additions but it should be ignored 
 			// because it cancels with the borrow from uu.Sub(vv_temp)
 		}
 
@@ -2424,7 +2470,7 @@ public:
 		SetZero();
 		bit.SetZero();
 		bit.table[value_size-1] = (TTMATH_UINT_HIGHEST_BIT >> 1);
-
+		
 		while( bit > value )
 			bit.Rcr(2);
 
@@ -2518,11 +2564,18 @@ public:
 	*/
 	bool IsOnlyTheHighestBitSet() const
 	{
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-compare"
+#endif
 
 		for(uint i=0 ; i<value_size-1 ; ++i)
 			if( table[i] != 0 )
 				return false;
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 		if( table[value_size-1] != TTMATH_UINT_HIGHEST_BIT )
 			return false;
 
@@ -2595,7 +2648,7 @@ public:
 	/*!
 		this method converts an UInt<another_size> type to this class
 
-		this operation has mainly sense if the value from p is
+		this operation has mainly sense if the value from p is 
 		equal or smaller than that one which is returned from UInt<value_size>::SetMax()
 
 		it returns a carry if the value 'p' is too big
@@ -2611,7 +2664,7 @@ public:
 
 
 		if( value_size > argument_size )
-		{
+		{	
 			// 'this' is longer than 'p'
 
 			for( ; i<value_size ; ++i)
@@ -2636,7 +2689,7 @@ public:
 	/*!
 		this method converts an UInt<another_size> type to this class
 
-		this operation has mainly sense if the value from p is
+		this operation has mainly sense if the value from p is 
 		equal or smaller than that one which is returned from UInt<value_size>::SetMax()
 
 		it returns a carry if the value 'p' is too big
@@ -3255,7 +3308,7 @@ protected:
 public:
 
 
-	/*!
+	/*!	
 		an auxiliary method for converting to a string
 		it's used from Int::ToString() too (negative is set true then)
 	*/
@@ -3311,7 +3364,7 @@ public:
 
 
 
-	/*!
+	/*!	
 		this method converts the value to a string with a base equal 'b'
 	*/
 	void ToString(std::string & result, uint b = 10) const
@@ -3324,7 +3377,7 @@ public:
 	{
 		std::string result;
 		ToStringBase(result, b);
-
+	
 	return result;
 	}
 
@@ -3340,7 +3393,7 @@ public:
 	{
 		std::wstring result;
 		ToStringBase(result, b);
-
+	
 	return result;
 	}
 
@@ -3387,7 +3440,7 @@ private:
 				c += Mul(base); // !! IMPROVE ME: there can be used MulInt here
 				c += Add(temp);
 			}
-		}
+		}		
 
 		if( after_source )
 			*after_source = s;
@@ -3695,7 +3748,7 @@ public:
 
 	/*!
 	*
-	*	standard mathematical operators
+	*	standard mathematical operators 
 	*
 	*/
 
@@ -3772,7 +3825,7 @@ public:
 	{
 	UInt<value_size> temp(*this);
 	UInt<value_size> remainder;
-
+	
 		temp.Div( p2, remainder );
 
 	return remainder;
@@ -3782,7 +3835,7 @@ public:
 	UInt<value_size> & operator%=(const UInt<value_size> & p2)
 	{
 	UInt<value_size> remainder;
-
+	
 		Div( p2, remainder );
 		operator=(remainder);
 
@@ -3942,7 +3995,7 @@ public:
 	/*!
 	*
 	*	input/output operators for standard streams
-	*
+	*	
 	*	(they are very simple, in the future they should be changed)
 	*
 	*/
@@ -4001,10 +4054,10 @@ private:
 	static istream_type & InputFromStream(istream_type & s, UInt<value_size> & l)
 	{
 	string_type ss;
-
+	
 	// char or wchar_t for operator>>
 	char_type z;
-
+	
 		// operator>> omits white characters if they're set for ommiting
 		s >> z;
 
@@ -4064,9 +4117,9 @@ public:
 
 	union uint_
 	{
-		struct
+		struct 
 		{
-			unsigned int low;  // 32 bit
+			unsigned int low;  // 32 bit 
 			unsigned int high; // 32 bit
 		} u_;
 
