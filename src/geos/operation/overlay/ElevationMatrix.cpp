@@ -1,3 +1,4 @@
+#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -53,7 +54,7 @@ void
 ElevationMatrixFilter::filter_rw(Coordinate* c) const
 {
 #if GEOS_DEBUG
-    cerr << "ElevationMatrixFilter::filter_rw(" << c->toString() << ") called"
+    cpp_compat_cerr << "ElevationMatrixFilter::filter_rw(" << c->toString() << ") called"
          << endl;
 #endif
 
@@ -71,7 +72,7 @@ ElevationMatrixFilter::filter_rw(Coordinate* c) const
             c->z = p_avgElevation;
         }
 #if GEOS_DEBUG
-        cerr << "  z set to " << c->z << endl;
+        cpp_compat_cerr << "  z set to " << c->z << endl;
 #endif
     }
     catch(const util::IllegalArgumentException& /* ex */) {
@@ -83,7 +84,7 @@ void
 ElevationMatrixFilter::filter_ro(const Coordinate* c)
 {
 #if GEOS_DEBUG
-    cerr << "ElevationMatrixFilter::filter_ro(" << c->toString() << ") called"
+    cpp_compat_cerr << "ElevationMatrixFilter::filter_ro(" << c->toString() << ") called"
          << endl;
 #endif
     em.add(*c);
@@ -112,7 +113,7 @@ void
 ElevationMatrix::add(const Geometry* geom)
 {
 #if GEOS_DEBUG
-    cerr << "ElevationMatrix::add(Geometry *) called" << endl;
+    cpp_compat_cerr << "ElevationMatrix::add(Geometry *) called" << endl;
 #endif // GEOS_DEBUG
 
     // Cannot add Geometries to an ElevationMatrix after it's average
@@ -147,7 +148,7 @@ ElevationMatrix::add(const Coordinate& c)
     }
     catch(const util::IllegalArgumentException& exp) {
         // coordinate do not overlap matrix
-        cerr << "ElevationMatrix::add(" << c.toString()
+        cpp_compat_cerr << "ElevationMatrix::add(" << c.toString()
              << "): Coordinate does not overlap grid extent: "
              << exp.what() << endl;
         return;
