@@ -302,5 +302,4 @@ OBJECTS =  geos/algorithm/Angle.o \
      geos/util/math.o \
      geos/util/Profiler.o \
      libgeos-cpp-compat.o \
-     libgeos-version.o \
-     RcppExports.o
+     libgeos-init.o
