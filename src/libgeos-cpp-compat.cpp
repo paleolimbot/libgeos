@@ -1,10 +1,10 @@
 
 #include "libgeos-cpp-compat.h"
-#include <R.h>
-#include <Rmath.h>
 #include <iostream>
 #include <cstdio>
 #include <streambuf>
+#include <R.h>
+#include <Rmath.h>
 
 template <bool OUTPUT>
 class Rstreambuf : public std::streambuf {
