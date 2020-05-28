@@ -35,5 +35,5 @@ remotes::install_github("paleolimbot/libgeos")
 (currently this package does nothing)
 
 ```{r}
-libgeos:::libgeos_version()
+libgeos::libgeos_version()
 ```
