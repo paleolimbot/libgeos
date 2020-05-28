@@ -1,8 +1,64 @@
 
 #include "libgeos-cpp-compat.h"
-#include <Rcpp.h>
+#include <R.h>
 #include <Rmath.h>
-using namespace Rcpp;
+#include <iostream>
+#include <cstdio>
+#include <streambuf>
+
+template <bool OUTPUT>
+class Rstreambuf : public std::streambuf {
+public:
+  Rstreambuf(){}
+
+protected:
+  virtual std::streamsize xsputn(const char *s, std::streamsize n);
+  virtual int overflow(int c = traits_type::eof());
+  virtual int sync();
+};
+
+template <bool OUTPUT>
+class Rostream : public std::ostream {
+  typedef Rstreambuf<OUTPUT> Buffer;
+  Buffer buf;
+public:
+  Rostream() : std::ostream( &buf ) {}
+};
+// #nocov start
+template <> inline std::streamsize Rstreambuf<true>::xsputn(const char *s, std::streamsize num) {
+  Rprintf("%.*s", num, s);
+  return num;
+}
+template <> inline std::streamsize Rstreambuf<false>::xsputn(const char *s, std::streamsize num) {
+  REprintf("%.*s", num, s);
+  return num;
+}
+
+template <> inline int Rstreambuf<true>::overflow(int c) {
+  if (c != traits_type::eof()) {
+    char_type ch = traits_type::to_char_type(c);
+    return xsputn(&ch, 1) == 1 ? c : traits_type::eof();
+  }
+  return c;
+}
+template <> inline int Rstreambuf<false>::overflow(int c) {
+  if (c != traits_type::eof()) {
+    char_type ch = traits_type::to_char_type(c);
+    return xsputn(&ch, 1) == 1 ? c : traits_type::eof();
+  }
+  return c;
+}
+
+template <> inline int Rstreambuf<true>::sync() {
+  ::R_FlushConsole();
+  return 0;
+}
+template <> inline int Rstreambuf<false>::sync() {
+  ::R_FlushConsole();
+  return 0;
+}
+static Rostream<true>  Rcout;
+static Rostream<false> Rcerr;
 
 void cpp_compat_printf(const char* fmt, ...) {
   // don't know how to pass on elipses
