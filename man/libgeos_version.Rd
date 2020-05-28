@@ -13,6 +13,6 @@ The version string returned by \code{GEOSversion();}
 GEOS version information
 }
 \examples{
-libgeos_verisoin()
+libgeos_version()
 
 }

@@ -34,3 +34,23 @@ remotes::install_github("paleolimbot/libgeos")
 libgeos::libgeos_version()
 #> [1] "3.8.1-CAPI-1.13.3"
 ```
+
+(but you can theoretically call it from Rcpp…)
+
+``` cpp
+#include <Rcpp.h>
+
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos.h"
+
+
+// [[Rcpp::export]]
+SEXP version() {
+  return libgeos_geos_version();
+}
+```
+
+``` r
+version()
+#> [1] "3.8.1-CAPI-1.13.3"
+```

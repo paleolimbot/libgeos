@@ -15,8 +15,8 @@ NULL
 #' @export
 #'
 #' @examples
-#' libgeos_verisoin()
+#' libgeos_version()
 #'
 libgeos_version <- function() {
-  .Call("_libgeos_geos_version")
+  .Call("libgeos_geos_version")
 }

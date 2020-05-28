@@ -37,3 +37,24 @@ remotes::install_github("paleolimbot/libgeos")
 ```{r}
 libgeos::libgeos_version()
 ```
+
+(but you can theoretically call it from Rcpp...)
+
+```{Rcpp}
+#include <Rcpp.h>
+
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos.h"
+
+
+// [[Rcpp::export]]
+SEXP version() {
+  return libgeos_geos_version();
+}
+```
+
+```{r}
+version()
+```
+
+
