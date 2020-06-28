@@ -21,6 +21,8 @@ extern "C" {
     R_useDynamicSymbols(dll, FALSE);
 
     /* used by external packages linking to libgeos from C */
+    R_RegisterCCallable("libgeos", "GEOS_init_r", (DL_FUNC) &GEOS_init_r);
+    R_RegisterCCallable("libgeos", "GEOS_finish_r", (DL_FUNC) &GEOS_finish_r);
     R_RegisterCCallable("libgeos", "GEOSversion", (DL_FUNC) &GEOSversion);
   }
 }

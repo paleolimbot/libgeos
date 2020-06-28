@@ -1,12 +1,12 @@
 
 library(tidyverse)
 
-capi_header <- read_file("inst/include/geos_c.h")
+capi_header <- read_file("inst/libgeos_include/geos_c.h")
 
-function_defs <- capi_header %>%
+function_defs_chr <- capi_header %>%
   str_extract_all(
     regex(
-      "extern\\s+[A-Za-z0-9 ]+\\s+GEOS_DLL[^;]+;",
+      "extern\\s*[A-Za-z0-9_ ]+\\s*GEOS_DLL[^;]+;",
       multiline = TRUE,
       dotall = TRUE
     )
@@ -14,15 +14,25 @@ function_defs <- capi_header %>%
   .[[1]] %>%
   str_replace_all(regex("\\s+"), " ")
 
-defs <- tibble(
-  # move pointer spec to be with type to the left, remove extern and GEOS_DLL
-  def = function_defs %>%
+typedefs_chr <- capi_header %>%
+  str_extract_all(regex("typedef[^;]+;", multiline = TRUE)) %>%
+  .[[1]]
+
+enums_chr <- capi_header %>%
+  str_extract_all(regex("\nenum[^;]+;", multiline = TRUE)) %>%
+  .[[1]] %>%
+  str_trim()
+
+function_defs <- tibble(
+  # move pointer spec to be with type to the left, remove extern
+  def = function_defs_chr %>%
     str_replace("\\s+GEOS_DLL\\s+\\*", "* GEOS_DLL ") %>%
-    str_remove("extern\\s+") %>% str_remove("GEOS_DLL\\s+"),
+    str_remove("extern\\s+"),
 
   name = def %>% str_extract("[A-Za-z0-9_]+\\s*\\(") %>% str_remove("\\($") %>% str_trim(),
 
-  return_type = str_extract(def, "^[A-Za-z0-9_ ]+\\*?"),
+  return_type = str_extract(def, "^[A-Za-z0-9_ ]+\\*?\\s*GEOS_DLL") %>%
+    str_remove("\\s*GEOS_DLL$"),
 
   args = str_extract(def, "\\([^\\)]*\\)") %>%
     str_remove_all("[\\(\\)]") %>%
@@ -33,7 +43,7 @@ defs <- tibble(
   n_args = map_int(args, length)
 )
 
-header_defs <- defs %>%
+function_header_defs <- function_defs %>%
   mutate(
     # declare function pointers
     arg_types = map_chr(arg_types, paste0, collapse = ", "),
@@ -43,10 +53,10 @@ header_defs <- defs %>%
     init_def = glue::glue('  {name} = ({return_type} (*)({arg_types})) R_GetCCallable("libgeos", "{name}");'),
     register_def = glue::glue('    R_RegisterCCallable("libgeos", "{name}", (DL_FUNC) &{name});')
   ) %>%
-  filter(name == "GEOSversion")
+  filter(name %in% c("GEOSversion", "GEOS_init_r", "GEOS_finish_r"))
 
 libgeos_h <- with(
-  header_defs,
+  rlang::list2(!!!function_header_defs, typedefs_chr = typedefs_chr, enums_chr = enums_chr),
   glue::glue(
 '
 
@@ -55,6 +65,10 @@ libgeos_h <- with(
 
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
+
+{ paste0(typedefs_chr, collapse = "\n") }
+
+{ paste0(enums_chr, collapse = "\n") }
 
 { paste0(header_def, collapse = "\n") }
 
@@ -67,7 +81,7 @@ void libgeos_init_api();
 )
 
 libgeos_c <- with(
-  header_defs,
+  function_header_defs,
   glue::glue(
     '
 
@@ -84,7 +98,7 @@ void libgeos_init_api() {{
 )
 
 libgeos_init_cpp <- with(
-  header_defs,
+  function_header_defs,
   glue::glue(
     '
 

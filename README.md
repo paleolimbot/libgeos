@@ -66,3 +66,30 @@ cpp_libgeos_init_api()
 version()
 #> [1] "3.8.1-CAPI-1.13.3"
 ```
+
+Realistically, you will want to operate on some actual geometry\!
+
+``` cpp
+#include <Rcpp.h>
+
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos.h"
+#include "libgeos.c"
+
+// [[Rcpp::export]]
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// regular C or C++ code that uses GEOS functions!
+// [[Rcpp::export]]
+void test_init_finish() {
+  GEOSContextHandle_t handle = GEOS_init_r();
+  GEOS_finish_r(handle);
+}
+```
+
+``` r
+cpp_libgeos_init_api()
+test_init_finish()
+```
