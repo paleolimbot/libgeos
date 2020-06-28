@@ -53,7 +53,7 @@ function_header_defs <- function_defs %>%
     init_def = glue::glue('  {name} = ({return_type} (*)({arg_types})) R_GetCCallable("libgeos", "{name}");'),
     register_def = glue::glue('    R_RegisterCCallable("libgeos", "{name}", (DL_FUNC) &{name});')
   ) %>%
-  filter(name %in% c("GEOSversion", "GEOS_init_r", "GEOS_finish_r"))
+  filter((name %in% c("GEOSversion")) | str_detect(name, "_r$"))
 
 libgeos_h <- with(
   rlang::list2(!!!function_header_defs, typedefs_chr = typedefs_chr, enums_chr = enums_chr),
