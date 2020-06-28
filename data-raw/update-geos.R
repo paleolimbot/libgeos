@@ -20,7 +20,7 @@ headers <- tibble(
     full.names = TRUE,
     recursive = TRUE
   ),
-  final_path = str_replace(path, ".*?geos/", "inst/include/geos/")
+  final_path = str_replace(path, ".*?geos/", "inst/libgeos_include/geos/")
 )
 
 # If source files are in src/ with no subdirectories
@@ -32,14 +32,9 @@ source_files <- tibble(
     str_replace("src__", "src/")
 )
 
-# clean source dir
-current_source_files <- tibble(
-  path = list.files("src", "\\.(h|hpp|cpp|o|cc)$", full.names = TRUE, recursive = TRUE)
-) %>%
-  filter(!str_detect(path, "^src/(libgeos-|Rcpp|Makevars)"))
-
-unlink(current_source_files$path)
-unlink("inst/include/geos", recursive = TRUE)
+# remove current source and header files
+unlink("inst/libgeos_include/geos", recursive = TRUE)
+unlink("inst/libgeos_include/geos_c.h")
 unlink("src/geos", recursive = TRUE)
 
 # create destination dirs
@@ -48,7 +43,8 @@ dest_dirs <- c(
   source_files %>% pull(final_path)
 ) %>%
   dirname() %>%
-  unique()
+  unique() %>%
+  sort()
 dest_dirs[!dir.exists(dest_dirs)] %>% walk(dir.create, recursive = TRUE)
 
 # copy source files
@@ -65,7 +61,7 @@ stopifnot(
   # also need to copy the C API cpp and header
   file.copy(
     file.path(geos_dir, "capi/geos_c.h"),
-    "inst/include/geos_c.h"
+    "inst/libgeos_include/geos_c.h"
   ),
   file.copy(
     file.path(geos_dir, "capi/geos_c.cpp"),
@@ -96,6 +92,7 @@ print_next <- function() {
   cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
+  cli::cat_bullet("Update exported C API using update-libgeos-api.R")
   clipr::write_clip(objects)
 }
 
