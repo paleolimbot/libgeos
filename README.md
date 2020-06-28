@@ -28,29 +28,41 @@ remotes::install_github("paleolimbot/libgeos")
 
 ## Example
 
-(currently this package does nothing)
-
-``` r
-libgeos::libgeos_version()
-#> [1] "3.8.1-CAPI-1.13.3"
-```
-
-(but you can theoretically call it from Rcpp…)
+This package only exists for its exported C API, for which headers are
+provided to make calling these functions from Rcpp or another package as
+easy as possible.
 
 ``` cpp
 #include <Rcpp.h>
 
+// Packages will also need LinkingTo: libgeos
 // [[Rcpp::depends(libgeos)]]
+
+// needed in every file that uses GEOS functions
 #include "libgeos.h"
 
+// needed exactly once in your package or Rcpp script
+// contains all the function pointers and the
+// implementation of the function to initialize them
+// (`libgeos_init_api()`)
+#include "libgeos.c"
 
+// this function needs to be called once before any GEOS functions
+// are called (e.g., in .onLoad() for your package)
 // [[Rcpp::export]]
-SEXP version() {
-  return libgeos_geos_version();
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// regular C or C++ code that uses GEOS functions!
+// [[Rcpp::export]]
+std::string version() {
+  return GEOSversion();
 }
 ```
 
 ``` r
+cpp_libgeos_init_api()
 version()
 #> [1] "3.8.1-CAPI-1.13.3"
 ```

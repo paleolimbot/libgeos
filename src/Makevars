@@ -1,6 +1,9 @@
 PKG_CPPFLAGS = -I../inst/include -DUSE_UNSTABLE_GEOS_CPP_API
 
-OBJECTS =  geos/algorithm/Angle.o \
+OBJECTS =  \
+     libgeos-cpp-compat.o \
+     libgeos-init.o \
+     geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
      geos/algorithm/Centroid.o \
@@ -300,6 +303,4 @@ OBJECTS =  geos/algorithm/Angle.o \
      geos/util/GeometricShapeFactory.o \
      geos/util/Interrupt.o \
      geos/util/math.o \
-     geos/util/Profiler.o \
-     libgeos-cpp-compat.o \
-     libgeos-init.o
+     geos/util/Profiler.o
