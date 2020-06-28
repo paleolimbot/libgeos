@@ -4,9 +4,13 @@
 \name{libgeos-package}
 \alias{libgeos}
 \alias{libgeos-package}
-\title{libgeos: Open Source Geometry Engine C API}
+\title{libgeos: Open Source Geometry Engine (GEOS) C API}
 \description{
-Provides access to the GEOS C API.
+Provides the GEOS API as a dynamically-linkable
+  C API that can be used to write high-performance C and C++
+  geometry operations using R as an interface. Headers are provided
+  to make linking to and using these functions from C++ code as
+  easy and as safe as possible.
 }
 \seealso{
 Useful links:
