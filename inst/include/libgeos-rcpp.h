@@ -177,15 +177,26 @@ public:
   }
 
   LibGEOSGeometry readHex(const char* text) {
-    GEOSGeometry* geometryPtr = GEOSWKBReader_readHEX_r(
-      this->handle.get(),
-      this->reader,
-      // not sure if this is the correct cast
-      reinterpret_cast<const unsigned char *>(text),
-      strlen(text)
-    );
 
-    return LibGEOSGeometry(this->handle, geometryPtr);
+    // readHEX needs a const unsigned char *
+    // best I can think of for converting to unsigned char*
+    unsigned char* textBuffer = new unsigned char[strlen(text)];
+    memcpy(textBuffer, text, strlen(text));
+
+    try {
+      GEOSGeometry* geometryPtr = GEOSWKBReader_readHEX_r(
+        this->handle.get(),
+        this->reader,
+        textBuffer,
+        strlen(text)
+      );
+      delete[] textBuffer;
+
+      return LibGEOSGeometry(this->handle, geometryPtr);
+    } catch (LibGEOSRcppException& e) {
+      delete[] textBuffer;
+      throw e;
+    }
   }
 
   ~LibGEOSWKBReader() {
