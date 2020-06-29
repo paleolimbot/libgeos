@@ -74,7 +74,14 @@ public:
     p = buf + strlen(buf) - 1;
     if(strlen(buf) > 0 && *p == '\n') *p = '\0';
 
-    Rcpp::stop(buf);
+    // Throwing an exception here works on most platforms,
+    // but Rcpp on Windows i386 isn't able to catch this
+    // exception and convert it to an R error. This approach,
+    // borrowed from {sf}, works on all platforms.
+    Rcpp::Function error("stop");
+    error(buf);
+
+    return;
   }
 
   static void handleWarning(const char *fmt, ...) {

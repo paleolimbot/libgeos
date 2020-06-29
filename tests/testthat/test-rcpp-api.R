@@ -138,7 +138,6 @@ test_that("Rcpp API readers and writers work as expected", {
   expect_error(wkt_wkt("POINT (30 10)"), "LibGEOS API was not initialized")
   source_rcpp_libgeos_init()
 
-  wkt_wkt("PONT EMPTY")
   expect_error(wkt_wkt("POINT ENTPY"), "ParseException")
   expect_identical(wkt_wkt("POINT (30 10)"), "POINT (30 10)")
   expect_identical(wkb_wkt(wkt_wkb("POINT (30 10)")), "POINT (30 10)")
