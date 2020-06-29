@@ -3,6 +3,8 @@ library(tidyverse)
 
 capi_header <- read_file("inst/libgeos_include/geos_c.h")
 
+version_defs_chr <- read_lines(capi_header)[54:76]
+
 function_defs_chr <- capi_header %>%
   str_extract_all(
     regex(
@@ -56,15 +58,27 @@ function_header_defs <- function_defs %>%
   filter((name %in% c("GEOSversion")) | str_detect(name, "_r$"))
 
 libgeos_h <- with(
-  rlang::list2(!!!function_header_defs, typedefs_chr = typedefs_chr, enums_chr = enums_chr),
+  rlang::list2(
+    !!!function_header_defs,
+    typedefs_chr = typedefs_chr,
+    enums_chr = enums_chr,
+    version_defs_chr = version_defs_chr
+  ),
   glue::glue(
 '
 
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #ifndef LIBGEOS_H
 #define LIBGEOS_H
 
-#include <Rinternals.h>
-#include <R_ext/Rdynload.h>
+#ifndef __cplusplus
+# include <stddef.h> /* for size_t definition */
+#else
+# include <cstddef>
+using std::size_t;
+#endif
+
+{ paste0(version_defs_chr, collapse = "\n") }
 
 { paste0(typedefs_chr, collapse = "\n") }
 
@@ -85,7 +99,11 @@ libgeos_c <- with(
   glue::glue(
     '
 
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #include "libgeos.h"
+
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 { paste0(impl_def, collapse = "\n") }
 
@@ -102,6 +120,8 @@ libgeos_init_cpp <- with(
   glue::glue(
     '
 
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
+#define GEOS_USE_ONLY_R_API
 #include "geos_c.h"
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>

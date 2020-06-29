@@ -1,9 +1,38 @@
 
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #ifndef LIBGEOS_H
 #define LIBGEOS_H
 
-#include <Rinternals.h>
-#include <R_ext/Rdynload.h>
+#ifndef __cplusplus
+# include <stddef.h> /* for size_t definition */
+#else
+# include <cstddef>
+using std::size_t;
+#endif
+
+#ifndef GEOS_VERSION_MAJOR
+#define GEOS_VERSION_MAJOR 3
+#endif
+#ifndef GEOS_VERSION_MINOR
+#define GEOS_VERSION_MINOR 8
+#endif
+#ifndef GEOS_VERSION_PATCH
+#define GEOS_VERSION_PATCH 1
+#endif
+#ifndef GEOS_VERSION
+#define GEOS_VERSION "3.8.1"
+#endif
+#ifndef GEOS_JTS_PORT
+#define GEOS_JTS_PORT "1.13.0"
+#endif
+
+#define GEOS_CAPI_VERSION_MAJOR 1
+#define GEOS_CAPI_VERSION_MINOR 13
+#define GEOS_CAPI_VERSION_PATCH 3
+#define GEOS_CAPI_VERSION "3.8.1-CAPI-1.13.3"
+
+#define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
+#define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
 
 typedef struct GEOSContextHandle_HS *GEOSContextHandle_t;
 typedef void (*GEOSMessageHandler)(const char *fmt, ...);

@@ -1,5 +1,9 @@
 
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #include "libgeos.h"
+
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 GEOSContextHandle_t (*initGEOS_r)( GEOSMessageHandler, GEOSMessageHandler) = NULL;
 void (*finishGEOS_r)(GEOSContextHandle_t) = NULL;
