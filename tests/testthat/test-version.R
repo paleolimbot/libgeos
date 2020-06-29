@@ -4,7 +4,7 @@ test_that("libgeos_version() works", {
 })
 
 test_that("GEOSversion() can be called from Rcpp", {
-  source_rcpp_libgeos('
+  cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
     std::string version() {
       libgeos_init_api();
@@ -13,4 +13,6 @@ test_that("GEOSversion() can be called from Rcpp", {
   ')
 
   expect_identical(version(), libgeos_version())
+
+  unlink(cache, recursive = TRUE)
 })

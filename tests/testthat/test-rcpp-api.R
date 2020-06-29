@@ -1,6 +1,6 @@
 
 test_that("Rcpp error handler works without segfaulting", {
-  source_rcpp_libgeos('
+  cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
     void wkt_validate_catch(CharacterVector wkt, bool rethrow) {
       LibGEOSHandle handle;
@@ -41,10 +41,12 @@ test_that("Rcpp error handler works without segfaulting", {
   # terminations
   expect_silent(wkt_validate("POINT EMPTY"))
   expect_error(wkt_validate("NOPE"), "ParseException", class = "LibGEOSRcppException")
+
+  unlink(cache, recursive = TRUE)
 })
 
 test_that("Rcpp API readers and writers work as expected", {
-  source_rcpp_libgeos('
+  cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
     CharacterVector wkt_wkt(CharacterVector wkt) {
       CharacterVector output(wkt.size());
@@ -187,10 +189,12 @@ test_that("Rcpp API readers and writers work as expected", {
   expect_identical(wkb_wkt(wkb_wkb((wkt_wkb("POINT (30 10)")))), "POINT (30 10)")
   expect_identical(hex_wkt(wkt_hex("POINT (30 10)")), "POINT (30 10)")
   expect_identical(hex_wkt(hex_hex((wkt_hex("POINT (30 10)")))), "POINT (30 10)")
+
+  unlink(cache, recursive = TRUE)
 })
 
 test_that("deleters are called", {
-  source_rcpp_libgeos("
+  cache <- source_rcpp_libgeos("
     // [[Rcpp::export]]
     CharacterVector wkt_wkt(CharacterVector wkt) {
       CharacterVector output(wkt.size());
@@ -324,10 +328,12 @@ test_that("deleters are called", {
     ),
     fixed = TRUE
   )
+
+  unlink(cache, recursive = TRUE)
 })
 
 test_that("buffer params work", {
-  source_rcpp_libgeos("
+  cache <- source_rcpp_libgeos("
     // [[Rcpp::export]]
     CharacterVector wkt_buffer(CharacterVector wkt, double distance) {
       CharacterVector output(wkt.size());
@@ -360,5 +366,7 @@ test_that("buffer params work", {
   source_rcpp_libgeos_init()
 
   expect_match(wkt_buffer("POINT (0 0)", 10), "^POLYGON \\(\\(")
+
+  unlink(cache, recursive = TRUE)
 })
 

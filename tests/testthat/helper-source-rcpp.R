@@ -1,7 +1,5 @@
 
-rcpp_cache <- tempfile()
-dir.create(rcpp_cache)
-source_rcpp_libgeos <- function(code, header = '', ..., env = parent.frame()) {
+source_rcpp_libgeos <- function(code, header = '', cache = tempfile(), ..., env = parent.frame()) {
   head <- '
     #include <Rcpp.h>
     // [[Rcpp::depends(libgeos)]]
@@ -16,5 +14,9 @@ source_rcpp_libgeos <- function(code, header = '', ..., env = parent.frame()) {
 
   '
   requireNamespace("libgeos", quietly = TRUE)
-  Rcpp::sourceCpp(code = paste0(header, '\n\n', head, code), env = env, cacheDir = rcpp_cache, ...)
+  if (!dir.exists(cache)) {
+    dir.create(cache)
+  }
+  Rcpp::sourceCpp(code = paste0(header, '\n\n', head, code), env = env, cacheDir = cache, ...)
+  cache
 }
