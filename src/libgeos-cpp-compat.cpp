@@ -1,5 +1,6 @@
 
 #include "libgeos-cpp-compat.h"
+#include <stdexcept>
 #include <iostream>
 #include <cstdio>
 #include <streambuf>
