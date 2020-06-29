@@ -1,4 +1,48 @@
 
+test_that("Rcpp error handler works without segfaulting", {
+  source_rcpp_libgeos('
+    // [[Rcpp::export]]
+    void wkt_validate_catch(CharacterVector wkt, bool rethrow) {
+      LibGEOSHandle handle;
+      LibGEOSWKTReader reader(handle);
+
+      try {
+        for (R_xlen_t i = 0; i < wkt.size(); i++) {
+          LibGEOSGeometry geom = reader.read(wkt[i]);
+        }
+      } catch(std::exception& e) {
+        if (rethrow) {
+          throw e;
+        } else {
+          Rcout << "Converting error to stdout: " << e.what();
+        }
+      }
+    }
+
+    // [[Rcpp::export]]
+    void wkt_validate(CharacterVector wkt) {
+      LibGEOSHandle handle;
+      LibGEOSWKTReader reader(handle);
+      for (R_xlen_t i = 0; i < wkt.size(); i++) {
+        LibGEOSGeometry geom = reader.read(wkt[i]);
+      }
+    }
+  ')
+
+  source_rcpp_libgeos_init()
+
+  # see if it's possible to catch exceptions coming from the error handler
+  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = TRUE))
+  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = FALSE))
+  expect_error(wkt_validate_catch("NOPE", rethrow = TRUE), class = "std::exception")
+  expect_output(wkt_validate_catch("NOPE", rethrow = FALSE), "ParseException")
+
+  # make sure uncaught exceptions are propagated as R errors rather than
+  # terminations
+  expect_silent(wkt_validate("POINT EMPTY"))
+  expect_error(wkt_validate("NOPE"), "ParseException", class = "LibGEOSRcppException")
+})
+
 test_that("Rcpp API readers and writers work as expected", {
   source_rcpp_libgeos('
     // [[Rcpp::export]]
@@ -138,7 +182,6 @@ test_that("Rcpp API readers and writers work as expected", {
   expect_error(wkt_wkt("POINT (30 10)"), "LibGEOS API was not initialized")
   source_rcpp_libgeos_init()
 
-  expect_error(wkt_wkt("POINT ENTPY"), "ParseException")
   expect_identical(wkt_wkt("POINT (30 10)"), "POINT (30 10)")
   expect_identical(wkb_wkt(wkt_wkb("POINT (30 10)")), "POINT (30 10)")
   expect_identical(wkb_wkt(wkb_wkb((wkt_wkb("POINT (30 10)")))), "POINT (30 10)")
@@ -217,7 +260,7 @@ test_that("deleters are called", {
   expect_output(
     expect_error(
       wkt_wkt("NOT WKT"),
-      "ParseException"
+      class = "LibGEOSRcppException"
     ),
     paste(
       "GEOS_init_r()",
@@ -268,7 +311,7 @@ test_that("deleters are called", {
   expect_output(
     expect_error(
       wkb_wkb(list(raw(0))),
-      "ParseException"
+      class = "LibGEOSRcppException"
     ),
     paste(
       "GEOS_init_r()",

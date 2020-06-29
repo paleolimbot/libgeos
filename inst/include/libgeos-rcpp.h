@@ -2,16 +2,22 @@
 #ifndef LIBGEOS_RCPP_H
 #define LIBGEOS_RCPP_H
 
+#include <stdexcept>
+#include <memory>
+#include <sstream>
+
 #ifdef LIBGEOS_RCPP_USE_SYSTEM_GEOS
 #include "geos_c.h"
 #else
 #include "libgeos.h"
 #endif
 
-#include <memory>
-#include <sstream>
 #include <Rcpp.h>
 
+class LibGEOSRcppException: public std::runtime_error {
+public:
+  LibGEOSRcppException(std::string msg): std::runtime_error(msg) {}
+};
 
 class LibGEOSHandle {
 public:
@@ -74,14 +80,7 @@ public:
     p = buf + strlen(buf) - 1;
     if(strlen(buf) > 0 && *p == '\n') *p = '\0';
 
-    // Throwing an exception here works on most platforms,
-    // but Rcpp on Windows i386 isn't able to catch this
-    // exception and convert it to an R error. This approach,
-    // borrowed from {sf}, works on all platforms.
-    Rcpp::Function error("stop");
-    error(buf);
-
-    return;
+    throw LibGEOSRcppException(buf);
   }
 
   static void handleWarning(const char *fmt, ...) {
@@ -96,8 +95,6 @@ public:
 
     Rcpp::Function warning("warning");
     warning(buf);
-
-    return;
   }
 };
 
