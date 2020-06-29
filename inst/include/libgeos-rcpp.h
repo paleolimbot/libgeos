@@ -74,7 +74,7 @@ public:
     p = buf + strlen(buf) - 1;
     if(strlen(buf) > 0 && *p == '\n') *p = '\0';
 
-    throw Rcpp::exception(buf);
+    Rcpp::stop(buf);
   }
 
   static void handleWarning(const char *fmt, ...) {
