@@ -32,15 +32,15 @@ test_that("Rcpp error handler works without segfaulting", {
   source_rcpp_libgeos_init()
 
   # see if it's possible to catch exceptions coming from the error handler
-  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = TRUE))
   expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = FALSE))
-  expect_error(wkt_validate_catch("NOPE", rethrow = TRUE), class = "std::exception")
-  expect_output(wkt_validate_catch("NOPE", rethrow = FALSE), "ParseException")
+  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = TRUE))
+  expect_output(wkt_validate_catch("NOPE1", rethrow = FALSE), "ParseException")
+  expect_error(wkt_validate_catch("NOPE2", rethrow = TRUE), class = "std::exception")
 
   # make sure uncaught exceptions are propagated as R errors rather than
   # terminations
   expect_silent(wkt_validate("POINT EMPTY"))
-  expect_error(wkt_validate("NOPE"), "ParseException", class = "LibGEOSRcppException")
+  expect_error(wkt_validate("NOPE3"), "ParseException", class = "LibGEOSRcppException")
 
   unlink(cache, recursive = TRUE)
 })
@@ -262,10 +262,7 @@ test_that("deleters are called", {
   )
 
   expect_output(
-    expect_error(
-      wkt_wkt("NOT WKT"),
-      class = "LibGEOSRcppException"
-    ),
+    expect_error(wkt_wkt("NOPE4"), class = "LibGEOSRcppException"),
     paste(
       "GEOS_init_r()",
       "GEOSWKTReader_create_r()",
@@ -313,10 +310,7 @@ test_that("deleters are called", {
   )
 
   expect_output(
-    expect_error(
-      wkb_wkb(list(raw(0))),
-      class = "LibGEOSRcppException"
-    ),
+    expect_error(wkb_wkb(list(raw(0))), class = "LibGEOSRcppException"),
     paste(
       "GEOS_init_r()",
       "GEOSWKBReader_create_r()",
