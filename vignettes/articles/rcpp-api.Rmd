@@ -1,0 +1,258 @@
+---
+title: "Using the LibGEOS Rcpp API"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The [GEOS](https://trac.osgeo.org/geos/) library is written in C++, with its recommended interface as a [C API](https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in) for long-term stability. Because of this long-term stability (and because there is no other way to do cross-package dynamic linking in R), this is the interface exposed via the libgeos package. While it seems a bit silly to have a massively powerful and well-written C++ library squeezed through the tiny hole of the C API, it powers a [huge number of libraries and products](https://trac.osgeo.org/geos/wiki/Applications), arguably because of the stability of the C API.
+
+Arguably even more silly is to write a C++ API wrapping the C API (that was written around a C++ library in the first place). However, in R, header-only C++ libraries are easy to distribute (a well-known example is [Rcpp](https://cran.r-project.org/package=Rcpp)), and make it easier for more people to write safe high-performance code. Rcpp isn't the only way to use C++ to interact with R, but it is the most popular, and there are excellent [reference guides](https://teuder.github.io/rcpp4everyone_en/) and introductory material for [scripting](https://adv-r.hadley.nz/rcpp.html) and [using it in packages](http://r-pkgs.had.co.nz/src.html).
+
+## Getting Started
+
+To get started, you'll have to install and load libgeos:
+
+```{r setup}
+library(libgeos)
+```
+
+Next, you'll need to make a new `.cpp` file and use `Rcpp::sourceRcpp()` to make the exported functions available. The anatomy of a file that uses the libgeos Rcpp API is as follows:
+
+```{Rcpp}
+#include <Rcpp.h>
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos-rcpp.h"
+#include "libgeos.c"
+
+// [[Rcpp::export]]
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// regular C or C++ code that uses GEOS functions!
+// [[Rcpp::export]]
+std::string version() {
+  return GEOSversion();
+}
+```
+
+A few things to note:
+
+- Use `// [[Rcpp::depends(libgeos)]]` to tell Rcpp to put libgeos's headers in the include path
+- Use `#include "libgeos-rcpp.h"` to include the GEOS function definitions and the Rcpp API
+- Use `#include "libgeos.c"` to include the actual GEOS function pointers.
+- You need to provide a way to call `libgeos_init_api()` to initialize the function pointers with references to the implementations in libgeos.
+
+After compiling the above with `sourceRcpp()`, in R you can do:
+
+```{r}
+cpp_libgeos_init_api() # once
+version()
+```
+
+In a package this will be slightly different: you need to include `libgeos.c` exactly once, but all other files that use GEOS functions only need to `#include "libgeos-rcpp.h"`. You don't need `// [[Rcpp::depends(libgeos)]]` in any of your package files, but you will need to add `LinkingTo: libgeos` to your `DESCRIPTION` and make sure to call `libgeos_init_api()` when your package is loaded (e.g., via `.onLoad()`).
+
+## The LibGEOSHandle
+
+Every function in the GEOS API exported by libgeos (except `GEOSVersion()`) requires a `GEOSContextHandle_t` object as the first argument. This object primarily controls error reporting and makes the API thread-safe if used correctly. The libgeos Rcpp API wraps this object with the `LibGEOSHandle` class, which takes care of creating and destroying the underlying `GEOSContextHandle_t`, and reporting errors in such a way that R doesn't crash.
+
+To use the `LibGEOSHandle`, declare it at the beginning of your function and pass it everywhere. Classes that are part of the libgeos Rcpp API take the `LibGEOSHandle` object, but GEOS API functions need the underlying `GEOSContextHandle_t` (available via `.get()`).
+
+```{Rcpp, eval = FALSE}
+LogicalVector wkt_is_empty(CharacterVector wkt) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  
+  LogicalVector output(wkt.size());
+  for (R_xlen_t i = 0; i < wkt.size(); i++) {
+    LibGEOSGeometry geom = reader.read(wkt[i]);
+    output[i] = GEOSisEmpty_r(handle.get(), geom.get());
+  }
+  
+  return output;
+}
+```
+
+One thing that is important to note is that raw `GEOS*_r()` functions never throw exceptions. This is by design: throwing an exception across a library boundary doesn't always work. In the above example, you could check the return value of `GEOSisEmpty_r()` and throw the corresponding exception if one occurred. The `LibGEOSHandle` collects the error messages reported by GEOS, and you can throw the last one it encountered using `handle.throwLastError()` (or do something else with the message using `handle.lastErrorMessage()`). You will have to [consult the GEOS C API header](https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in) to see what return value corresponds to which error codes. Convenience methods `handle.checkGeometry()` and `handle.checkPredicateResult()` are provided for these two common cases (geometry generating functions return `NULL` on error; predicates return `2` on error).
+
+Note that `LibGEOS*` objects do throw exceptions, so you only have to worry about this when you call the GEOS C API functions yourself.
+
+## Reading and Writing Geometry
+
+GEOS has two main ways of getting geometry in and out: well-known binary and well-known text. In R, these correspond to `List`s of `RawVector`s and `CharacterVector`s, respectively. You can use the `LibGEOSWKBReader` and `LibGEOSWKTReader` to read geometries, and `LibGEOSWKBWriter` and `LibGEOSWKTWriter` to write them. I tend to use WKT for examples, but WKB is orders of magnitude faster (and you can generate it readily from [sf](https://r-spatial.github.io/sf/) objects using `st_as_binary()`). As an example, the following function reads WKT and writes it back again with the settings that you probably want (notably, `writer.setTrim(true)`).
+
+```{Rcpp}
+#include <Rcpp.h>
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos-rcpp.h"
+#include "libgeos.c"
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// [[Rcpp::export]]
+CharacterVector wkt_convert_wkt(CharacterVector wkt) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  LibGEOSWKTWriter writer(handle);
+  writer.setTrim(true);
+  
+  CharacterVector output(wkt.size());
+  for (R_xlen_t i = 0; i < wkt.size(); i++) {
+    LibGEOSGeometry geom = reader.read(wkt[i]);
+    output[i] = writer.write(geom.get());
+  }
+
+  return output;
+}
+```
+
+```{r}
+cpp_libgeos_init_api()
+wkt_convert_wkt("POINT (-64 45)")
+```
+
+Note that the `.read()` functions always return a `LibGEOSGeometry`, which wraps the `GEOSGeometry*` pointer to make sure that the object is destroyed when the variable goes out of scope. You can get a reference to the `GEOSGeometry*` using `.get()` to pass it to the GEOS C API functions directly.
+
+## Predicates
+
+Geometry predicates in GEOS return 0 for false, 1 for true, or 2 if an exception occurred. Most predicates in GEOS operate on two geometries (e.g., `GEOSIntersects_r()`), but a few operate on one (e.g., `GEOSisEmpty_r()`). Finally, there are the "prepared" predicates, which build a spatial index on the geometry to more efficiently compute (potentially many) relationships. Because the lifecycles of the `GEOSGeometry*` and the `GEOSPreparedGeometry*` are intertwined, these are both handled by the `LibGEOSGeometry` class (the geometry is prepared the first time `.getPrepared()` is called). Examples of each of these types of predicates are provided below.
+
+```{Rcpp}
+#include <Rcpp.h>
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos-rcpp.h"
+#include "libgeos.c"
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// [[Rcpp::export]]
+LogicalVector wkt_is_empty(CharacterVector wkt) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  
+  LogicalVector output(wkt.size());
+  for (R_xlen_t i = 0; i < wkt.size(); i++) {
+    LibGEOSGeometry geom = reader.read(wkt[i]);
+    char result = GEOSisEmpty_r(handle.get(), geom.get());
+    output[i] = handle.checkPredicateResult(result);
+  }
+
+  return output;
+}
+
+// [[Rcpp::export]]
+LogicalVector wkt_intersects(CharacterVector x, CharacterVector y) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  
+  LogicalVector output(x.size());
+  for (R_xlen_t i = 0; i < x.size(); i++) {
+    LibGEOSGeometry geomX = reader.read(x[i]);
+    LibGEOSGeometry geomY = reader.read(y[i]);
+    char result = GEOSIntersects_r(handle.get(), geomX.get(), geomY.get());
+    output[i] = handle.checkPredicateResult(result);
+  }
+
+  return output;
+}
+
+// [[Rcpp::export]]
+LogicalVector wkt_intersects_prepared(CharacterVector x, CharacterVector y) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  
+  LogicalVector output(x.size());
+  for (R_xlen_t i = 0; i < x.size(); i++) {
+    LibGEOSGeometry geomX = reader.read(x[i]);
+    LibGEOSGeometry geomY = reader.read(y[i]);
+    char result = GEOSPreparedIntersects_r(handle.get(), geomX.getPrepared(), geomY.get());
+    output[i] = handle.checkPredicateResult(result);
+  }
+
+  return output;
+}
+```
+
+```{r}
+cpp_libgeos_init_api()
+wkt_is_empty(c("POINT (-64 45)", "POINT EMPTY"))
+wkt_intersects("POINT (0 0)", "POINT (0 0)")
+wkt_intersects_prepared("POINT (0 0)", "POINT (0 0)")
+```
+
+## Transformers
+
+GEOS Functions that return a geometry add a small layer of complexity in that they create a `GEOSGeometry*` that must be cleaned up afterward. You can use `LibGEOSGeometry` to manage these objects, as demonstrated by the following wrapper of `GEOSGetCentroid_r()`. The constructor of `LibGEOSGeometry()` will throw an exception with an  informative error if it's passed `NULL`, which almost always denotes an error for these operations.
+
+```{Rcpp}
+#include <Rcpp.h>
+// [[Rcpp::depends(libgeos)]]
+#include "libgeos-rcpp.h"
+#include "libgeos.c"
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+void cpp_libgeos_init_api() {
+  libgeos_init_api();
+}
+
+// [[Rcpp::export]]
+CharacterVector wkt_centroid(CharacterVector wkt) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  LibGEOSWKTWriter writer(handle);
+  writer.setTrim(true);
+  
+  CharacterVector output(wkt.size());
+  for (R_xlen_t i = 0; i < wkt.size(); i++) {
+    LibGEOSGeometry geom = reader.read(wkt[i]);
+    LibGEOSGeometry result(handle, GEOSGetCentroid_r(handle.get(), geom.get()));
+    output[i] = writer.write(result.get());
+  }
+
+  return output;
+}
+```
+
+```{r}
+cpp_libgeos_init_api()
+wkt_centroid(c("LINESTRING (0 0, 10 10)", "LINESTRING EMPTY"))
+```
+
+## Extractors
+
+An important note about many functions that compute a `double` is that they often pass these values to the caller using a pointer argument (so that they can `return` an error code). An example is `GEOSArea_r()`, which returns an error code on failure and passes its area argument on via a pointer. Wrappers that use these functions usually look like this:
+
+```{Rcpp, eval = FALSE}
+NumericVector wkt_is_empty(CharacterVector wkt) {
+  LibGEOSHandle handle;
+  LibGEOSWKTReader reader(handle);
+  
+  NumericVector output(wkt.size());
+  for (R_xlen_t i = 0; i < wkt.size(); i++) {
+    LibGEOSGeometry geom = reader.read(wkt[i]);
+    double area;
+    GEOSArea_r(handle.get(), geom.get(), &area);
+    output[i] = area;
+  }
+  
+  return output;
+}
+```
+
+## Using the C API
+
+If you don't need the features of C++, you can import only the C API via `libgeos.h`. You will also have to include `libgeos.c` exactly once in your shared library and call `libgeos_init_api()` before using any GEOS functions.
