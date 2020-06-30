@@ -154,7 +154,7 @@ test_that("Rcpp API readers and writers work as expected", {
       writer.setRoundingPrecision(16);
 
       for (R_xlen_t i = 0; i < hex.size(); i++) {
-        LibGEOSGeometry geom = reader.readHex(hex[i]);
+        LibGEOSGeometry geom = reader.readHex(as<std::string>(hex[i]));
         output[i] = writer.write(geom.get());
       }
 
@@ -173,7 +173,7 @@ test_that("Rcpp API readers and writers work as expected", {
       writer.setOutputDimension(3);
 
       for (R_xlen_t i = 0; i < hex.size(); i++) {
-        LibGEOSGeometry geom = reader.readHex(hex[i]);
+        LibGEOSGeometry geom = reader.readHex(as<std::string>(hex[i]));
         output[i] = writer.writeHex(geom.get());
       }
 

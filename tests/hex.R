@@ -26,7 +26,7 @@ Rcpp::sourceCpp(
     writer.setRoundingPrecision(16);
 
     for (R_xlen_t i = 0; i < hex.size(); i++) {
-      LibGEOSGeometry geom = reader.readHex(hex[i]);
+      LibGEOSGeometry geom = reader.readHex(as<std::string>(hex[i]));
       output[i] = writer.write(geom.get());
     }
 

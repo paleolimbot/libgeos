@@ -197,25 +197,24 @@ public:
     return LibGEOSGeometry(this->handle, this->handle.checkGeometry(geometryPtr));
   }
 
-  LibGEOSGeometry readHex(const char* text) {
+  LibGEOSGeometry readHex(std::string wkbstring) {
 
-    // readHEX needs a const unsigned char *
-    // best I can think of for converting to unsigned char*
-    unsigned char* textBuffer = new unsigned char[strlen(text)];
-    memcpy(textBuffer, text, strlen(text));
+    const std::size_t len = wkbstring.length();
+    unsigned char* result = NULL;
+    result = (unsigned char*) malloc(len);
+    std::memcpy(result, wkbstring.c_str(), len);
 
     try {
       GEOSGeometry* geometryPtr = GEOSWKBReader_readHEX_r(
         this->handle.get(),
         this->reader,
-        textBuffer,
-        strlen(text)
+        result,
+        len
       );
-      delete[] textBuffer;
-
+      free(result);
       return LibGEOSGeometry(this->handle, this->handle.checkGeometry(geometryPtr));
     } catch (LibGEOSRcppException& e) {
-      delete[] textBuffer;
+      free(result);
       throw e;
     }
   }
@@ -338,20 +337,13 @@ public:
 
   std::string writeHex(const GEOSGeometry* geometry) {
     size_t size;
-    unsigned char* resultBuffer = GEOSWKBWriter_writeHEX_r(this->handle.get(), this->writer, geometry, &size);
-    if (resultBuffer == NULL) {
+    unsigned char* hex = GEOSWKBWriter_writeHEX_r(this->handle.get(), this->writer, geometry, &size);
+    if (hex == NULL) {
       this->handle.throwLastError();
     }
 
-    // best I can think of for converting to char*
-    char* resultBuffer2 = new char[size];
-    memcpy(resultBuffer2, resultBuffer, size);
-    GEOSFree_r(this->handle.get(), resultBuffer);
-
-    std::string result(resultBuffer2);
-    delete[] resultBuffer2;
-
-    return result;
+    std::string hexstring(reinterpret_cast<const char*>(hex), size);
+    return hexstring;
   }
 
   ~LibGEOSWKBWriter() {
