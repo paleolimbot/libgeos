@@ -1,0 +1,13 @@
+
+This package is a port of the Open Source Geometry Engine (GEOS; https://trac.osgeo.org/geos/), whose code is released under the LGPL (>= 2.1) and copyrighted by its authors. Additional copyright notices that appear in the source code are as follows:
+
+ * Copyright (C) 2019 Daniel Baston <dbaston@gmail.com>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
+ * Copyright (C) 2005-2006 Refractions Research Inc.
+ * Copyright (C) 2001-2002 Vivid Solutions Inc.
+ * Copyright (C) 2014 Mateusz Loskot <mateusz@loskot.net>
+ * Copyright (C) 2018 Paul Ramsey <pramsey@cleverelephant.ca>
+ * Copyright (c) 1995 Olivier Devillers <Olivier.Devillers@sophia.inria.fr>
+ * Copyright (C) 2008 Sean Gillies
+ * Copyright (C) 2014 Mika Heiskanen <mika.heiskanen@fmi.fi>
+ * Copyright (C) 2007-2010 Safe Software Inc.
