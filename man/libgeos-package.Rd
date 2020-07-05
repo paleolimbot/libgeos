@@ -15,6 +15,7 @@ Provides the GEOS API as a dynamically-linkable
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://paleolimbot.github.io/libgeos}
   \item \url{https://github.com/paleolimbot/libgeos}
   \item Report bugs at \url{https://github.com/paleolimbot/libgeos/issues}
 }
