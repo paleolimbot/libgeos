@@ -6,7 +6,7 @@
 \alias{libgeos-package}
 \title{libgeos: Open Source Geometry Engine (GEOS) C API}
 \description{
-Provides the GEOS API as a dynamically-linkable
+Provides the Open Source Geometry Engine (GEOS) as a
   C API that can be used to write high-performance C and C++
   geometry operations using R as an interface. Headers are provided
   to make linking to and using these functions from C++ code as
@@ -23,6 +23,17 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Dewey Dunnington \email{dewey@fishandwhistle.net} (\href{https://orcid.org/0000-0002-9415-4582}{ORCID})
+
+Authors:
+\itemize{
+  \item GEOS authors [copyright holder]
+}
+
+Other contributors:
+\itemize{
+  \item Refractions Research Inc. [copyright holder]
+  \item Vivid Solutions Inc. [copyright holder]
+}
 
 }
 \keyword{internal}
