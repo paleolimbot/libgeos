@@ -1,5 +1,5 @@
 
-This is a new submission of a port of the Open Source Geometry Engine (GEOS) to the R package framework. This package does not link to system GEOS; it contains a copy of the latest version and exports the C API. This is desirable for several reasons: first, it enables a more consistent version guarnatee so that the latest GEOS features can be used in compiled code. This can be a problem on Linux distributions whose package repository contains an outdated version of GEOS (if it provides one at all). A consistent (and recent) GEOS version is desirable for both stability and reproducibility. Second, it enables the use of GEOS in environments where a user does not have administrator access. Finally, GEOS is licensed under the LGPL, which generally allows dynamic linking from software with other licenses. Packaging the GEOS sources as they are in this package makes license compliance clearer.
+This is a new submission of a port of the Open Source Geometry Engine (GEOS) to the R package framework. This package does not link to system GEOS; it contains a copy of the latest version and exports the C API. This is desirable for several reasons. First, it enables a more consistent version guarnatee so that the latest GEOS features can be used in R packages. This can be a problem on Linux distributions whose package repository contains an outdated version of GEOS (if it provides one at all). A consistent (and recent) GEOS version is desirable for both stability and reproducibility. Second, it enables the use of GEOS in environments where a user does not have administrator access, where installing R packages is usually allowed. Finally, GEOS is licensed under the LGPL, which generally allows dynamic linking from software with other licenses. Packaging the GEOS sources as they are in this package makes license compliance clear.
 
 ## Test environments
 
@@ -10,6 +10,16 @@ This is a new submission of a port of the Open Source Geometry Engine (GEOS) to 
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+* checking CRAN incoming feasibility ... NOTE
+Maintainer: ‘Dewey Dunnington <dewey@fishandwhistle.net>’
 
-* This is a new release.
+New submission
+
+Possibly mis-spelled words in DESCRIPTION:
+  GEOS (2:37, 15:56)
+  
+* checking installed package size ... NOTE
+  installed size is 34.2Mb
+  sub-directories of 1Mb or more:
+    libgeos_include   2.9Mb (there really is almost 3 Mb of header text!)
+    libs             31.1Mb
