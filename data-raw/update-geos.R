@@ -91,6 +91,10 @@ print_next <- function() {
   cli::cat_bullet("src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
+  cli::cat_bullet(
+    "inst/libgeos_include/geos/algorithm/ttmath/ttmathuint.h:1288: ",
+    "fix warning with -Wautological-compare by changing == 1 to != 0"
+  )
   cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
   cli::cat_bullet("Update exported C API using update-libgeos-api.R")
   clipr::write_clip(objects)

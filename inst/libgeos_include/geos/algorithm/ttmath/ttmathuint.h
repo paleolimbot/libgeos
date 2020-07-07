@@ -1284,8 +1284,11 @@ private:
 			return MulTwoWords(*ss1, *ss2, &result[1], &result[0]);
 		}
 
-
-		if( (ss_size & 1) == 1 )
+    // was previously: if( (ss_size & 1) == 1 )
+    // which resulted in a waring with -Wautological-compare
+    // this solution is from here:
+    // https://github.com/grpc/grpc/pull/17971/files
+    if( (ss_size & 1) != 0 )
 		{
 			// ss_size is odd
 			x0 = ss1;
