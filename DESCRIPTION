@@ -1,5 +1,5 @@
 Package: libgeos
-Title: Open Source Geometry Engine (GEOS) C API
+Title: Open Source Geometry Engine ('GEOS') C API
 Version: 3.8.1-0
 Authors@R: 
     c(
@@ -8,11 +8,24 @@ Authors@R:
              role = c("aut", "cre"),
              email = "dewey@fishandwhistle.net",
              comment = c(ORCID = "0000-0002-9415-4582")),
-        person("GEOS authors", role = c("aut", "cph")),
-        person("Refractions Research Inc.", role = "cph"),
-        person("Vivid Solutions Inc.", role = "cph")
+      person("GEOS authors", role = "aut"),
+      person("Martin", "Davis", role = c("ctb", "cph")),
+      person("Benjamin", "Campbell", role = c("ctb", "cph")),
+      person("Tomasz", "Sowa", role = c("ctb", "cph")),
+      person("Christian", "Kaiser", role = c("ctb", "cph")),
+      person("David", "Skea", role = c("ctb", "cph")),
+      person("Daniel", "Baston", role = c("ctb", "cph")),
+      person("Sandro", "Santilli", role = c("ctb", "cph")),
+      person("Mateusz", "Loskot", role = c("ctb", "cph")),
+      person("Paul", "Ramsey", role = c("ctb", "cph")),
+      person("Olivier", "Devillers", role = c("ctb", "cph")),
+      person("Sean", "Gillies", role = c("ctb", "cph")),
+      person("Mika", "Heiskanen", role = c("ctb", "cph")),
+      person("Safe Software Inc.", role = "cph"),
+      person("Refractions Research Inc.", role = "cph"),
+      person("Vivid Solutions Inc.", role = "cph")
     )
-Description: Provides the Open Source Geometry Engine (GEOS) as a
+Description: Provides the Open Source Geometry Engine ('GEOS') as a
   C API that can be used to write high-performance C and C++
   geometry operations using R as an interface. Headers are provided
   to make linking to and using these functions from C++ code as

@@ -4,9 +4,9 @@
 \name{libgeos-package}
 \alias{libgeos}
 \alias{libgeos-package}
-\title{libgeos: Open Source Geometry Engine (GEOS) C API}
+\title{libgeos: Open Source Geometry Engine ('GEOS') C API}
 \description{
-Provides the Open Source Geometry Engine (GEOS) as a
+Provides the Open Source Geometry Engine ('GEOS') as a
   C API that can be used to write high-performance C and C++
   geometry operations using R as an interface. Headers are provided
   to make linking to and using these functions from C++ code as
@@ -26,11 +26,24 @@ Useful links:
 
 Authors:
 \itemize{
-  \item GEOS authors [copyright holder]
+  \item GEOS authors
 }
 
 Other contributors:
 \itemize{
+  \item Martin Davis [contributor, copyright holder]
+  \item Benjamin Campbell [contributor, copyright holder]
+  \item Tomasz Sowa [contributor, copyright holder]
+  \item Christian Kaiser [contributor, copyright holder]
+  \item David Skea [contributor, copyright holder]
+  \item Daniel Baston [contributor, copyright holder]
+  \item Sandro Santilli [contributor, copyright holder]
+  \item Mateusz Loskot [contributor, copyright holder]
+  \item Paul Ramsey [contributor, copyright holder]
+  \item Olivier Devillers [contributor, copyright holder]
+  \item Sean Gillies [contributor, copyright holder]
+  \item Mika Heiskanen [contributor, copyright holder]
+  \item Safe Software Inc. [copyright holder]
   \item Refractions Research Inc. [copyright holder]
   \item Vivid Solutions Inc. [copyright holder]
 }
