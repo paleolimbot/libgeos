@@ -10,7 +10,9 @@ Provides the Open Source Geometry Engine ('GEOS') as a
   C API that can be used to write high-performance C and C++
   geometry operations using R as an interface. Headers are provided
   to make linking to and using these functions from C++ code as
-  easy and as safe as possible.
+  easy and as safe as possible. If a suitable version of 'GEOS'
+  is not available, an internal version of 'GEOS' will be 
+  built and used.
 }
 \seealso{
 Useful links:

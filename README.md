@@ -23,6 +23,13 @@ generally allowed from a package with any license.
 
 ## Installation
 
+You can install the released version of libgeos from
+[CRAN](https://cran.r-project.org/) with:
+
+``` r
+install.packages("libgeos")
+```
+
 You can install the development version of libgeos from
 [GitHub](https://github.com/) with:
 
@@ -30,6 +37,14 @@ You can install the development version of libgeos from
 # install.packages("remotes")
 remotes::install_github("paleolimbot/libgeos")
 ```
+
+If you’re installing from source, libgeos will try to use your installed
+binary version of GEOS to avoid unnecessary compilation. For this to
+work, your installed version must be \>=3.8.0. You can install on MacOS
+using `brew install geos` and Debian/Ubuntu using `apt-get install
+libgeos-dev`. Using the [UbuntuGIS
+ppa](https://launchpad.net/~ubuntugis/+archive/ubuntu/ubuntugis-unstable)
+is most likely to install a binary suitable for use with libgeos.
 
 ## Example
 

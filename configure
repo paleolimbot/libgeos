@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Based on Anticonf (tm) script by Jeroen Ooms (2020)
+# This script will query 'geos-config' for the required cflags and ldflags,
+# or set Makevars to compile the included GEOS sources if 'geos-config'
+# cannot be found. Set INCLUDE_DIR and LIB_DIR manually via e.g:
+# R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
+
+# Library settings
+PKG_TEST_FILE="tools/test_geos.c"
+PKG_LIBS=""
+PKG_CFLAGS=""
+PKG_HAS_SYSTEM_GEOS=0
+
+# check for geos-config
+geos-config --version  2>/dev/null
+if [ $? -eq 0 ]; then
+  PKG_HAS_GEOS_CONFIG=1
+else
+  PKG_HAS_GEOS_CONFIG=0
+fi
+
+# always try user specified includes and libs first
+if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
+  echo "Using INCLUDE_DIR and/or LIB_DIR!"
+  PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
+  PKG_LIBS="-L$LIB_DIR -lgeos_c"
+  PKG_HAS_SYSTEM_GEOS=1
+elif [ $PKG_HAS_GEOS_CONFIG -eq 1 ] && [ -z "$USE_INTERNAL_GEOS" ]; then
+  echo "Using system geos-config!"
+  PKG_CFLAGS=`geos-config --cflags`
+  PKG_LIBS=`geos-config --clibs`
+  PKG_HAS_SYSTEM_GEOS=1
+fi
+
+# Find compiler
+CC=`${R_HOME}/bin/R CMD config CC`
+CFLAGS=`${R_HOME}/bin/R CMD config CFLAGS`
+CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
+
+if [ $PKG_HAS_SYSTEM_GEOS -eq 1 ]; then
+  # Test configuration (includes check for required version)
+  echo "Testing compiler using PKG_CFLAGS=$PKG_CFLAGS"
+  ${CC} ${CPPFLAGS} ${PKG_CFLAGS} ${CFLAGS} -E ${PKG_TEST_FILE} >/dev/null 2>configure.log
+
+  if [ $? -eq 0 ]; then
+    echo "Compiler check succeeded!"
+    PKG_OBJECTS="libgeos-init.o"
+  else
+    echo "Compiling internal GEOS (linking to system GEOS failed)"
+    PKG_HAS_SYSTEM_GEOS=0
+  fi
+elif [! -z "$USE_INTERNAL_GEOS"] ; then
+  echo "Compiling internal GEOS (as requested by USE_INTERNAL_GEOS)"
+else
+  echo "Compiling internal GEOS (no system GEOS found or specified)"
+  echo "Use --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'"
+  echo "To specify a specific GEOS installation location"
+fi
+
+if [ $PKG_HAS_SYSTEM_GEOS == 0 ]; then
+  PKG_CFLAGS="-I../inst/libgeos_include -DUSE_UNSTABLE_GEOS_CPP_API"
+  PKG_OBJECTS=`find src -name "*.cpp" | sed -e "s|src/||" -e "s|\\.cpp$|.o|" | tr '\n' ' '`
+fi
+
+# print actual flags
+echo "Using PKG_LIBS=$PKG_LIBS"
+echo "Using PKG_CFLAGS=$PKG_CFLAGS"
+
+# Write to Makevars
+sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" -e "s|@objects@|$PKG_OBJECTS|" src/Makevars.in > src/Makevars
+
+# Success
+exit 0

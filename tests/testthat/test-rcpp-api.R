@@ -2,7 +2,7 @@
 test_that("Rcpp error handler works without segfaulting", {
   cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
-    void wkt_validate_catch(CharacterVector wkt, bool rethrow) {
+    void wkt_validate_catch(CharacterVector wkt) {
       LibGEOSHandle handle;
       LibGEOSWKTReader reader(handle);
 
@@ -11,11 +11,7 @@ test_that("Rcpp error handler works without segfaulting", {
           LibGEOSGeometry geom = reader.read(wkt[i]);
         }
       } catch(std::exception& e) {
-        if (rethrow) {
-          throw e;
-        } else {
-          Rcout << "Converting error to stdout: " << e.what();
-        }
+        Rcout << "Converting error to stdout: " << e.what();
       }
     }
 
@@ -31,16 +27,9 @@ test_that("Rcpp error handler works without segfaulting", {
 
   source_rcpp_libgeos_init()
 
-  # see if it's possible to catch exceptions coming from the error handler
-  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = FALSE))
-  expect_silent(wkt_validate_catch("POINT EMPTY", rethrow = TRUE))
-  expect_output(wkt_validate_catch("NOPE1", rethrow = FALSE), "ParseException")
-  expect_error(wkt_validate_catch("NOPE2", rethrow = TRUE), class = "std::exception")
-
-  # make sure uncaught exceptions are propagated as R errors rather than
-  # terminations
-  expect_silent(wkt_validate("POINT EMPTY"))
-  expect_error(wkt_validate("NOPE3"), "ParseException", class = "LibGEOSRcppException")
+  # make sure it's possible to catch exceptions coming from the error handler
+  expect_silent(wkt_validate_catch("POINT EMPTY"))
+  expect_output(wkt_validate_catch("NOPE1"), "ParseException")
 
   unlink(cache, recursive = TRUE)
 })

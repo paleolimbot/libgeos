@@ -1,7 +1,8 @@
 PKG_CPPFLAGS = -I../inst/libgeos_include -DUSE_UNSTABLE_GEOS_CPP_API
-CXX_STD=CXX11
 
-OBJECTS =  libgeos-cpp-compat.o \
+CXX_STD = CXX11
+
+OBJECTS = libgeos-cpp-compat.o \
      libgeos-init.o \
      geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
