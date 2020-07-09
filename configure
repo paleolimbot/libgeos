@@ -50,7 +50,7 @@ if [ $PKG_HAS_SYSTEM_GEOS -eq 1 ]; then
     PKG_HAS_SYSTEM_GEOS=0
   fi
 elif [! -z "$USE_INTERNAL_GEOS"] ; then
-  echo "Compiling internal GEOS (as requested by $USE_INTERNAL_GEOS)"
+  echo "Compiling internal GEOS (as requested by USE_INTERNAL_GEOS)"
 else
   echo "Compiling internal GEOS (no system GEOS found or specified)"
   echo "Use --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'"
