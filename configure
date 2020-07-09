@@ -23,7 +23,7 @@ fi
 if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
   echo "Using INCLUDE_DIR and/or LIB_DIR!"
   PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
-  PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
+  PKG_LIBS="-L$LIB_DIR -lgeos_c"
   PKG_HAS_SYSTEM_GEOS=1
 elif [ $PKG_HAS_GEOS_CONFIG -eq 1 ] && [ -z "$USE_INTERNAL_GEOS" ]; then
   echo "Using system geos-config!"

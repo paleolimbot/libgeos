@@ -20,9 +20,15 @@ knitr::opts_chunk$set(
 ![R-CMD-check](https://github.com/paleolimbot/libgeos/workflows/R-CMD-check/badge.svg)
 <!-- badges: end -->
 
-The goal of libgeos is to provide access to the [GEOS](https://trac.osgeo.org/geos/) C API for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS sources rather than linking to system GEOS (if it exists), meaning you don't have to install anything (other than the package) to take advantage of GEOS functions  in R. It also means you don't need a configure script if you're writing a package that needs GEOS functionality. Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license.
+The goal of libgeos is to provide access to the [GEOS](https://trac.osgeo.org/geos/) C API for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS sources rather than linking to system GEOS (if it exists), meaning you don't have to install anything (other than the package) to take advantage of GEOS functions in R. It also means you don't need a configure script if you're writing a package that needs GEOS functionality. Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license.
 
 ## Installation
+
+You can install the released version of libgeos from [CRAN](https://cran.r-project.org/) with:
+
+``` r
+install.packages("libgeos")
+```
 
 You can install the development version of libgeos from [GitHub](https://github.com/) with:
 
@@ -30,6 +36,8 @@ You can install the development version of libgeos from [GitHub](https://github.
 # install.packages("remotes")
 remotes::install_github("paleolimbot/libgeos")
 ```
+
+If you're installing from source, libgeos will try to use your installed binary version of GEOS to avoid unnecessary compilation. For this to work, your installed version must be >=3.8.0. You can install on MacOS using `brew install geos` and Debian/Ubuntu using `apt-get install libgeos-dev`. Using the [UbuntuGIS ppa](https://launchpad.net/~ubuntugis/+archive/ubuntu/ubuntugis-unstable) is most likely to install a binary suitable for use with libgeos.
 
 ## Example
 
