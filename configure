@@ -29,8 +29,10 @@ elif [ $PKG_HAS_GEOS_CONFIG -eq 1 ] && [ -z "$USE_INTERNAL_GEOS" ]; then
   echo "Using system geos-config!"
   PKG_CFLAGS=`geos-config --cflags`
   PKG_LIBS=`geos-config --ldflags`
-  # also use -lgeos, because -lgeos_c (probably) links to -lgeos
-  PKG_LIBS="$PKG_LIBS -lgeos_c $PKG_LIBS -lgeos"
+  # also need the cclibs on at least MacOS, and probably anywhere else
+  # that static linking happens
+  PKG_CCLIBS=`geos-config --libs`
+  PKG_LIBS="$PKG_LIBS -lgeos_c $PKG_CCLIBS"
   PKG_HAS_SYSTEM_GEOS=1
 fi
 
