@@ -95,7 +95,8 @@ jobs:
         shell: bash
 
       - name: Install package
-        run: R CMD INSTALL .
+        run: devtools::install()
+        shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
         uses: actions/checkout@v2
