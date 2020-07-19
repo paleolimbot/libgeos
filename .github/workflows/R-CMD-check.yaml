@@ -94,6 +94,9 @@ jobs:
         run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
+      - name: Install package
+        run: R CMD INSTALL .
+
       - name: Checkout paleolimbot/geos
         uses: actions/checkout@v2
         with:
