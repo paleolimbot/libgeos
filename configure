@@ -61,6 +61,7 @@ fi
 
 if [ $PKG_HAS_SYSTEM_GEOS == 0 ]; then
   PKG_CFLAGS="-I../inst/libgeos_include -DUSE_UNSTABLE_GEOS_CPP_API"
+  PKG_LIBS=""
   PKG_OBJECTS=`find src -name "*.cpp" | sed -e "s|src/||" -e "s|\\.cpp$|.o|" | tr '\n' ' '`
 fi
 
