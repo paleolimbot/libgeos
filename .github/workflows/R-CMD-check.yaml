@@ -94,6 +94,25 @@ jobs:
         run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
 
+      - name: Checkout paleolimbot/geos
+        uses: actions/checkout@v2
+        with:
+          repository: paleolimbot/geos
+          ref: master
+          path: 'geos'
+
+      - name: Check paleolimbot/geos
+        env:
+          _R_CHECK_CRAN_INCOMING_: false
+        run: |
+          rcmdcheck::rcmdcheck("geos", args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check_geos")
+        shell: Rscript {0}
+
+      - name: Show testthat output (paleolimbot/geos)
+        if: always()
+        run: find check_geos -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
       - name: Upload check results
         if: failure()
         uses: actions/upload-artifact@master
