@@ -30,7 +30,7 @@ elif [ $PKG_HAS_GEOS_CONFIG -eq 1 ] && [ -z "$USE_INTERNAL_GEOS" ]; then
   PKG_CFLAGS=`geos-config --cflags`
   PKG_LIBS=`geos-config --ldflags`
   # also use -lgeos, because -lgeos_c (probably) links to -lgeos
-  PKG_LIBS="$PKG_LIBS -lgeos_c -lgeos"
+  PKG_LIBS="$PKG_LIBS -lgeos_c $PKG_LIBS -lgeos"
   PKG_HAS_SYSTEM_GEOS=1
 fi
 
