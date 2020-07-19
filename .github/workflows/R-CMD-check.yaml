@@ -100,7 +100,10 @@ jobs:
 
       - name: Install package (Windows)
         if: runner.os == 'Windows'
-        run: R CMD INSTALL . --arch=i386
+        run: |
+          install.packages("devtools")
+          devtools::install()
+        shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
         uses: actions/checkout@v2
