@@ -96,11 +96,11 @@ jobs:
 
       - name: Install package
         if: runner.os != 'Windows'
-        run: R CMD install .
+        run: R CMD INSTALL .
 
-      - name: Install package (windows)
+      - name: Install package (Windows)
         if: runner.os == 'Windows'
-        run: R CMD install . --arch=i386
+        run: R CMD INSTALL . --arch=i386
 
       - name: Checkout paleolimbot/geos
         uses: actions/checkout@v2
