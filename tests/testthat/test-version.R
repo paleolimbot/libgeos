@@ -1,6 +1,6 @@
 
 test_that("libgeos_version() works", {
-  expect_match(libgeos_version(), "3\\.8\\.[0-9]+-CAPI-1\\.13\\.3")
+  expect_match(libgeos_version(), "3\\.8\\.[0-9]+")
 })
 
 test_that("GEOSversion() can be called from Rcpp", {
