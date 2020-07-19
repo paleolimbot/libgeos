@@ -23,6 +23,9 @@ jobs:
           - {os: macOS-latest,   r: '4.0', geos: 'external'}
           - {os: windows-latest, r: '4.0', geos: 'internal'}
           - {os: ubuntu-16.04,   r: '4.0', geos: 'internal', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
+          # this version of ubuntugis has an insufficient version of GEOS, so is a good check
+          # for what happens when the compiler check fails
+          - {os: ubuntu-16.04,   r: '4.0', geos: 'external', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
           - {os: ubuntu-18.04,   r: '4.0', geos: 'external', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
 
     env:
