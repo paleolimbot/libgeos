@@ -79,7 +79,7 @@ jobs:
         shell: bash
 
       - name: Install package
-        run: install.packages("check/libgeos.Rcheck/libgeos", type = "binary")
+        run: remotes::install_local("check/libgeos.Rcheck/libgeos", build = FALSE)
         shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
