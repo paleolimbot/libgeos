@@ -79,14 +79,7 @@ jobs:
         shell: bash
 
       - name: Install package
-        if: runner.os != 'Windows'
-        run: R CMD INSTALL .
-
-      - name: Install package (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          install.packages("devtools")
-          devtools::install()
+        run: install.packages("check/libgeos.Rcheck/libgeos", type = "binary")
         shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
