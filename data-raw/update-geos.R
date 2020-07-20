@@ -64,10 +64,6 @@ stopifnot(
     "inst/libgeos_include/geos_c.h"
   ),
   file.copy(
-    file.path(geos_dir, "capi/geos_c.cpp"),
-    "src/geos/geos_c.cpp"
-  ),
-  file.copy(
     file.path(geos_dir, "capi/geos_ts_c.cpp"),
     "src/geos/geos_ts_c.cpp"
   )
@@ -96,6 +92,9 @@ print_next <- function() {
     "fix warning with -Wautological-compare by changing == 1 to != 0"
   )
   cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
+  cli::cat_bullet("Use typedef instead of #define to cross-check types in geos_c_ts.cpp")
+  cli::cat_bullet("Consolidate geos_c.h typedefs to be different when included in geos_c_ts.cpp")
+  cli::cat_bullet("Remove the non-thread-safe API from geos_c.h")
   cli::cat_bullet("Update exported C API using update-libgeos-api.R")
   clipr::write_clip(objects)
 }
