@@ -10,5 +10,3 @@
 ^vignettes$
 ^cran-comments\.md$
 ^LICENSE\.md$
-^src/Makevars$
-^configure\.log$
