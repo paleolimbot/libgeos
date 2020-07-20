@@ -79,7 +79,9 @@ jobs:
         shell: bash
 
       - name: Install package
-        run: remotes::install_local("check/libgeos.Rcheck/libgeos", build = FALSE)
+        run: |
+          remotes::install_cran("fs")
+          fs::dir_copy("check/libgeos.Rcheck/libgeos", file.path(.libPaths()[1], "libgeos"))
         shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
