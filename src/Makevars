@@ -108,7 +108,6 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/geomgraph/Position.o \
      geos/geomgraph/Quadrant.o \
      geos/geomgraph/TopologyLocation.o \
-     geos/geos_c.o \
      geos/geos_ts_c.o \
      geos/index/bintree/Bintree.o \
      geos/index/bintree/Interval.o \
