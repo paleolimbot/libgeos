@@ -1,5 +1,9 @@
 
 test_that("Rcpp error handler works without segfaulting", {
+  # these tests run a bit of Rcpp code that, depending on the Rcpp version,
+  # can lead to sanitizer errors that are out of my control
+  skip_on_cran()
+
   cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
     void wkt_validate_catch(CharacterVector wkt) {
@@ -35,6 +39,10 @@ test_that("Rcpp error handler works without segfaulting", {
 })
 
 test_that("Rcpp API readers and writers work as expected", {
+  # these tests run a bit of Rcpp code that, depending on the Rcpp version,
+  # can lead to sanitizer errors that are out of my control
+  skip_on_cran()
+
   cache <- source_rcpp_libgeos('
     // [[Rcpp::export]]
     CharacterVector wkt_wkt(CharacterVector wkt) {
@@ -183,6 +191,10 @@ test_that("Rcpp API readers and writers work as expected", {
 })
 
 test_that("deleters are called", {
+  # these tests run a bit of Rcpp code that, depending on the Rcpp version,
+  # can lead to sanitizer errors that are out of my control
+  skip_on_cran()
+
   cache <- source_rcpp_libgeos("
     // [[Rcpp::export]]
     CharacterVector wkt_wkt(CharacterVector wkt) {
@@ -316,6 +328,10 @@ test_that("deleters are called", {
 })
 
 test_that("buffer params work", {
+  # these tests run a bit of Rcpp code that, depending on the Rcpp version,
+  # can lead to sanitizer errors that are out of my control
+  skip_on_cran()
+
   cache <- source_rcpp_libgeos("
     // [[Rcpp::export]]
     CharacterVector wkt_buffer(CharacterVector wkt, double distance) {
