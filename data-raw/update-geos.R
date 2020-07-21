@@ -20,7 +20,7 @@ headers <- tibble(
     full.names = TRUE,
     recursive = TRUE
   ),
-  final_path = str_replace(path, ".*?geos/", "inst/libgeos_include/geos/")
+  final_path = str_replace(path, ".*?geos/", "src/geos_include/geos/")
 )
 
 # If source files are in src/ with no subdirectories
@@ -33,8 +33,8 @@ source_files <- tibble(
 )
 
 # remove current source and header files
-unlink("inst/libgeos_include/geos", recursive = TRUE)
-unlink("inst/libgeos_include/geos_c.h")
+unlink("src/geos_include/geos", recursive = TRUE)
+unlink("src/geos_include/geos_c.h")
 unlink("src/geos", recursive = TRUE)
 
 # create destination dirs
@@ -61,7 +61,7 @@ stopifnot(
   # also need to copy the C API cpp and header
   file.copy(
     file.path(geos_dir, "capi/geos_c.h"),
-    "inst/libgeos_include/geos_c.h"
+    "src/geos_include/geos_c.h"
   ),
   file.copy(
     file.path(geos_dir, "capi/geos_ts_c.cpp"),
@@ -88,7 +88,7 @@ print_next <- function() {
   cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
   cli::cat_bullet(
-    "inst/libgeos_include/geos/algorithm/ttmath/ttmathuint.h:1288: ",
+    "src/geos_include/geos/algorithm/ttmath/ttmathuint.h:1288: ",
     "fix warning with -Wautological-compare by changing == 1 to != 0"
   )
   cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")

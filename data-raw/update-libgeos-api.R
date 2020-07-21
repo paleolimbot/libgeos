@@ -1,7 +1,7 @@
 
 library(tidyverse)
 
-capi_header <- read_file("inst/libgeos_include/geos_c.h")
+capi_header <- read_file("src/geos_include/geos_c.h")
 
 version_defs_chr <- read_lines(capi_header)[54:76]
 
