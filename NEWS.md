@@ -1,3 +1,5 @@
+# libgeos (development version)
+
 # libgeos 3.8.1-2
 
 * Removed the ability to link to system 'GEOS', as with extensive testing
