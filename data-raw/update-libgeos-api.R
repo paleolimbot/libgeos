@@ -130,8 +130,8 @@ libgeos_init_c <- with(
 // uses create problems for the LTO build of R-devel
 { paste0(typedefs_chr, collapse = "\n") }
 
-{ paste0(header_def, collapse = "\n") }
-
+#define GEOS_DLL
+{ paste0(def, collapse = "\n") }
 
 // defined in libgeos-version.c, where it is safe to #include geos_c.h
 SEXP libgeos_geos_version();
@@ -154,16 +154,19 @@ void R_init_libgeos(DllInfo *dll) {{
   )
 )
 
+# hardcode CAPI version to avoid including geos_c.h
+GEOS_CAPI_VERSION <- str_extract(capi_header, "\\s*GEOS_CAPI_VERSION\\s+.*") %>%
+  str_remove("\\s*GEOS_CAPI_VERSION\\s+")
+
 libgeos_version_c <- glue::glue(
 '
 
 // generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #include <Rinternals.h>
-#include "geos_c.h"
 
 SEXP libgeos_geos_version() {{
   SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
-  SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
+  SET_STRING_ELT(out, 0, Rf_mkChar({GEOS_CAPI_VERSION}));
   UNPROTECT(1);
   return out;
 }}
