@@ -154,9 +154,6 @@ void R_init_libgeos(DllInfo *dll) {{
   )
 )
 
-# hardcode CAPI version to avoid including geos_c.h
-GEOS_CAPI_VERSION <- str_extract(capi_header, "\\s*GEOS_CAPI_VERSION\\s+.*") %>%
-  str_remove("\\s*GEOS_CAPI_VERSION\\s+")
 
 libgeos_version_c <- glue::glue(
 '
@@ -164,9 +161,12 @@ libgeos_version_c <- glue::glue(
 // generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
 #include <Rinternals.h>
 
+// to avoid #include "geos_c.h"
+const char* GEOSversion();
+
 SEXP libgeos_geos_version() {{
   SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
-  SET_STRING_ELT(out, 0, Rf_mkChar({GEOS_CAPI_VERSION}));
+  SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
   UNPROTECT(1);
   return out;
 }}
