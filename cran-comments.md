@@ -1,5 +1,5 @@
 
-This submission removes the ability to link to system 'GEOS', as it was determined that the exported C API could not be guaranteed to work on all platforms if the package linked to a previously installed copy of the library. This increases check time but guarantees a specific version of 'GEOS' for future dependencies. See the forthcoming [geos package](https://paleolimbot.github.io/geos), which vectorizes the C API such that it is usable from R, and provides a reasonable test that all functions exported by 'libgeos' can be accessed by downstream packages as intended.
+This submission fixes warnings from the link-time optimizer, which reported naming conflicts between the C++ header types and the abstract C types used in the header API.
 
 ## Test environments
 
@@ -12,3 +12,7 @@ This submission removes the ability to link to system 'GEOS', as it was determin
 
 * checking CRAN incoming feasibility ... NOTE
 Maintainer: ‘Dewey Dunnington <dewey@fishandwhistle.net>’
+
+Days since last update: 3
+
+Updated promptly at the request of CRAN, who issued a notice that the package would be removed if the check problems were not fixed.
