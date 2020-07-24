@@ -1,5 +1,9 @@
 # libgeos (development version)
 
+* Fixed warnings from the link-time optimizer, which reported naming 
+  conflicts between the C++ header types and the abstract C types 
+  used in the header API.
+
 # libgeos 3.8.1-2
 
 * Removed the ability to link to system 'GEOS', as with extensive testing
