@@ -1,7 +1,7 @@
 
 library(tidyverse)
 
-# download S2
+# download GEOS
 source_url <- "http://download.osgeo.org/geos/geos-3.8.1.tar.bz2"
 curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
@@ -92,9 +92,6 @@ print_next <- function() {
     "fix warning with -Wautological-compare by changing == 1 to != 0"
   )
   cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
-  cli::cat_bullet("Use typedef instead of #define to cross-check types in geos_c_ts.cpp")
-  cli::cat_bullet("Consolidate geos_c.h typedefs to be different when included in geos_c_ts.cpp")
-  cli::cat_bullet("Remove the non-thread-safe API from geos_c.h")
   cli::cat_bullet("Update exported C API using update-libgeos-api.R")
   clipr::write_clip(objects)
 }

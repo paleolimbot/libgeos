@@ -1,4 +1,4 @@
-PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API
+PKG_CPPFLAGS = -I../src/geos_include -I../inst/include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY_R_API
 
 CXX_STD = CXX11
 

@@ -17,5 +17,5 @@ NULL
 #' libgeos_version()
 #'
 libgeos_version <- function() {
-  .Call("libgeos_geos_version")
+  .Call(libgeos_geos_version)
 }

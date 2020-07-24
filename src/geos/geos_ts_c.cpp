@@ -101,28 +101,16 @@
 
 // Some extra magic to make type declarations in geos_c.h work -
 // for cross-checking of types in header.
-// #define GEOSGeometry geos::geom::Geometry
-// #define GEOSPreparedGeometry geos::geom::prep::PreparedGeometry
-// #define GEOSCoordSequence geos::geom::CoordinateSequence
-// #define GEOSBufferParams geos::operation::buffer::BufferParameters
-// #define GEOSSTRtree geos::index::strtree::STRtree
-// #define GEOSWKTReader_t geos::io::WKTReader
-// #define GEOSWKTWriter_t geos::io::WKTWriter
-// #define GEOSWKBReader_t geos::io::WKBReader
-// #define GEOSWKBWriter_t geos::io::WKBWriter
+#define GEOSGeometry geos::geom::Geometry
+#define GEOSPreparedGeometry geos::geom::prep::PreparedGeometry
+#define GEOSCoordSequence geos::geom::CoordinateSequence
+#define GEOSBufferParams geos::operation::buffer::BufferParameters
+#define GEOSSTRtree geos::index::strtree::STRtree
+#define GEOSWKTReader_t geos::io::WKTReader
+#define GEOSWKTWriter_t geos::io::WKTWriter
+#define GEOSWKBReader_t geos::io::WKBReader
+#define GEOSWKBWriter_t geos::io::WKBWriter
 
-// above approach leads to sanitizer errors, so this is modified here
-typedef geos::geom::Geometry GEOSGeometry;
-typedef geos::geom::prep::PreparedGeometry GEOSPreparedGeometry;
-typedef geos::geom::CoordinateSequence GEOSCoordSequence;
-typedef geos::operation::buffer::BufferParameters GEOSBufferParams;
-typedef geos::index::strtree::STRtree GEOSSTRtree;
-typedef geos::io::WKTReader GEOSWKTReader_t;
-typedef geos::io::WKTWriter GEOSWKTWriter_t;
-typedef geos::io::WKBReader GEOSWKBReader_t;
-typedef geos::io::WKBWriter GEOSWKBWriter_t;
-
-#define INCLUDED_IN_GEOS_C_CPP
 #include "geos_c.h"
 
 // Intentional, to allow non-standard C elements like C99 functions to be

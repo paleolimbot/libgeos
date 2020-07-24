@@ -121,8 +121,7 @@ libgeos_init_cpp <- with(
     '
 
 // generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
-#define GEOS_USE_ONLY_R_API
-#include "geos_c.h"
+#include "libgeos.h"
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
