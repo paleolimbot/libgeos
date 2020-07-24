@@ -115,15 +115,51 @@ void libgeos_init_api() {{
   )
 )
 
-libgeos_init_cpp <- with(
+libgeos_init_c <- with(
   function_header_defs,
   glue::glue(
     '
 
 // generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
-#include "libgeos.h"
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
+
+// whereas libgeos.h contains declarations for function *pointers*
+// these are the declarations for the functions in geos_c.h
+// we cannnot include geos_c.h because the magic defines GEOS
+// uses create problems for the LTO build of R-devel
+{ paste0(typedefs_chr, collapse = "\n") }
+
+{ paste0(header_def, collapse = "\n") }
+
+
+// defined in libgeos-version.c, where it is safe to #include geos_c.h
+SEXP libgeos_geos_version();
+
+static const R_CallMethodDef CallEntries[] = {{
+  {{"libgeos_geos_version", (DL_FUNC) &libgeos_geos_version, 0}},
+  {{NULL, NULL, 0}}
+}};
+
+
+void R_init_libgeos(DllInfo *dll) {{
+  R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+
+  /* used by external packages linking to libgeos from C */
+{ paste0(register_def, collapse = "\n") }
+}}
+
+'
+  )
+)
+
+libgeos_version_c <- glue::glue(
+'
+
+// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
+#include <Rinternals.h>
+#include "geos_c.h"
 
 SEXP libgeos_geos_version() {{
   SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
@@ -132,26 +168,13 @@ SEXP libgeos_geos_version() {{
   return out;
 }}
 
-static const R_CallMethodDef CallEntries[] = {{
-  {{"libgeos_geos_version", (DL_FUNC) &libgeos_geos_version, 0}},
-  {{NULL, NULL, 0}}
-}};
-
-extern "C" {{
-  void R_init_libgeos(DllInfo *dll) {{
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
-
-    /* used by external packages linking to libgeos from C */
-{ paste0(register_def, collapse = "\n") }
-  }}
-}}
-
 '
-  )
 )
+
+
 
 # write auto-generated files!
 write_file(libgeos_h, "inst/include/libgeos.h")
 write_file(libgeos_c, "inst/include/libgeos.c")
-write_file(libgeos_init_cpp, "src/libgeos-init.cpp")
+write_file(libgeos_init_c, "src/libgeos-init.c")
+write_file(libgeos_version_c, "src/libgeos-version.c")

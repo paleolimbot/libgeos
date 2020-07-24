@@ -4,6 +4,7 @@ CXX_STD = CXX11
 
 OBJECTS = libgeos-cpp-compat.o \
      libgeos-init.o \
+     libgeos-version.o \
      geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
