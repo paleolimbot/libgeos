@@ -2,14 +2,13 @@ PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY
 
 CXX_STD = CXX11
 
-OBJECTS = libgeos-cpp-compat.o \
-     libgeos-init.o \
-     libgeos-version.o \
-     geos/algorithm/Angle.o \
+OBJECTS = geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
      geos/algorithm/Centroid.o \
      geos/algorithm/CGAlgorithmsDD.o \
+     geos/algorithm/construct/LargestEmptyCircle.o \
+     geos/algorithm/construct/MaximumInscribedCircle.o \
      geos/algorithm/ConvexHull.o \
      geos/algorithm/Distance.o \
      geos/algorithm/distance/DiscreteFrechetDistance.o \
@@ -34,6 +33,10 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/algorithm/RayCrossingCounter.o \
      geos/algorithm/RayCrossingCounterDD.o \
      geos/algorithm/RobustDeterminant.o \
+     geos/edgegraph/EdgeGraph.o \
+     geos/edgegraph/EdgeGraphBuilder.o \
+     geos/edgegraph/HalfEdge.o \
+     geos/edgegraph/MarkHalfEdge.o \
      geos/geom/Coordinate.o \
      geos/geom/CoordinateArraySequence.o \
      geos/geom/CoordinateArraySequenceFactory.o \
@@ -45,6 +48,7 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/geom/GeometryCollection.o \
      geos/geom/GeometryComponentFilter.o \
      geos/geom/GeometryFactory.o \
+     geos/geom/HeuristicOverlay.o \
      geos/geom/IntersectionMatrix.o \
      geos/geom/LinearRing.o \
      geos/geom/LineSegment.o \
@@ -55,20 +59,25 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/geom/MultiPolygon.o \
      geos/geom/Point.o \
      geos/geom/Polygon.o \
+     geos/geom/Position.o \
      geos/geom/PrecisionModel.o \
      geos/geom/prep/AbstractPreparedPolygonContains.o \
      geos/geom/prep/BasicPreparedGeometry.o \
      geos/geom/prep/PreparedGeometry.o \
      geos/geom/prep/PreparedGeometryFactory.o \
      geos/geom/prep/PreparedLineString.o \
+     geos/geom/prep/PreparedLineStringDistance.o \
      geos/geom/prep/PreparedLineStringIntersects.o \
+     geos/geom/prep/PreparedLineStringNearestPoints.o \
      geos/geom/prep/PreparedPoint.o \
      geos/geom/prep/PreparedPolygon.o \
      geos/geom/prep/PreparedPolygonContains.o \
      geos/geom/prep/PreparedPolygonContainsProperly.o \
      geos/geom/prep/PreparedPolygonCovers.o \
+     geos/geom/prep/PreparedPolygonDistance.o \
      geos/geom/prep/PreparedPolygonIntersects.o \
      geos/geom/prep/PreparedPolygonPredicate.o \
+     geos/geom/Quadrant.o \
      geos/geom/Triangle.o \
      geos/geom/util/ComponentCoordinateExtracter.o \
      geos/geom/util/CoordinateOperation.o \
@@ -106,8 +115,6 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/geomgraph/NodeFactory.o \
      geos/geomgraph/NodeMap.o \
      geos/geomgraph/PlanarGraph.o \
-     geos/geomgraph/Position.o \
-     geos/geomgraph/Quadrant.o \
      geos/geomgraph/TopologyLocation.o \
      geos/geos_ts_c.o \
      geos/index/bintree/Bintree.o \
@@ -123,7 +130,8 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/index/intervalrtree/IntervalRTreeBranchNode.o \
      geos/index/intervalrtree/IntervalRTreeLeafNode.o \
      geos/index/intervalrtree/SortedPackedIntervalRTree.o \
-     geos/index/quadtree/DoubleBits.o \
+     geos/index/kdtree/KdNode.o \
+     geos/index/kdtree/KdTree.o \
      geos/index/quadtree/IntervalSize.o \
      geos/index/quadtree/Key.o \
      geos/index/quadtree/Node.o \
@@ -135,6 +143,9 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/index/strtree/EnvelopeUtil.o \
      geos/index/strtree/GeometryItemDistance.o \
      geos/index/strtree/Interval.o \
+     geos/index/strtree/SimpleSTRdistance.o \
+     geos/index/strtree/SimpleSTRnode.o \
+     geos/index/strtree/SimpleSTRtree.o \
      geos/index/strtree/SIRtree.o \
      geos/index/strtree/STRtree.o \
      geos/index/sweepline/SweepLineEvent.o \
@@ -161,6 +172,7 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/linearref/LinearLocation.o \
      geos/linearref/LocationIndexOfLine.o \
      geos/linearref/LocationIndexOfPoint.o \
+     geos/math/DD.o \
      geos/noding/BasicSegmentString.o \
      geos/noding/FastNodingValidator.o \
      geos/noding/FastSegmentSetIntersectionFinder.o \
@@ -182,10 +194,16 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/noding/SegmentString.o \
      geos/noding/SegmentStringUtil.o \
      geos/noding/SimpleNoder.o \
+     geos/noding/snap/SnappingIntersectionAdder.o \
+     geos/noding/snap/SnappingNoder.o \
+     geos/noding/snap/SnappingPointIndex.o \
      geos/noding/snapround/HotPixel.o \
+     geos/noding/snapround/HotPixelIndex.o \
      geos/noding/snapround/MCIndexPointSnapper.o \
      geos/noding/snapround/MCIndexSnapRounder.o \
-     geos/noding/snapround/SimpleSnapRounder.o \
+     geos/noding/snapround/SnapRoundingIntersectionAdder.o \
+     geos/noding/snapround/SnapRoundingNoder.o \
+     geos/noding/ValidatingNoder.o \
      geos/operation/buffer/BufferBuilder.o \
      geos/operation/buffer/BufferInputLineSimplifier.o \
      geos/operation/buffer/BufferOp.o \
@@ -231,6 +249,34 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/operation/overlay/validate/FuzzyPointLocator.o \
      geos/operation/overlay/validate/OffsetPointGenerator.o \
      geos/operation/overlay/validate/OverlayResultValidator.o \
+     geos/operation/overlayng/Edge.o \
+     geos/operation/overlayng/EdgeKey.o \
+     geos/operation/overlayng/EdgeMerger.o \
+     geos/operation/overlayng/EdgeNodingBuilder.o \
+     geos/operation/overlayng/EdgeSourceInfo.o \
+     geos/operation/overlayng/ElevationModel.o \
+     geos/operation/overlayng/IndexedPointOnLineLocator.o \
+     geos/operation/overlayng/InputGeometry.o \
+     geos/operation/overlayng/IntersectionPointBuilder.o \
+     geos/operation/overlayng/LineBuilder.o \
+     geos/operation/overlayng/LineLimiter.o \
+     geos/operation/overlayng/MaximalEdgeRing.o \
+     geos/operation/overlayng/OverlayEdge.o \
+     geos/operation/overlayng/OverlayEdgeRing.o \
+     geos/operation/overlayng/OverlayGraph.o \
+     geos/operation/overlayng/OverlayLabel.o \
+     geos/operation/overlayng/OverlayLabeller.o \
+     geos/operation/overlayng/OverlayMixedPoints.o \
+     geos/operation/overlayng/OverlayNG.o \
+     geos/operation/overlayng/OverlayNGRobust.o \
+     geos/operation/overlayng/OverlayPoints.o \
+     geos/operation/overlayng/OverlayUtil.o \
+     geos/operation/overlayng/PolygonBuilder.o \
+     geos/operation/overlayng/PrecisionReducer.o \
+     geos/operation/overlayng/PrecisionUtil.o \
+     geos/operation/overlayng/RingClipper.o \
+     geos/operation/overlayng/RobustClipEnvelopeComputer.o \
+     geos/operation/overlayng/UnaryUnionNG.o \
      geos/operation/polygonize/BuildArea.o \
      geos/operation/polygonize/EdgeRing.o \
      geos/operation/polygonize/HoleAssigner.o \
@@ -259,6 +305,7 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/operation/valid/ConnectedInteriorTester.o \
      geos/operation/valid/ConsistentAreaTester.o \
      geos/operation/valid/IndexedNestedRingTester.o \
+     geos/operation/valid/IndexedNestedShellTester.o \
      geos/operation/valid/IsValidOp.o \
      geos/operation/valid/MakeValid.o \
      geos/operation/valid/QuadtreeNestedRingTester.o \
@@ -283,6 +330,9 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/precision/MinimumClearance.o \
      geos/precision/PrecisionReducerCoordinateOperation.o \
      geos/precision/SimpleGeometryPrecisionReducer.o \
+     geos/shape/fractal/HilbertCode.o \
+     geos/shape/fractal/HilbertEncoder.o \
+     geos/shape/fractal/MortonCode.o \
      geos/simplify/DouglasPeuckerLineSimplifier.o \
      geos/simplify/DouglasPeuckerSimplifier.o \
      geos/simplify/LineSegmentIndex.o \
@@ -304,4 +354,7 @@ OBJECTS = libgeos-cpp-compat.o \
      geos/util/GeometricShapeFactory.o \
      geos/util/Interrupt.o \
      geos/util/math.o \
-     geos/util/Profiler.o
+     geos/util/Profiler.o \
+     libgeos-cpp-compat.o \
+     libgeos-init.o \
+     libgeos-version.o

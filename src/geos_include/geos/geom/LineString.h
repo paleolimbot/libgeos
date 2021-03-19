@@ -103,7 +103,7 @@ public:
     int getBoundaryDimension() const override;
 
     /// Returns coordinate dimension.
-    int getCoordinateDimension() const override;
+    uint8_t getCoordinateDimension() const override;
 
     /**
      * \brief
@@ -209,6 +209,8 @@ protected:
 private:
 
     void validateConstruction();
+    void normalizeClosed();
+
 
 };
 

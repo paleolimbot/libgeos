@@ -1,4 +1,3 @@
-#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -52,14 +51,11 @@ MCIndexSnapRounder::findInteriorIntersections(MCIndexNoder& noder,
 void
 MCIndexSnapRounder::computeIntersectionSnaps(vector<Coordinate>& snapPts)
 {
-    for(vector<Coordinate>::iterator
-            it = snapPts.begin(), itEnd = snapPts.end();
-            it != itEnd;
-            ++it) {
-        Coordinate& snapPt = *it;
-        HotPixel hotPixel(snapPt, scaleFactor, li);
+    for (Coordinate& snapPt: snapPts) {
+        HotPixel hotPixel(snapPt, scaleFactor);
         pointSnapper->snap(hotPixel);
     }
+
 }
 
 /*private*/
@@ -68,11 +64,11 @@ MCIndexSnapRounder::computeVertexSnaps(NodedSegmentString* e)
 {
     CoordinateSequence& pts0 = *(e->getCoordinates());
     for(size_t i = 0, n = pts0.size() - 1; i < n; ++i) {
-        HotPixel hotPixel(pts0[i], scaleFactor, li);
+        HotPixel hotPixel(pts0.getAt(i), scaleFactor);
         bool isNodeAdded = pointSnapper->snap(hotPixel, e, i);
         // if a node is created for a vertex, that vertex must be noded too
         if(isNodeAdded) {
-            e->addIntersection(pts0[i], i);
+            e->addIntersection(pts0.getAt(i), i);
         }
     }
 }
@@ -131,7 +127,7 @@ MCIndexSnapRounder::checkCorrectness(
         nv.checkValid();
     }
     catch(const std::exception& ex) {
-        cpp_compat_cerr << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
         throw;
     }
 }
