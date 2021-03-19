@@ -83,25 +83,12 @@ objects <- list.files("src", pattern = "\\.c(pp)?$", recursive = TRUE, full.name
 
 clipr::write_clip(objects)
 
-# reminders about manual modifications that are needed
-# for build/CMD check to succeed
-print_next <- function() {
-  cli::cat_rule("Manual modifications")
-  cli::cat_bullet("inst/include/geos/version.h: Required header that isn't in sources")
-  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics")
-  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas")
-  cli::cat_bullet("noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/noding__snapround__SimpleSnapRounder.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet(
-    "src/geos_include/geos/algorithm/ttmath/ttmathuint.h:1288: ",
-    "fix warning with -Wautological-compare by changing == 1 to != 0"
-  )
-  cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
-  cli::cat_bullet("Update exported C API using update-libgeos-api.R")
-  clipr::write_clip(objects)
-}
-
-print_next()
+#' Reminders about manual modifications that are needed
+#' - inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics
+#' - inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas
+#' - noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr
+#' - src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr
+#' - src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr
+#' - src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr
+#' - Update OBJECTS in Makevars (copied to clipboard)
+#' - Update exported C API using update-libgeos-api.R

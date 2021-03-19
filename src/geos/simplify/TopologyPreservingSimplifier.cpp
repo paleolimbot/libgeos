@@ -1,3 +1,4 @@
+#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -138,7 +139,7 @@ LineStringTransformer::transformCoordinates(
     const Geometry* parent)
 {
 #ifdef GEOS_DEBUG
-    std::cerr << __FUNCTION__ << ": parent: " << parent
+    cpp_compat_cerr << __FUNCTION__ << ": parent: " << parent
               << std::endl;
 #endif
     if(dynamic_cast<const LineString*>(parent)) {
@@ -147,7 +148,7 @@ LineStringTransformer::transformCoordinates(
 
         TaggedLineString* taggedLine = it->second;
 #ifdef GEOS_DEBUG
-        std::cerr << "LineStringTransformer[" << this << "] "
+        cpp_compat_cerr << "LineStringTransformer[" << this << "] "
                   << " getting result Coordinates from "
                   << " TaggedLineString[" << taggedLine << "]"
                   << std::endl;
@@ -233,7 +234,7 @@ LineStringMapBuilderFilter::filter_ro(const Geometry* geom)
 
     // Duplicated Geometry pointers shouldn't happen
     if(! linestringMap.insert(std::make_pair(geom, taggedLine)).second) {
-        std::cerr << __FILE__ << ":" << __LINE__
+        cpp_compat_cerr << __FILE__ << ":" << __LINE__
                   << "Duplicated Geometry components detected"
                   << std::endl;
 
@@ -296,7 +297,7 @@ TopologyPreservingSimplifier::getResultGeometry()
         inputGeom->apply_ro(&lsmbf);
 
 #ifdef GEOS_DEBUG
-        std::cerr << "LineStringMapBuilderFilter applied, "
+        cpp_compat_cerr << "LineStringMapBuilderFilter applied, "
                   << " lineStringMap contains "
                   << linestringMap.size() << " elements\n";
 #endif
@@ -307,14 +308,14 @@ TopologyPreservingSimplifier::getResultGeometry()
 
 
 #ifdef GEOS_DEBUG
-        std::cerr << "all TaggedLineString simplified\n";
+        cpp_compat_cerr << "all TaggedLineString simplified\n";
 #endif
 
         LineStringTransformer trans(linestringMap);
         result = trans.transform(inputGeom);
 
 #ifdef GEOS_DEBUG
-        std::cerr << "inputGeom transformed\n";
+        cpp_compat_cerr << "inputGeom transformed\n";
 #endif
 
     }
@@ -339,7 +340,7 @@ TopologyPreservingSimplifier::getResultGeometry()
     }
 
 #ifdef GEOS_DEBUG
-    std::cerr << "returning result\n";
+    cpp_compat_cerr << "returning result\n";
 #endif
 
     return result;
