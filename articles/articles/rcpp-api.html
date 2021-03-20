@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../../index.html">libgeos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.8.1-3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.9.1-0.9000</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../../reference/index.html">Reference</a>
 </li>
@@ -64,8 +60,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/paleolimbot/libgeos/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="https://github.com/paleolimbot/libgeos/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -85,22 +81,21 @@
       <h1 data-toc-skip>Using the LibGEOS Rcpp API</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/paleolimbot/libgeos/blob/master/vignettes/articles/rcpp-api.Rmd"><code>vignettes/articles/rcpp-api.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/paleolimbot/libgeos/blob/master/vignettes/articles/rcpp-api.Rmd" class="external-link"><code>vignettes/articles/rcpp-api.Rmd</code></a></small>
       <div class="hidden name"><code>rcpp-api.Rmd</code></div>
 
     </div>
 
     
     
-<p>The <a href="https://trac.osgeo.org/geos/">GEOS</a> library is written in C++, with its recommended interface as a <a href="https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in">C API</a> for long-term stability. Because of this long-term stability (and because there is no other way to do cross-package dynamic linking in R), this is the interface exposed via the libgeos package. While it seems a bit silly to have a massively powerful and well-written C++ library squeezed through the tiny hole of the C API, it powers a <a href="https://trac.osgeo.org/geos/wiki/Applications">huge number of libraries and products</a>, arguably because of the stability of the C API.</p>
-<p>Arguably even more silly is to write a C++ API wrapping the C API (that was written around a C++ library in the first place). However, in R, header-only C++ libraries are easy to distribute (a well-known example is <a href="https://cran.r-project.org/package=Rcpp">Rcpp</a>), and make it easier for more people to write safe high-performance code. Rcpp isn’t the only way to use C++ to interact with R, but it is the most popular, and there are excellent <a href="https://teuder.github.io/rcpp4everyone_en/">reference guides</a> and introductory material for <a href="https://adv-r.hadley.nz/rcpp.html">scripting</a> and <a href="http://r-pkgs.had.co.nz/src.html">using it in packages</a>.</p>
+<p>The <a href="https://trac.osgeo.org/geos/" class="external-link">GEOS</a> library is written in C++, with its recommended interface as a <a href="https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in" class="external-link">C API</a> for long-term stability. Because of this long-term stability (and because there is no other way to do cross-package dynamic linking in R), this is the interface exposed via the libgeos package. While it seems a bit silly to have a massively powerful and well-written C++ library squeezed through the tiny hole of the C API, it powers a <a href="https://trac.osgeo.org/geos/wiki/Applications" class="external-link">huge number of libraries and products</a>, arguably because of the stability of the C API.</p>
+<p>Arguably even more silly is to write a C++ API wrapping the C API (that was written around a C++ library in the first place). However, in R, header-only C++ libraries are easy to distribute (a well-known example is <a href="https://cran.r-project.org/package=Rcpp" class="external-link">Rcpp</a>), and make it easier for more people to write safe high-performance code. Rcpp isn’t the only way to use C++ to interact with R, but it is the most popular, and there are excellent <a href="https://teuder.github.io/rcpp4everyone_en/" class="external-link">reference guides</a> and introductory material for <a href="https://adv-r.hadley.nz/rcpp.html" class="external-link">scripting</a> and <a href="http://r-pkgs.had.co.nz/src.html" class="external-link">using it in packages</a>.</p>
 <div id="getting-started" class="section level2">
 <h2 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h2>
 <p>To get started, you’ll have to install and load libgeos:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://paleolimbot.github.io/libgeos">libgeos</a></span>)
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/libgeos" class="external-link">libgeos</a></span><span class="op">)</span></code></pre></div>
 <p>Next, you’ll need to make a new <code>.cpp</code> file and use <code>Rcpp::sourceRcpp()</code> to make the exported functions available. The anatomy of a file that uses the libgeos Rcpp API is as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="co">// [[Rcpp::depends(libgeos)]]</span></span>
@@ -125,12 +120,11 @@
 <li>You need to provide a way to call <code>libgeos_init_api()</code> to initialize the function pointers with references to the implementations in libgeos.</li>
 </ul>
 <p>After compiling the above with <code>sourceRcpp()</code>, in R you can do:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="fu">cpp_libgeos_init_api</span>() <span class="co"># once</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Version.html">version</a></span>()
-<span class="co">#&gt; [1] "3.8.1-CAPI-1.13.3"</span>
-</pre></div>
-<p>In a package this will be slightly different: you need to include <code>libgeos.c</code> exactly once, but all other files that use GEOS functions only need to <code>#include "libgeos-rcpp.h"</code>. You don’t need <code>// [[Rcpp::depends(libgeos)]]</code> in any of your package files, but you will need to add <code>LinkingTo: libgeos</code> to your <code>DESCRIPTION</code> and make sure to call <code>libgeos_init_api()</code> when your package is loaded (e.g., via <code><a href="https://rdrr.io/r/base/ns-hooks.html">.onLoad()</a></code>).</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span> <span class="co"># once</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">version</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "3.9.1-CAPI-1.14.2"</span></code></pre></div>
+<p>In a package this will be slightly different: you need to include <code>libgeos.c</code> exactly once, but all other files that use GEOS functions only need to <code>#include "libgeos-rcpp.h"</code>. You don’t need <code>// [[Rcpp::depends(libgeos)]]</code> in any of your package files, but you will need to add <code>LinkingTo: libgeos</code> to your <code>DESCRIPTION</code> and make sure to call <code>libgeos_init_api()</code> when your package is loaded (e.g., via <code><a href="https://rdrr.io/r/base/ns-hooks.html" class="external-link">.onLoad()</a></code>).</p>
 </div>
 <div id="the-libgeoshandle" class="section level2">
 <h2 class="hasAnchor">
@@ -149,13 +143,13 @@
 <span id="cb4-10"><a href="#cb4-10"></a>  </span>
 <span id="cb4-11"><a href="#cb4-11"></a>  <span class="cf">return</span> output;</span>
 <span id="cb4-12"><a href="#cb4-12"></a>}</span></code></pre></div>
-<p>One thing that is important to note is that raw <code>GEOS*_r()</code> functions never throw exceptions. This is by design: throwing an exception across a library boundary doesn’t always work. In the above example, you could check the return value of <code>GEOSisEmpty_r()</code> and throw the corresponding exception if one occurred. The <code>LibGEOSHandle</code> collects the error messages reported by GEOS, and you can throw the last one it encountered using <code>handle.throwLastError()</code> (or do something else with the message using <code>handle.lastErrorMessage()</code>). You will have to <a href="https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in">consult the GEOS C API header</a> to see what return value corresponds to which error codes. Convenience methods <code>handle.checkGeometry()</code> and <code>handle.checkPredicateResult()</code> are provided for these two common cases (geometry generating functions return <code>NULL</code> on error; predicates return <code>2</code> on error).</p>
+<p>One thing that is important to note is that raw <code>GEOS*_r()</code> functions never throw exceptions. This is by design: throwing an exception across a library boundary doesn’t always work. In the above example, you could check the return value of <code>GEOSisEmpty_r()</code> and throw the corresponding exception if one occurred. The <code>LibGEOSHandle</code> collects the error messages reported by GEOS, and you can throw the last one it encountered using <code>handle.throwLastError()</code> (or do something else with the message using <code>handle.lastErrorMessage()</code>). You will have to <a href="https://trac.osgeo.org/geos/browser/git/capi/geos_c.h.in" class="external-link">consult the GEOS C API header</a> to see what return value corresponds to which error codes. Convenience methods <code>handle.checkGeometry()</code> and <code>handle.checkPredicateResult()</code> are provided for these two common cases (geometry generating functions return <code>NULL</code> on error; predicates return <code>2</code> on error).</p>
 <p>Note that <code>LibGEOS*</code> objects do throw exceptions, so you only have to worry about this when you call the GEOS C API functions yourself.</p>
 </div>
 <div id="reading-and-writing-geometry" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reading-and-writing-geometry" class="anchor"></a>Reading and Writing Geometry</h2>
-<p>GEOS has two main ways of getting geometry in and out: well-known binary and well-known text. In R, these correspond to <code>List</code>s of <code>RawVector</code>s and <code>CharacterVector</code>s, respectively. You can use the <code>LibGEOSWKBReader</code> and <code>LibGEOSWKTReader</code> to read geometries, and <code>LibGEOSWKBWriter</code> and <code>LibGEOSWKTWriter</code> to write them. I tend to use WKT for examples, but WKB is orders of magnitude faster (and you can generate it readily from <a href="https://r-spatial.github.io/sf/">sf</a> objects using <code>st_as_binary()</code>). As an example, the following function reads WKT and writes it back again with the settings that you probably want (notably, <code>writer.setTrim(true)</code>).</p>
+<p>GEOS has two main ways of getting geometry in and out: well-known binary and well-known text. In R, these correspond to <code>List</code>s of <code>RawVector</code>s and <code>CharacterVector</code>s, respectively. You can use the <code>LibGEOSWKBReader</code> and <code>LibGEOSWKTReader</code> to read geometries, and <code>LibGEOSWKBWriter</code> and <code>LibGEOSWKTWriter</code> to write them. I tend to use WKT for examples, but WKB is orders of magnitude faster (and you can generate it readily from <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> objects using <code>st_as_binary()</code>). As an example, the following function reads WKT and writes it back again with the settings that you probably want (notably, <code>writer.setTrim(true)</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="co">// [[Rcpp::depends(libgeos)]]</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="pp">#include </span><span class="im">"libgeos-rcpp.h"</span></span>
@@ -182,11 +176,10 @@
 <span id="cb5-24"><a href="#cb5-24"></a></span>
 <span id="cb5-25"><a href="#cb5-25"></a>  <span class="cf">return</span> output;</span>
 <span id="cb5-26"><a href="#cb5-26"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="fu">cpp_libgeos_init_api</span>()
-<span class="fu">wkt_convert_wkt</span>(<span class="st">"POINT (-64 45)"</span>)
-<span class="co">#&gt; [1] "POINT (-64 45)"</span>
-</pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">wkt_convert_wkt</span><span class="op">(</span><span class="st">"POINT (-64 45)"</span><span class="op">)</span>
+<span class="co">#&gt; [1] "POINT (-64 45)"</span></code></pre></div>
 <p>Note that the <code>.read()</code> functions always return a <code>LibGEOSGeometry</code>, which wraps the <code>GEOSGeometry*</code> pointer to make sure that the object is destroyed when the variable goes out of scope. You can get a reference to the <code>GEOSGeometry*</code> using <code>.get()</code> to pass it to the GEOS C API functions directly.</p>
 </div>
 <div id="predicates" class="section level2">
@@ -250,15 +243,14 @@
 <span id="cb7-55"><a href="#cb7-55"></a></span>
 <span id="cb7-56"><a href="#cb7-56"></a>  <span class="cf">return</span> output;</span>
 <span id="cb7-57"><a href="#cb7-57"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="fu">cpp_libgeos_init_api</span>()
-<span class="fu">wkt_is_empty</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"POINT (-64 45)"</span>, <span class="st">"POINT EMPTY"</span>))
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">wkt_is_empty</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"POINT (-64 45)"</span>, <span class="st">"POINT EMPTY"</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; [1] FALSE  TRUE</span>
-<span class="fu">wkt_intersects</span>(<span class="st">"POINT (0 0)"</span>, <span class="st">"POINT (0 0)"</span>)
+<span class="fu">wkt_intersects</span><span class="op">(</span><span class="st">"POINT (0 0)"</span>, <span class="st">"POINT (0 0)"</span><span class="op">)</span>
 <span class="co">#&gt; [1] TRUE</span>
-<span class="fu">wkt_intersects_prepared</span>(<span class="st">"POINT (0 0)"</span>, <span class="st">"POINT (0 0)"</span>)
-<span class="co">#&gt; [1] TRUE</span>
-</pre></div>
+<span class="fu">wkt_intersects_prepared</span><span class="op">(</span><span class="st">"POINT (0 0)"</span>, <span class="st">"POINT (0 0)"</span><span class="op">)</span>
+<span class="co">#&gt; [1] TRUE</span></code></pre></div>
 </div>
 <div id="transformers" class="section level2">
 <h2 class="hasAnchor">
@@ -291,11 +283,10 @@
 <span id="cb9-25"><a href="#cb9-25"></a></span>
 <span id="cb9-26"><a href="#cb9-26"></a>  <span class="cf">return</span> output;</span>
 <span id="cb9-27"><a href="#cb9-27"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit">
-<span class="fu">cpp_libgeos_init_api</span>()
-<span class="fu">wkt_centroid</span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"LINESTRING (0 0, 10 10)"</span>, <span class="st">"LINESTRING EMPTY"</span>))
-<span class="co">#&gt; [1] "POINT (5 5)" "POINT EMPTY"</span>
-</pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
+<span class="fu">wkt_centroid</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LINESTRING (0 0, 10 10)"</span>, <span class="st">"LINESTRING EMPTY"</span><span class="op">)</span><span class="op">)</span>
+<span class="co">#&gt; [1] "POINT (5 5)" "POINT EMPTY"</span></code></pre></div>
 </div>
 <div id="extractors" class="section level2">
 <h2 class="hasAnchor">
@@ -334,11 +325,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Dewey Dunnington, GEOS authors.</p>
+  <p></p>
+<p>Developed by Dewey Dunnington, GEOS authors.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9000.</p>
 </div>
 
       </footer>
@@ -346,6 +339,8 @@
 
   
 
+
+  
 
   </body>
 </html>
