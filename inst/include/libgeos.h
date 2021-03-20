@@ -14,22 +14,22 @@ using std::size_t;
 #define GEOS_VERSION_MAJOR 3
 #endif
 #ifndef GEOS_VERSION_MINOR
-#define GEOS_VERSION_MINOR 8
+#define GEOS_VERSION_MINOR 9
 #endif
 #ifndef GEOS_VERSION_PATCH
 #define GEOS_VERSION_PATCH 1
 #endif
 #ifndef GEOS_VERSION
-#define GEOS_VERSION "3.8.1"
+#define GEOS_VERSION "3.9.1"
 #endif
 #ifndef GEOS_JTS_PORT
-#define GEOS_JTS_PORT "1.13.0"
+#define GEOS_JTS_PORT "1.17.0"
 #endif
 
 #define GEOS_CAPI_VERSION_MAJOR 1
-#define GEOS_CAPI_VERSION_MINOR 13
-#define GEOS_CAPI_VERSION_PATCH 3
-#define GEOS_CAPI_VERSION "3.8.1-CAPI-1.13.3"
+#define GEOS_CAPI_VERSION_MINOR 14
+#define GEOS_CAPI_VERSION_PATCH 2
+#define GEOS_CAPI_VERSION "3.9.1-CAPI-1.14.2"
 
 #define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
 #define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
@@ -157,16 +157,23 @@ extern GEOSGeometry* (*GEOSGeom_clone_r)(GEOSContextHandle_t, const GEOSGeometry
 extern void (*GEOSGeom_destroy_r)(GEOSContextHandle_t, GEOSGeometry*);
 extern GEOSGeometry* (*GEOSEnvelope_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSIntersection_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSIntersectionPrec_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSConvexHull_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSMinimumRotatedRectangle_r)(GEOSContextHandle_t, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSMaximumInscribedCircle_r)(GEOSContextHandle_t, const GEOSGeometry*, double);
+extern GEOSGeometry* (*GEOSLargestEmptyCircle_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSMinimumWidth_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSMinimumClearanceLine_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern int (*GEOSMinimumClearance_r)(GEOSContextHandle_t, const GEOSGeometry*, double*);
 extern GEOSGeometry* (*GEOSDifference_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSDifferencePrec_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSSymDifference_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSSymDifferencePrec_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSBoundary_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSUnion_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSUnionPrec_r)(GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSUnaryUnion_r)(GEOSContextHandle_t, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSUnaryUnionPrec_r)(GEOSContextHandle_t, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSCoverageUnion_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSUnionCascaded_r)(GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSPointOnSurface_r)(GEOSContextHandle_t, const GEOSGeometry*);
@@ -212,6 +219,8 @@ extern char (*GEOSPreparedIntersects_r)(GEOSContextHandle_t, const GEOSPreparedG
 extern char (*GEOSPreparedOverlaps_r)(GEOSContextHandle_t, const GEOSPreparedGeometry*, const GEOSGeometry*);
 extern char (*GEOSPreparedTouches_r)(GEOSContextHandle_t, const GEOSPreparedGeometry*, const GEOSGeometry*);
 extern char (*GEOSPreparedWithin_r)(GEOSContextHandle_t, const GEOSPreparedGeometry*, const GEOSGeometry*);
+extern GEOSCoordSequence* (*GEOSPreparedNearestPoints_r)( GEOSContextHandle_t, const GEOSPreparedGeometry*, const GEOSGeometry*);
+extern int (*GEOSPreparedDistance_r)( GEOSContextHandle_t, const GEOSPreparedGeometry*, const GEOSGeometry*, double*);
 extern GEOSSTRtree* (*GEOSSTRtree_create_r)( GEOSContextHandle_t, size_t);
 extern void (*GEOSSTRtree_insert_r)(GEOSContextHandle_t, GEOSSTRtree*, const GEOSGeometry*, void*);
 extern void (*GEOSSTRtree_query_r)(GEOSContextHandle_t, GEOSSTRtree*, const GEOSGeometry*, GEOSQueryCallback, void*);

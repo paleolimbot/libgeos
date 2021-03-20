@@ -2,18 +2,24 @@
 library(tidyverse)
 
 # download GEOS
-source_url <- "http://download.osgeo.org/geos/geos-3.8.1.tar.bz2"
+source_url <- "http://download.osgeo.org/geos/geos-3.9.1.tar.bz2"
 curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
 
 # make sure the dir exists
 geos_dir <- list.files("data-raw", "^geos-[0-9.]+", include.dirs = TRUE, full.names = TRUE)
 stopifnot(dir.exists(geos_dir), length(geos_dir) == 1)
-src_dir <- file.path(geos_dir, "src/s2")
+src_dir <- file.path(geos_dir, "src")
+
+# one way to make sure that geos_c.h is built is to run ./configure
+withr::with_dir(
+  geos_dir,
+  system("./configure")
+)
 
 # headers live in inst/include
 # keeping the directory structure means that
-# we don't have to update any source files (beause of header locations)
+# we don't have to update any source files (because of header locations)
 headers <- tibble(
   path = list.files(
     file.path(geos_dir, "include", "geos"), "\\.(h|inl)$",
@@ -28,8 +34,7 @@ headers <- tibble(
 # in Makevars. Here, we replace "/" with "__"
 source_files <- tibble(
   path = list.files(file.path(geos_dir, "src"), "\\.cpp$", full.names = TRUE, recursive = TRUE),
-  final_path = str_replace(path, ".*?src/", "src/geos/") %>%
-    str_replace("src__", "src/")
+  final_path = str_replace(path, ".*?src/", "src/geos/")
 )
 
 # remove current source and header files
@@ -69,31 +74,21 @@ stopifnot(
   )
 )
 
-# need to update objects, because they aren't autodetected on windows
-objects <- list.files("src", pattern = "\\.cpp$", recursive = TRUE, full.names = TRUE) %>%
-  gsub("\\.cpp$", ".o", .) %>%
+# need to update objects because we've placed the geos bits in subfolders
+objects <- list.files("src", pattern = "\\.c(pp)?$", recursive = TRUE, full.names = TRUE) %>%
+  gsub("\\.c(pp)?$", ".o", .) %>%
   gsub("src/", "", .) %>%
-  paste("    ", ., "\\", collapse = "\n")
+  paste("    ", ., "\\", collapse = "\n") %>%
+  gsub("\\\\\\s*$", "", .)
 
-# reminders about manual modifications that are needed
-# for build/CMD check to succeed
-print_next <- function() {
-  cli::cat_rule("Manual modifications")
-  cli::cat_bullet("inst/include/geos/version.h: Required header that isn't in sources")
-  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics")
-  cli::cat_bullet("inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas")
-  cli::cat_bullet("src/noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/noding__snapround__SimpleSnapRounder.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet("src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr")
-  cli::cat_bullet(
-    "src/geos_include/geos/algorithm/ttmath/ttmathuint.h:1288: ",
-    "fix warning with -Wautological-compare by changing == 1 to != 0"
-  )
-  cli::cat_bullet("Update OBJECTS in Makevars (copied to clipboard)")
-  cli::cat_bullet("Update exported C API using update-libgeos-api.R")
-  clipr::write_clip(objects)
-}
+clipr::write_clip(objects)
 
-print_next()
+#' Reminders about manual modifications that are needed
+#' - inst/include/geos/algorithm/ttmathuint.h: Remove pragmas suppressing diagnostics
+#' - inst/include/geos/algorithm/ttmathuint.h: Remove non-portable pragmas
+#' - noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr
+#' - src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr
+#' - src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr
+#' - src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr
+#' - Update OBJECTS in Makevars (copied to clipboard)
+#' - Update exported C API using update-libgeos-api.R

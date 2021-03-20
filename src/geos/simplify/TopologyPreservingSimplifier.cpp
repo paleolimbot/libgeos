@@ -102,18 +102,12 @@ public:
         return *this;
     }
 
-    // postfix++
-    void
-    operator++(int)
-    {
-        _iter++;
-    }
-
     // ++suffix
-    void
+    LinesMapValueIterator&
     operator++()
     {
         ++_iter;
+        return *this;
     }
 
     // inequality operator
