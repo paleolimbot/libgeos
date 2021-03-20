@@ -5,6 +5,8 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+int (*libgeos_version_int)() = NULL;
+
 GEOSContextHandle_t (*initGEOS_r)( GEOSMessageHandler, GEOSMessageHandler) = NULL;
 void (*finishGEOS_r)(GEOSContextHandle_t) = NULL;
 GEOSContextHandle_t (*GEOS_init_r)() = NULL;
@@ -225,6 +227,8 @@ void (*GEOSWKBWriter_setIncludeSRID_r)(GEOSContextHandle_t, GEOSWKBWriter*, cons
 void (*GEOSFree_r)(GEOSContextHandle_t, void*) = NULL;
 
 void libgeos_init_api() {
+  libgeos_version_int = (int (*)()) R_GetCCallable("libgeos", "libgeos_version_int");
+
   initGEOS_r = (GEOSContextHandle_t (*)( GEOSMessageHandler, GEOSMessageHandler)) R_GetCCallable("libgeos", "initGEOS_r");
   finishGEOS_r = (void (*)(GEOSContextHandle_t)) R_GetCCallable("libgeos", "finishGEOS_r");
   GEOS_init_r = (GEOSContextHandle_t (*)()) R_GetCCallable("libgeos", "GEOS_init_r");

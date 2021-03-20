@@ -10,6 +10,10 @@
 using std::size_t;
 #endif
 
+// the runtime version of libgeos
+#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+extern int (*libgeos_version_int)();
+
 #ifndef GEOS_VERSION_MAJOR
 #define GEOS_VERSION_MAJOR 3
 #endif

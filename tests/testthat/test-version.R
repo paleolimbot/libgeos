@@ -14,9 +14,16 @@ test_that("GEOSversion() can be called from Rcpp", {
       libgeos_init_api();
       return GEOSversion();
     }
+
+    // [[Rcpp::export]]
+    int version_int() {
+      libgeos_init_api();
+      return libgeos_version_int();
+    }
   ')
 
   expect_identical(version(), libgeos_version())
+  expect_equal(version_int(), 1 + 9 * 100 + 3 * 10000)
 
   unlink(cache, recursive = TRUE)
 })
