@@ -2,11 +2,16 @@
 
 * Update to GEOS 3.9.1 (#3).
 * Added an exported callable `libgeos_version_int()` that can be used
-  in future versions to resolve build-time/compile-time differences 
+  to resolve runtime/compile-time differences 
   when loading the exported GEOS callables (#4).
 * Removed C++ helpers and simplified linking tests (#4).
 * Simplified pattern for removing references to `std::cerr` from
   GEOS sources (#5).
+
+# libgeos 3.8.1-4
+
+* Backported facilities for checking runtime versions during package
+  load from the future version 3.9.1-1.
 
 # libgeos 3.8.1-3
 

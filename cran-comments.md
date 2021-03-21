@@ -1,18 +1,20 @@
 
-This submission fixes warnings from the link-time optimizer, which reported naming conflicts between the C++ header types and the abstract C types used in the header API.
+This submission updates the internal version of GEOS to 3.9.1.
 
 ## Test environments
 
-* local R installation, MacOS R 4.0.1
-* GitHub actions: MacOS (R release), Windows (R oldrel and release), Ubuntu 16.04 (R release)
+* local R installation, MacOS R 4.0.3
+* GitHub actions: MacOS (R release), Windows (R oldrel and release), 
+  Ubuntu 20.04 (R release, R devel)
 * win-builder (devel)
 * `rhub::check_for_cran()`
 
 ## R CMD check results
 
-* checking CRAN incoming feasibility ... NOTE
-Maintainer: ‘Dewey Dunnington <dewey@fishandwhistle.net>’
+* checking installed package size ... NOTE
+  installed size is  5.2Mb
+  sub-directories of 1Mb or more:
+    libs   5.1Mb
 
-Days since last update: 3
-
-Updated promptly at the request of CRAN, who issued a notice that the package would be removed if the check problems were not fixed.
+The dynamic library for this package is large; however, the purpose of this package
+is specifically to provide access to this library.
