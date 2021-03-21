@@ -38,6 +38,8 @@ extern int (*libgeos_version_int)();
 #define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
 #define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
 
+#define LIBGEOS_VERSION_COMPILE_INT LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH)
+
 typedef struct GEOSContextHandle_HS *GEOSContextHandle_t;
 typedef void (*GEOSMessageHandler)(const char *fmt, ...);
 typedef void (*GEOSMessageHandler_r)(const char *message, void *userdata);
