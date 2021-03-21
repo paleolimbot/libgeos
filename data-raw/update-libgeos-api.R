@@ -84,11 +84,16 @@ libgeos_h <- with(
 using std::size_t;
 #endif
 
-// the runtime version of libgeos
+{ paste0(version_defs_chr, collapse = "\n") }
+
+// how integer versions are calculated
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+
+// the runtime version of libgeos
 extern int (*libgeos_version_int)();
 
-{ paste0(version_defs_chr, collapse = "\n") }
+// the compile-time version of libgeos
+#define LIBGEOS_VERSION_COMPILE_INT LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH)
 
 { paste0(typedefs_chr, collapse = "\n") }
 

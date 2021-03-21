@@ -10,10 +10,6 @@
 using std::size_t;
 #endif
 
-// the runtime version of libgeos
-#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
-extern int (*libgeos_version_int)();
-
 #ifndef GEOS_VERSION_MAJOR
 #define GEOS_VERSION_MAJOR 3
 #endif
@@ -37,6 +33,15 @@ extern int (*libgeos_version_int)();
 
 #define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
 #define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
+
+// how integer versions are calculated
+#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+
+// the runtime version of libgeos
+extern int (*libgeos_version_int)();
+
+// the compile-time version of libgeos
+#define LIBGEOS_VERSION_COMPILE_INT LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH)
 
 typedef struct GEOSContextHandle_HS *GEOSContextHandle_t;
 typedef void (*GEOSMessageHandler)(const char *fmt, ...);
