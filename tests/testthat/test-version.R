@@ -4,7 +4,6 @@ test_that("libgeos_version() works", {
 })
 
 test_that("libgeos can be linked to", {
-  # basic test for linking
   Sys.setenv(
     PKG_CPPFLAGS = paste0("-I", system.file("include", package = "libgeos"))
   )
