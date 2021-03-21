@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 ![R-CMD-check](https://github.com/paleolimbot/libgeos/workflows/R-CMD-check/badge.svg)
 <!-- badges: end -->
 
@@ -21,7 +21,7 @@ you’re writing a package that needs GEOS functionality (just
 `LinkingTo: libgeos`). Because GEOS is license under the LGPL,
 dynamically linking to GEOS (e.g., through the C API exposed in this
 package) is generally allowed from a package with any license. See the
-[geos R package](https://paleolimbot.github.io/geos) for an R API to
+[geos R package](https://paleolimbot.github.io/geos/) for an R API to
 GEOS.
 
 ## Installation
