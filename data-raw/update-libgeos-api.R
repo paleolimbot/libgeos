@@ -1,6 +1,12 @@
 
 library(tidyverse)
 
+# also need previous API to detect changes
+funs_3.8.1 <- read_file("https://raw.githubusercontent.com/paleolimbot/libgeos/v3.8.1-3/inst/include/libgeos.c") %>%
+  str_match_all('R_GetCCallable\\("libgeos", "([^\\"]+)"\\)') %>%
+  .[[1]] %>%
+  .[, 2]
+
 capi_header <- read_file("src/geos_include/geos_c.h")
 
 version_defs_chr <- read_lines(capi_header)[54:76]
@@ -98,8 +104,21 @@ void libgeos_init_api();
   )
 )
 
+# in the implementation, we need to conditionally call R_GetCCallable based on
+# the libgeos_version_int() result so that the client package can run against
+# previous libgeos versions that may not eexport all the callables
+function_header_defs_common <- function_header_defs %>%
+  filter(name %in% funs_3.8.1)
+
+function_header_defs_3.9.1 <- function_header_defs %>%
+  setdiff(function_header_defs_common)
+
 libgeos_c <- with(
-  function_header_defs,
+  list(
+    function_header_defs = function_header_defs,
+    function_header_defs_common = function_header_defs_common,
+    function_header_defs_3.9.1 = function_header_defs_3.9.1
+  ),
   glue::glue(
     '
 
@@ -111,12 +130,18 @@ libgeos_c <- with(
 
 int (*libgeos_version_int)() = NULL;
 
-{ paste0(impl_def, collapse = "\n") }
+{ paste0(function_header_defs$impl_def, collapse = "\n") }
 
 void libgeos_init_api() {{
   libgeos_version_int = (int (*)()) R_GetCCallable("libgeos", "libgeos_version_int");
 
-{ paste0(init_def, collapse = "\n") }
+  // exported in libgeos >= 3.8.1
+{ paste0(function_header_defs_common$init_def, collapse = "\n") }
+
+  // exported in libgeos >= 3.9.1
+  if (libgeos_version_int() >= LIBGEOS_VERSION_INT(3, 9, 1)) {{
+{ paste0("  ", function_header_defs_3.9.1$init_def, collapse = "\n") }
+  }}
 }}
 
 '
