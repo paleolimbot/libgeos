@@ -10,3 +10,4 @@
 ^vignettes$
 ^cran-comments\.md$
 ^LICENSE\.md$
+^\.vscode$
