@@ -1,3 +1,8 @@
+# libgeos 3.8.1-4
+
+* Backported facilities for checking runtime versions during package
+  load from the future version 3.9.1-1.
+
 # libgeos 3.8.1-3
 
 * Fixed warnings from the link-time optimizer, which reported naming 
