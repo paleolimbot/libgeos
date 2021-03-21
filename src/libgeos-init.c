@@ -3,6 +3,40 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+#ifndef GEOS_VERSION_MAJOR
+#define GEOS_VERSION_MAJOR 3
+#endif
+#ifndef GEOS_VERSION_MINOR
+#define GEOS_VERSION_MINOR 9
+#endif
+#ifndef GEOS_VERSION_PATCH
+#define GEOS_VERSION_PATCH 1
+#endif
+#ifndef GEOS_VERSION
+#define GEOS_VERSION "3.9.1"
+#endif
+#ifndef GEOS_JTS_PORT
+#define GEOS_JTS_PORT "1.17.0"
+#endif
+
+#define GEOS_CAPI_VERSION_MAJOR 1
+#define GEOS_CAPI_VERSION_MINOR 14
+#define GEOS_CAPI_VERSION_PATCH 2
+#define GEOS_CAPI_VERSION "3.9.1-CAPI-1.14.2"
+
+#define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
+#define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
+
+// we need a utility function to get the runtime version in a form that is
+// queryable from the inst/include/libgeos.c, because future GEOS versions
+// will add to the C API. The ability to do a runtime check around R_GetCCallable()
+// lets newer packages link to multiple versions of libgeos.
+#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+
+int libgeos_version_int() {
+  return LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH);
+}
+
 // whereas libgeos.h contains declarations for function *pointers*
 // these are the declarations for the functions in geos_c.h
 // we cannnot include geos_c.h because the magic defines GEOS
@@ -245,8 +279,13 @@ char GEOS_DLL GEOSWKBWriter_getIncludeSRID_r(GEOSContextHandle_t handle, const G
 void GEOS_DLL GEOSWKBWriter_setIncludeSRID_r(GEOSContextHandle_t handle, GEOSWKBWriter* writer, const char writeSRID);
 void GEOS_DLL GEOSFree_r(GEOSContextHandle_t handle, void *buffer);
 
-// defined in libgeos-version.c, where it is safe to #include geos_c.h
-SEXP libgeos_geos_version();
+// need at least one function passed to R to avoid a NOTE
+SEXP libgeos_geos_version() {
+  SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
+  SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
+  UNPROTECT(1);
+  return out;
+}
 
 static const R_CallMethodDef CallEntries[] = {
   {"libgeos_geos_version", (DL_FUNC) &libgeos_geos_version, 0},
@@ -259,6 +298,7 @@ void R_init_libgeos(DllInfo *dll) {
   R_useDynamicSymbols(dll, FALSE);
 
   /* used by external packages linking to libgeos from C */
+  R_RegisterCCallable("libgeos", "libgeos_version_int", (DL_FUNC) &libgeos_version_int);
     R_RegisterCCallable("libgeos", "initGEOS_r", (DL_FUNC) &initGEOS_r);
     R_RegisterCCallable("libgeos", "finishGEOS_r", (DL_FUNC) &finishGEOS_r);
     R_RegisterCCallable("libgeos", "GEOS_init_r", (DL_FUNC) &GEOS_init_r);

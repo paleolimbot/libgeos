@@ -78,6 +78,10 @@ libgeos_h <- with(
 using std::size_t;
 #endif
 
+// the runtime version of libgeos
+#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+extern int (*libgeos_version_int)();
+
 { paste0(version_defs_chr, collapse = "\n") }
 
 { paste0(typedefs_chr, collapse = "\n") }
@@ -105,9 +109,13 @@ libgeos_c <- with(
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+int (*libgeos_version_int)() = NULL;
+
 { paste0(impl_def, collapse = "\n") }
 
 void libgeos_init_api() {{
+  libgeos_version_int = (int (*)()) R_GetCCallable("libgeos", "libgeos_version_int");
+
 { paste0(init_def, collapse = "\n") }
 }}
 
@@ -124,6 +132,18 @@ libgeos_init_c <- with(
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+{ paste(version_defs_chr, collapse = "\n") }
+
+// we need a utility function to get the runtime version in a form that is
+// queryable from the inst/include/libgeos.c, because future GEOS versions
+// will add to the C API. The ability to do a runtime check around R_GetCCallable()
+// lets newer packages link to multiple versions of libgeos.
+#define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
+
+int libgeos_version_int() {{
+  return LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH);
+}}
+
 // whereas libgeos.h contains declarations for function *pointers*
 // these are the declarations for the functions in geos_c.h
 // we cannnot include geos_c.h because the magic defines GEOS
@@ -133,8 +153,13 @@ libgeos_init_c <- with(
 #define GEOS_DLL
 { paste0(def, collapse = "\n") }
 
-// defined in libgeos-version.c, where it is safe to #include geos_c.h
-SEXP libgeos_geos_version();
+// need at least one function passed to R to avoid a NOTE
+SEXP libgeos_geos_version() {{
+  SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
+  SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
+  UNPROTECT(1);
+  return out;
+}}
 
 static const R_CallMethodDef CallEntries[] = {{
   {{"libgeos_geos_version", (DL_FUNC) &libgeos_geos_version, 0}},
@@ -147,6 +172,7 @@ void R_init_libgeos(DllInfo *dll) {{
   R_useDynamicSymbols(dll, FALSE);
 
   /* used by external packages linking to libgeos from C */
+  R_RegisterCCallable("libgeos", "libgeos_version_int", (DL_FUNC) &libgeos_version_int);
 { paste0(register_def, collapse = "\n") }
 }}
 
@@ -154,30 +180,7 @@ void R_init_libgeos(DllInfo *dll) {{
   )
 )
 
-
-libgeos_version_c <- glue::glue(
-'
-
-// generated automatically by data-raw/update-libgeos-api.R - do not edit by hand!
-#include <Rinternals.h>
-
-// to avoid #include "geos_c.h"
-const char* GEOSversion();
-
-SEXP libgeos_geos_version() {{
-  SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
-  SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
-  UNPROTECT(1);
-  return out;
-}}
-
-'
-)
-
-
-
 # write auto-generated files!
 write_file(libgeos_h, "inst/include/libgeos.h")
 write_file(libgeos_c, "inst/include/libgeos.c")
 write_file(libgeos_init_c, "src/libgeos-init.c")
-write_file(libgeos_version_c, "src/libgeos-version.c")

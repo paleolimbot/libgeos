@@ -82,7 +82,9 @@ jobs:
       - name: Install package
         run: |
           remotes::install_cran("fs")
-          fs::dir_copy("check/libgeos.Rcheck/libgeos", file.path(.libPaths()[1], "libgeos"))
+          installed_path <- file.path(.libPaths()[1], "libgeos")
+          if (dir.exists(installed_path)) unlink(installed_path, recursive = TRUE)
+          fs::dir_copy("check/libgeos.Rcheck/libgeos", installed_path)
         shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos

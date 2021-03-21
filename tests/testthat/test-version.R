@@ -3,20 +3,33 @@ test_that("libgeos_version() works", {
   expect_identical(libgeos_version(), "3.9.1-CAPI-1.14.2")
 })
 
-test_that("GEOSversion() can be called from Rcpp", {
-  # these tests run a bit of Rcpp code that, depending on the Rcpp version,
-  # can lead to sanitizer errors that are out of my control
-  skip_on_cran()
+test_that("libgeos can be linked to", {
+  Sys.setenv(
+    PKG_CPPFLAGS = paste0("-I", system.file("include", package = "libgeos"))
+  )
 
-  cache <- source_rcpp_libgeos('
-    // [[Rcpp::export]]
-    std::string version() {
-      libgeos_init_api();
-      return GEOSversion();
-    }
-  ')
+  code <- '
+  #include "libgeos.h"
+  #include "libgeos.c"
 
-  expect_identical(version(), libgeos_version())
+  SEXP libgeos_test_version() {
+    libgeos_init_api();
+    return Rf_mkString(GEOSversion());
+  }
 
-  unlink(cache, recursive = TRUE)
+  '
+
+  code_file <- tempfile(fileext = ".c")
+  writeLines(code, code_file)
+  code_file_shell <- gsub("\\\\+", "/", code_file)
+
+  r_exec <- file.path(R.home("bin"), "R")
+  system(paste(r_exec, "CMD SHLIB", shQuote(code_file_shell)), ignore.stdout = TRUE)
+
+  shlib_file <- gsub("\\.c$", .Platform$dynlib.ext, code_file)
+  dyn.load(shlib_file)
+
+  expect_identical(.Call("libgeos_test_version"), libgeos_version())
+
+  unlink(c(code_file, shlib_file))
 })

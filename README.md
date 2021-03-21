@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 ![R-CMD-check](https://github.com/paleolimbot/libgeos/workflows/R-CMD-check/badge.svg)
 <!-- badges: end -->
 
@@ -21,7 +21,7 @@ you’re writing a package that needs GEOS functionality (just
 `LinkingTo: libgeos`). Because GEOS is license under the LGPL,
 dynamically linking to GEOS (e.g., through the C API exposed in this
 package) is generally allowed from a package with any license. See the
-[geos R package](https://paleolimbot.github.io/geos) for an R API to
+[geos R package](https://paleolimbot.github.io/geos/) for an R API to
 GEOS.
 
 ## Installation
@@ -49,9 +49,10 @@ remotes::install_github("paleolimbot/libgeos")
 
 ## Example
 
-This package only exists for its exported C API, for which headers are
-provided to make calling these functions from Rcpp or another package as
-easy and as safe as possible.
+This package only exists for its exported C API. You can link to libgeos
+from a package by specifying `LinkingTo: libgeos` and `Imports: libgeos`
+in your DESCRIPTION. You can link to libgeos interactively from Rcpp
+using `// [[Rcpp::depends(libgeos)]]`:
 
 ``` cpp
 #include <Rcpp.h>
@@ -85,78 +86,41 @@ std::string version() {
 ``` r
 cpp_libgeos_init_api()
 version()
-#> [1] "3.8.1-CAPI-1.13.3"
+#> [1] "3.9.1-CAPI-1.14.2"
 ```
 
-Realistically, you will want to operate on some actual geometry\! It
-isn’t possible to link directly to C++ objects in other packages, and
-working with the C API can be difficult if you aren’t used to managing
-memory yourself. To bridge this gap, the libgeos package provides a
-small header-only API that you can use to manage the pointers returned
-by functions in the GEOS C API.
+You can link to libegeos interactively from cpp11 using
+`[[cpp11::linking_to(libgeos)]]`:
 
 ``` cpp
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <cpp11.hpp>
 
-// [[Rcpp::depends(libgeos)]]
-// use this version of the header to use the LibGEOS C++ API
-#include "libgeos-rcpp.h" 
+// needed in every file that uses GEOS functions
+#include "libgeos.h"
+
+// needed exactly once in your package or Rcpp script
+// contains all the function pointers and the
+// implementation of the function to initialize them
+// (`libgeos_init_api()`)
 #include "libgeos.c"
 
-// [[Rcpp::export]]
+// this function needs to be called once before any GEOS functions
+// are called (e.g., in .onLoad() for your package)
+[[cpp11::linking_to(libgeos)]]
+[[cpp11::register]]
 void cpp_libgeos_init_api() {
   libgeos_init_api();
 }
 
-// [[Rcpp::export]]
-NumericVector wkt_area(CharacterVector wkt) {
-  NumericVector output(wkt.size());
-  
-  LibGEOSHandle handle;
-  LibGEOSWKTReader reader(handle);
-  for (R_xlen_t i = 0; i < wkt.size(); i++) {
-    LibGEOSGeometry geom = reader.read(wkt[i]);
-    GEOSArea_r(handle.get(), geom.get(), &output[i]);
-  }
-  
-  return output;
+// regular C or C++ code that uses GEOS functions!
+[[cpp11::register]]
+std::string version() {
+  return GEOSversion();
 }
 ```
 
 ``` r
 cpp_libgeos_init_api()
-wkt_area("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))")
-#> [1] 100
+version()
+#> [1] "3.9.1-CAPI-1.14.2"
 ```
-
-If you compile the above with `-DLIBGEOS_DEBUG_MEMORY`, you can see that
-the C++ wrapper takes care of a lot of object shuffling under the hood\!
-
-``` r
-cpp_libgeos_init_api()
-wkt_area("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))")
-#> GEOS_init_r()
-#> GEOSWKTReader_create_r()
-#> LibGEOSGeometry(GEOSGeometry*)
-#> GEOSGeom_destroy_r()
-#> GEOSWKTReader_destroy_r()
-#> GEOS_finish_r()
-#> [1] 100
-```
-
-This is especially useful if you’re running code that might error:
-
-``` r
-wkt_area("POLYGON (0 0, 10 0, 10 10, 0 10, 0 0))")
-#> GEOS_init_r()
-#> GEOSWKTReader_create_r()
-#> GEOSWKTReader_destroy_r()
-#> GEOS_finish_r()
-#> Error in wkt_area("POLYGON (0 0, 10 0, 10 10, 0 10, 0 0))"): ParseException: Expected word but encountered number: '0'
-```
-
-Other wrappers that might be useful are `LibGEOSWKTWriter`,
-`LibGEOSWKBReader`, `LibGEOSWKBWriter`, and `LibGEOSBufferParams`. In
-the future, there will probably also be a `LibGEOSSTRtree` to wrap
-indexes.

@@ -356,5 +356,4 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/util/math.o \
      geos/util/Profiler.o \
      libgeos-cpp-compat.o \
-     libgeos-init.o \
-     libgeos-version.o
+     libgeos-init.o
