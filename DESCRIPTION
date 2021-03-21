@@ -41,5 +41,4 @@ RoxygenNote: 7.1.1
 URL: https://paleolimbot.github.io/libgeos, https://github.com/paleolimbot/libgeos
 BugReports: https://github.com/paleolimbot/libgeos/issues
 Suggests: 
-    Rcpp,
     testthat
