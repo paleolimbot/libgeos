@@ -3,7 +3,8 @@ source_rcpp_libgeos <- function(code, header = '', cache = tempfile(), ..., env 
   head <- '
     #include <Rcpp.h>
     // [[Rcpp::depends(libgeos)]]
-    #include "libgeos-rcpp.h"
+    #define LIBGEOS_USE_RCPP
+    #include "libgeos-v1.hpp"
     #include "libgeos.c"
     using namespace Rcpp;
 

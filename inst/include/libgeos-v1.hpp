@@ -1,22 +1,32 @@
 
-#ifndef LIBGEOS_RCPP_H
-#define LIBGEOS_RCPP_H
+#ifndef LIBGEOS_CPP_H
+#define LIBGEOS_CPP_H
 
 #include <stdexcept>
-#include <memory>
+#include <cstring>
 #include <sstream>
 
-#ifdef LIBGEOS_RCPP_USE_SYSTEM_GEOS
+#ifdef LIBGEOS_CPP_USE_SYSTEM_GEOS
 #include "geos_c.h"
 #else
 #include "libgeos.h"
 #endif
 
+#if defined(LIBGEOS_USE_RCPP)
 #include <Rcpp.h>
+#define LIBGEOS_RAW Rcpp::RawVector
+#define LIBGEOS_RAW_WRITABLE Rcpp::RawVector
+#elif defined(LIBGEOS_USE_CPP11)
+#include <cpp11.hpp>
+#define LIBGEOS_RAW cpp11::raws
+#define LIBGEOS_RAW_WRITABLE cpp11::writable::raws
+#else
+#error Define one of 'LIBGEOS_USE_RCPP' or 'LIBGEOS_USE_CPP11'
+#endif
 
-class LibGEOSRcppException: public std::runtime_error {
+class LibGEOSCppException: public std::runtime_error {
 public:
-  LibGEOSRcppException(std::string msg): std::runtime_error(msg) {}
+  LibGEOSCppException(std::string msg): std::runtime_error(msg) {}
 };
 
 class LibGEOSHandle {
@@ -26,10 +36,10 @@ public:
 
   LibGEOSHandle() {
     if (GEOS_init_r == NULL) {
-      Rcpp::stop("LibGEOS API was not initialized. Did you forget to call libgeos_init_api()?");
+      throw std::runtime_error("LibGEOS API was not initialized. Did you forget to call libgeos_init_api()?");
     }
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOS_init_r()\n";
+    Rprintf("GEOS_init_r()\n");
 #endif
     this->handle = GEOS_init_r();
     GEOSContext_setNoticeMessageHandler_r(this->handle, this->handleWarning, this);
@@ -53,13 +63,9 @@ private:
   }
 
   static void handleWarning(const char *message, void *userdata) {
-    // Technically this *could* error if (e.g.) the user has
-    // options(warning = 2) set, in which case it would throw an exception
-    // that could crash the R session. This function is rarely (if ever)
-    // called in normal usage, and is unlikely to overlap with 32-bit
-    // Windows AND a warning() that turns into an error.
-    Rcpp::Function warning("warning");
-    warning(message);
+    // One could throw a true warning() here, but this could generate
+    // an exception or longjmp and it's rarely used in the GEOS API anyway
+    REprintf(message);
   }
 
 public:
@@ -68,7 +74,7 @@ public:
   }
 
   void throwLastError() {
-    throw LibGEOSRcppException(this->lastErrorMessage());
+    throw LibGEOSCppException(this->lastErrorMessage());
   }
 
   GEOSGeometry* checkGeometry(GEOSGeometry* geometry) {
@@ -89,19 +95,9 @@ public:
 
   ~LibGEOSHandle() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOS_finish_r()\n";
+    Rprintf("GEOS_finish_r()\n");
 #endif
     GEOS_finish_r(handle);
-  }
-
-  void warnForMismatchedVersions() {
-    if (this->runtimeVersion() != this->buildVersion()) {
-      std::stringstream err;
-      err << "libgeos build version (" << this->buildVersion() <<
-        ") is not the same as the libgeos runtime version (" << this->runtimeVersion() << ")";
-      Rcpp::Function warning("warning");
-      warning(err.str());
-    }
   }
 
 private:
@@ -125,7 +121,7 @@ public:
   LibGEOSGeometry(const LibGEOSGeometry& geom):
     handle(geom.handle), geometryPtr(nullptr), preparedGeometryPtr(nullptr) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "LibGEOSGeometry(GEOSGeom_clone_r())\n";
+    Rprintf("LibGEOSGeometry(GEOSGeom_clone_r())\n");
 #endif
     this->geometryPtr = handle.checkGeometry(GEOSGeom_clone_r(handle.get(), geom.geometryPtr));
   }
@@ -135,7 +131,7 @@ public:
   LibGEOSGeometry(LibGEOSHandle& handle, GEOSGeometry* geometryPtr):
     handle(handle), geometryPtr(handle.checkGeometry(geometryPtr)), preparedGeometryPtr(nullptr) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "LibGEOSGeometry(GEOSGeometry*)\n";
+    Rprintf("LibGEOSGeometry(GEOSGeometry*)\n");
 #endif
   }
 
@@ -152,7 +148,7 @@ public:
   const GEOSPreparedGeometry* getPrepared() {
     if (this->preparedGeometryPtr == nullptr) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-      Rcpp::Rcout << "GEOSPrepare_r()\n";
+      Rprintf("GEOSPrepare_r()\n");
 #endif
       const GEOSPreparedGeometry* prepared = GEOSPrepare_r(this->handle.get(), this->geometryPtr);
       this->preparedGeometryPtr = (GEOSPreparedGeometry*) prepared;
@@ -163,14 +159,14 @@ public:
   ~LibGEOSGeometry() {
     if (this->geometryPtr != nullptr) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-      Rcpp::Rcout << "GEOSGeom_destroy_r()\n";
+      Rprintf("GEOSGeom_destroy_r()\n");
 #endif
       GEOSGeom_destroy_r(this->handle.get(), this->geometryPtr);
     }
 
     if (this->preparedGeometryPtr != nullptr) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-      Rcpp::Rcout << "GEOSPreparedGeom_destroy_r()\n";
+      Rprintf("GEOSPreparedGeom_destroy_r()\n");
 #endif
       GEOSPreparedGeom_destroy_r(this->handle.get(), this->preparedGeometryPtr);
     }
@@ -187,41 +183,29 @@ class LibGEOSWKBReader {
 public:
   LibGEOSWKBReader(LibGEOSHandle& handle): handle(handle) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKBReader_create_r()\n";
+    Rprintf("GEOSWKBReader_create_r()\n");
 #endif
     this->reader = GEOSWKBReader_create_r(this->handle.get());
   }
 
-  LibGEOSGeometry read(Rcpp::RawVector raw) {
-    GEOSGeometry* geometryPtr = GEOSWKBReader_read_r(this->handle.get(), this->reader, &(raw[0]), raw.size());
+  LibGEOSGeometry read(LIBGEOS_RAW raw) {
+    GEOSGeometry* geometryPtr = GEOSWKBReader_read_r(this->handle.get(), this->reader, RAW(raw), raw.size());
     return LibGEOSGeometry(this->handle, this->handle.checkGeometry(geometryPtr));
   }
 
   LibGEOSGeometry readHex(std::string wkbstring) {
-
-    const std::size_t len = wkbstring.length();
-    unsigned char* result = NULL;
-    result = (unsigned char*) malloc(len);
-    std::memcpy(result, wkbstring.c_str(), len);
-
-    try {
-      GEOSGeometry* geometryPtr = GEOSWKBReader_readHEX_r(
+    GEOSGeometry* geometryPtr = GEOSWKBReader_readHEX_r(
         this->handle.get(),
         this->reader,
-        result,
-        len
+        reinterpret_cast<const unsigned char*>(wkbstring.data()),
+        wkbstring.size()
       );
-      free(result);
       return LibGEOSGeometry(this->handle, this->handle.checkGeometry(geometryPtr));
-    } catch (LibGEOSRcppException& e) {
-      free(result);
-      throw e;
-    }
   }
 
   ~LibGEOSWKBReader() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKBReader_destroy_r()\n";
+    Rprintf("GEOSWKBReader_destroy_r()\n");
 #endif
     GEOSWKBReader_destroy_r(this->handle.get(), this->reader);
   }
@@ -235,7 +219,7 @@ class LibGEOSWKTReader {
 public:
   LibGEOSWKTReader(LibGEOSHandle& handle): handle(handle) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKTReader_create_r()\n";
+    Rprintf("GEOSWKTReader_create_r()\n");
 #endif
     this->reader = GEOSWKTReader_create_r(this->handle.get());
   }
@@ -247,7 +231,7 @@ public:
 
   ~LibGEOSWKTReader() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKTReader_destroy_r()\n";
+    Rprintf("GEOSWKTReader_destroy_r()\n");
 #endif
     GEOSWKTReader_destroy_r(this->handle.get(), this->reader);
   }
@@ -261,7 +245,7 @@ class LibGEOSWKTWriter {
 public:
   LibGEOSWKTWriter(LibGEOSHandle& handle): handle(handle) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKTWriter_create_r()\n";
+    Rprintf("GEOSWKTWriter_create_r()\n");
 #endif
     this->writer = GEOSWKTWriter_create_r(this->handle.get());
   }
@@ -291,7 +275,7 @@ public:
 
   ~LibGEOSWKTWriter() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKTWriter_destroy_r()\n";
+    Rprintf("GEOSWKTWriter_destroy_r()\n");
 #endif
     GEOSWKTWriter_destroy_r(this->handle.get(), this->writer);
   }
@@ -305,7 +289,7 @@ class LibGEOSWKBWriter {
 public:
   LibGEOSWKBWriter(LibGEOSHandle& handle): handle(handle) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKBWriter_create_r()\n";
+    Rprintf("GEOSWKBWriter_create_r()\n");
 #endif
     this->writer = GEOSWKBWriter_create_r(this->handle.get());
   }
@@ -322,15 +306,15 @@ public:
     GEOSWKBWriter_setOutputDimension_r(this->handle.get(), this->writer, dimension);
   }
 
-  Rcpp::RawVector write(const GEOSGeometry* geometry) {
+  LIBGEOS_RAW write(const GEOSGeometry* geometry) {
     size_t size;
     unsigned char *buf = GEOSWKBWriter_write_r(this->handle.get(), this->writer, geometry, &size);
     if (buf == NULL) {
       this->handle.throwLastError();
     }
 
-    Rcpp::RawVector raw(size);
-    memcpy(&(raw[0]), buf, size);
+    LIBGEOS_RAW_WRITABLE raw(size);
+    memcpy(RAW(raw), buf, size);
     GEOSFree_r(this->handle.get(), buf);
     return raw;
   }
@@ -348,7 +332,7 @@ public:
 
   ~LibGEOSWKBWriter() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSWKBWriter_destroy_r()\n";
+    Rprintf("GEOSWKBWriter_destroy_r()\n");
 #endif
     GEOSWKBWriter_destroy_r(this->handle.get(), this->writer);
   }
@@ -362,7 +346,7 @@ class LibGEOSBufferParams {
 public:
   LibGEOSBufferParams(LibGEOSHandle& handle): handle(handle) {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSBufferParams_create_r()\n";
+    Rprintf("GEOSBufferParams_create_r()\n");
 #endif
     this->params = GEOSBufferParams_create_r(this->handle.get());
   }
@@ -398,7 +382,7 @@ public:
 
   ~LibGEOSBufferParams() {
 #ifdef LIBGEOS_DEBUG_MEMORY
-    Rcpp::Rcout << "GEOSBufferParams_destroy_r()\n";
+    Rprintf("GEOSBufferParams_destroy_r()\n");
 #endif
     GEOSBufferParams_destroy_r(this->handle.get(), this->params);
   }

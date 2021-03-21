@@ -263,7 +263,7 @@ test_that("deleters are called", {
   )
 
   expect_output(
-    expect_error(wkt_wkt("NOPE4"), class = "LibGEOSRcppException"),
+    expect_error(wkt_wkt("NOPE4"), class = "LibGEOSCppException"),
     paste(
       "GEOS_init_r()",
       "GEOSWKTReader_create_r()",
@@ -311,7 +311,7 @@ test_that("deleters are called", {
   )
 
   expect_output(
-    expect_error(wkb_wkb(list(raw(0))), class = "LibGEOSRcppException"),
+    expect_error(wkb_wkb(list(raw(0))), class = "LibGEOSCppException"),
     paste(
       "GEOS_init_r()",
       "GEOSWKBReader_create_r()",
