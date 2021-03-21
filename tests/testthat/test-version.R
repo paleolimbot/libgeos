@@ -21,12 +21,15 @@ test_that("libgeos can be linked to", {
 
   code_file <- tempfile(fileext = ".c")
   writeLines(code, code_file)
+  code_file_shell <- gsub("\\\\+", "/", code_file)
 
   r_exec <- file.path(R.home("bin"), "R")
-  system(paste(r_exec, "CMD SHLIB", shQuote(code_file)), ignore.stdout = TRUE)
+  system(paste(r_exec, "CMD SHLIB", shQuote(code_file_shell)), ignore.stdout = TRUE)
 
   shlib_file <- gsub("\\.c$", .Platform$dynlib.ext, code_file)
   dyn.load(shlib_file)
 
   expect_identical(.Call("libgeos_test_version"), libgeos_version())
+
+  unlink(c(code_file, shlib_file))
 })
