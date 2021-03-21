@@ -48,18 +48,6 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/articles/rcpp-api.html">Using the LibGEOS Rcpp API</a>
-    </li>
-  </ul>
-</li>
 <li>
   <a href="news/index.html">Changelog</a>
 </li>
@@ -88,7 +76,7 @@
 <a href="#libgeos" class="anchor"></a>libgeos</h1></div>
 <!-- badges: start -->
 
-<p>The goal of libgeos is to provide access to the <a href="https://trac.osgeo.org/geos/" class="external-link">GEOS</a> C API for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS library, modified slightly to eliminate errors on all the platorms checked by CRAN and GitHub actions. This means you don’t have to install anything (other than the package) to take advantage of GEOS functions in R. It also means you don’t need a configure script if you’re writing a package that needs GEOS functionality (just <code>LinkingTo: libgeos</code>). Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license. See the <a href="https://paleolimbot.github.io/geos" class="external-link">geos R package</a> for an R API to GEOS.</p>
+<p>The goal of libgeos is to provide access to the <a href="https://trac.osgeo.org/geos/" class="external-link">GEOS</a> C API for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS library, modified slightly to eliminate errors on all the platorms checked by CRAN and GitHub actions. This means you don’t have to install anything (other than the package) to take advantage of GEOS functions in R. It also means you don’t need a configure script if you’re writing a package that needs GEOS functionality (just <code>LinkingTo: libgeos</code>). Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license. See the <a href="https://paleolimbot.github.io/geos/" class="external-link">geos R package</a> for an R API to GEOS.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -104,7 +92,7 @@
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h2>
-<p>This package only exists for its exported C API, for which headers are provided to make calling these functions from Rcpp or another package as easy and as safe as possible.</p>
+<p>This package only exists for its exported C API. You can link to libgeos from a package by specifying <code>LinkingTo: libgeos</code> and <code>Imports: libgeos</code> in your DESCRIPTION. You can link to libgeos interactively from Rcpp using <code>// [[Rcpp::depends(libgeos)]]</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="co">// Packages will also need LinkingTo: libgeos</span></span>
@@ -134,58 +122,36 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">version</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "3.8.1-CAPI-1.13.3"</span></code></pre></div>
-<p>Realistically, you will want to operate on some actual geometry! It isn’t possible to link directly to C++ objects in other packages, and working with the C API can be difficult if you aren’t used to managing memory yourself. To bridge this gap, the libgeos package provides a small header-only API that you can use to manage the pointers returned by functions in the GEOS C API.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">using</span> <span class="kw">namespace</span> Rcpp;</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">// [[Rcpp::depends(libgeos)]]</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="co">// use this version of the header to use the LibGEOS C++ API</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="pp">#include </span><span class="im">"libgeos-rcpp.h"</span><span class="pp"> </span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="pp">#include </span><span class="im">"libgeos.c"</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="dt">void</span> cpp_libgeos_init_api() {</span>
-<span id="cb5-11"><a href="#cb5-11"></a>  libgeos_init_api();</span>
-<span id="cb5-12"><a href="#cb5-12"></a>}</span>
-<span id="cb5-13"><a href="#cb5-13"></a></span>
-<span id="cb5-14"><a href="#cb5-14"></a><span class="co">// [[Rcpp::export]]</span></span>
-<span id="cb5-15"><a href="#cb5-15"></a>NumericVector wkt_area(CharacterVector wkt) {</span>
-<span id="cb5-16"><a href="#cb5-16"></a>  NumericVector output(wkt.size());</span>
-<span id="cb5-17"><a href="#cb5-17"></a>  </span>
-<span id="cb5-18"><a href="#cb5-18"></a>  LibGEOSHandle handle;</span>
-<span id="cb5-19"><a href="#cb5-19"></a>  LibGEOSWKTReader reader(handle);</span>
-<span id="cb5-20"><a href="#cb5-20"></a>  <span class="cf">for</span> (<span class="dt">R_xlen_t</span> i = <span class="dv">0</span>; i &lt; wkt.size(); i++) {</span>
-<span id="cb5-21"><a href="#cb5-21"></a>    LibGEOSGeometry geom = reader.read(wkt[i]);</span>
-<span id="cb5-22"><a href="#cb5-22"></a>    GEOSArea_r(handle.get(), geom.get(), &amp;output[i]);</span>
-<span id="cb5-23"><a href="#cb5-23"></a>  }</span>
-<span id="cb5-24"><a href="#cb5-24"></a>  </span>
-<span id="cb5-25"><a href="#cb5-25"></a>  <span class="cf">return</span> output;</span>
-<span id="cb5-26"><a href="#cb5-26"></a>}</span></code></pre></div>
+<span class="co">#&gt; [1] "3.9.1-CAPI-1.14.2"</span></code></pre></div>
+<p>You can link to libegeos interactively from cpp11 using <code>[[cpp11::linking_to(libgeos)]]</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;cpp11.hpp&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co">// needed in every file that uses GEOS functions</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="pp">#include </span><span class="im">"libgeos.h"</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co">// needed exactly once in your package or Rcpp script</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co">// contains all the function pointers and the</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="co">// implementation of the function to initialize them</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a><span class="co">// (`libgeos_init_api()`)</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="pp">#include </span><span class="im">"libgeos.c"</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="co">// this function needs to be called once before any GEOS functions</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co">// are called (e.g., in .onLoad() for your package)</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>[[<span class="at">cpp11</span>::<span class="at">linking_to</span>(<span class="at">libgeos</span>)]]</span>
+<span id="cb5-15"><a href="#cb5-15"></a>[[<span class="at">cpp11</span>::<span class="at">register</span>]]</span>
+<span id="cb5-16"><a href="#cb5-16"></a><span class="dt">void</span> cpp_libgeos_init_api() {</span>
+<span id="cb5-17"><a href="#cb5-17"></a>  libgeos_init_api();</span>
+<span id="cb5-18"><a href="#cb5-18"></a>}</span>
+<span id="cb5-19"><a href="#cb5-19"></a></span>
+<span id="cb5-20"><a href="#cb5-20"></a><span class="co">// regular C or C++ code that uses GEOS functions!</span></span>
+<span id="cb5-21"><a href="#cb5-21"></a>[[<span class="at">cpp11</span>::<span class="at">register</span>]]</span>
+<span id="cb5-22"><a href="#cb5-22"></a><span class="bu">std::</span>string version() {</span>
+<span id="cb5-23"><a href="#cb5-23"></a>  <span class="cf">return</span> GEOSversion();</span>
+<span id="cb5-24"><a href="#cb5-24"></a>}</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
-<span class="fu">wkt_area</span><span class="op">(</span><span class="st">"POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))"</span><span class="op">)</span>
-<span class="co">#&gt; [1] 100</span></code></pre></div>
-<p>If you compile the above with <code>-DLIBGEOS_DEBUG_MEMORY</code>, you can see that the C++ wrapper takes care of a lot of object shuffling under the hood!</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
-<span class="fu">wkt_area</span><span class="op">(</span><span class="st">"POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))"</span><span class="op">)</span>
-<span class="co">#&gt; GEOS_init_r()</span>
-<span class="co">#&gt; GEOSWKTReader_create_r()</span>
-<span class="co">#&gt; LibGEOSGeometry(GEOSGeometry*)</span>
-<span class="co">#&gt; GEOSGeom_destroy_r()</span>
-<span class="co">#&gt; GEOSWKTReader_destroy_r()</span>
-<span class="co">#&gt; GEOS_finish_r()</span>
-<span class="co">#&gt; [1] 100</span></code></pre></div>
-<p>This is especially useful if you’re running code that might error:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">wkt_area</span><span class="op">(</span><span class="st">"POLYGON (0 0, 10 0, 10 10, 0 10, 0 0))"</span><span class="op">)</span>
-<span class="co">#&gt; GEOS_init_r()</span>
-<span class="co">#&gt; GEOSWKTReader_create_r()</span>
-<span class="co">#&gt; GEOSWKTReader_destroy_r()</span>
-<span class="co">#&gt; GEOS_finish_r()</span>
-<span class="co">#&gt; Error in wkt_area("POLYGON (0 0, 10 0, 10 10, 0 10, 0 0))"): ParseException: Expected word but encountered number: '0'</span></code></pre></div>
-<p>Other wrappers that might be useful are <code>LibGEOSWKTWriter</code>, <code>LibGEOSWKBReader</code>, <code>LibGEOSWKBWriter</code>, and <code>LibGEOSBufferParams</code>. In the future, there will probably also be a <code>LibGEOSSTRtree</code> to wrap indexes.</p>
+<span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">version</a></span><span class="op">(</span><span class="op">)</span>
+<span class="co">#&gt; [1] "3.9.1-CAPI-1.14.2"</span></code></pre></div>
 </div>
 </div>
   </div>
@@ -224,7 +190,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://www.tidyverse.org/lifecycle/#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>
 
