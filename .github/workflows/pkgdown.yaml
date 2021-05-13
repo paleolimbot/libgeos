@@ -27,6 +27,9 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
+      - name: Fix temporary non-availability of binary textshaping
+        run: brew install harfbuzz fribidi
+
       - name: Install dependencies
         run: |
           install.packages("remotes")
