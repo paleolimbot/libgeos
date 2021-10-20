@@ -1,4 +1,3 @@
-#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -52,7 +51,7 @@
 #include <geos/operation/overlayng/OverlayNGRobust.h>
 
 #include <geos/simplify/TopologyPreservingSimplifier.h>
-#include <geos/operation/IsSimpleOp.h>
+#include <geos/operation/valid/IsSimpleOp.h>
 #include <geos/operation/valid/IsValidOp.h>
 #include <geos/operation/valid/TopologyValidationError.h>
 #include <geos/util/TopologyException.h>
@@ -75,7 +74,7 @@
 #define GEOS_DEBUG_HEURISTICOVERLAY_PRINT_INVALID 0
 
 
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
+#if GEOS_DEBUG_HEURISTICOVERLAY
 # include <iostream>
 # include <iomanip>
 # include <sstream>
@@ -188,7 +187,7 @@ check_valid(const Geometry& g, const std::string& label, bool doThrow = false, b
 {
     if(g.isLineal()) {
         if(! validOnly) {
-            operation::IsSimpleOp sop(g, algorithm::BoundaryNodeRule::getBoundaryEndPoint());
+            operation::valid::IsSimpleOp sop(g, algorithm::BoundaryNodeRule::getBoundaryEndPoint());
             if(! sop.isSimple()) {
                 if(doThrow) {
                     throw geos::util::TopologyException(
@@ -202,14 +201,14 @@ check_valid(const Geometry& g, const std::string& label, bool doThrow = false, b
         operation::valid::IsValidOp ivo(&g);
         if(! ivo.isValid()) {
             using operation::valid::TopologyValidationError;
-            TopologyValidationError* err = ivo.getValidationError();
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
-            cpp_compat_cerr << label << " is INVALID: "
+            const TopologyValidationError* err = ivo.getValidationError();
+#if GEOS_DEBUG_HEURISTICOVERLAY
+            std::cerr << label << " is INVALID: "
                       << err->toString()
                       << " (" << std::setprecision(20)
                       << err->getCoordinate() << ")"
                       << std::endl
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY_PRINT_INVALID
+#if GEOS_DEBUG_HEURISTICOVERLAY_PRINT_INVALID
                       << "<A>" << std::endl
                       << g.toString()
                       << std::endl
@@ -238,8 +237,8 @@ inline std::unique_ptr<Geometry>
 fix_self_intersections(std::unique_ptr<Geometry> g, const std::string& label)
 {
     ::geos::ignore_unused_variable_warning(label);
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << label << " fix_self_intersection (UnaryUnion)" << std::endl;
+#if GEOS_DEBUG_HEURISTICOVERLAY
+    std::cerr << label << " fix_self_intersection (UnaryUnion)" << std::endl;
 #endif
 
     // Only multi-components can be fixed by UnaryUnion
@@ -259,23 +258,23 @@ fix_self_intersections(std::unique_ptr<Geometry> g, const std::string& label)
     // Not all invalidities can be fixed by this code
 
     using operation::valid::TopologyValidationError;
-    TopologyValidationError* err = ivo.getValidationError();
+    const TopologyValidationError* err = ivo.getValidationError();
     switch(err->getErrorType()) {
     case TopologyValidationError::eRingSelfIntersection:
     case TopologyValidationError::eTooFewPoints: // collapsed lines
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << label << " ATTEMPT_TO_FIX: " << err->getErrorType() << ": " << *g << std::endl;
+#if GEOS_DEBUG_HEURISTICOVERLAY
+        std::cerr << label << " ATTEMPT_TO_FIX: " << err->getErrorType() << ": " << *g << std::endl;
 #endif
         g = g->Union();
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << label << " ATTEMPT_TO_FIX succeeded.. " << std::endl;
+#if GEOS_DEBUG_HEURISTICOVERLAY
+        std::cerr << label << " ATTEMPT_TO_FIX succeeded.. " << std::endl;
 #endif
         return g;
     case TopologyValidationError::eSelfIntersection:
     // this one is within a single component, won't be fixed
     default:
-#ifdef GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << label << " invalidity is: " << err->getErrorType() << std::endl;
+#if GEOS_DEBUG_HEURISTICOVERLAY
+        std::cerr << label << " invalidity is: " << err->getErrorType() << std::endl;
 #endif
         return g;
     }
@@ -299,7 +298,7 @@ SnapOp(const Geometry* g0, const Geometry* g1, int opCode)
     // (not commonbits-removed) geoms
     double snapTolerance = GeometrySnapper::computeOverlaySnapTolerance(*g0, *g1);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << std::setprecision(20) << "Computed snap tolerance: " << snapTolerance << std::endl;
+    std::cerr << std::setprecision(20) << "Computed snap tolerance: " << snapTolerance << std::endl;
 #endif
 
 
@@ -309,7 +308,7 @@ SnapOp(const Geometry* g0, const Geometry* g1, int opCode)
     cbr.add(g0);
     cbr.add(g1);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << "Computed common bits: " << cbr.getCommonCoordinate() << std::endl;
+    std::cerr << "Computed common bits: " << cbr.getCommonCoordinate() << std::endl;
 #endif
 
     // Now remove common bits
@@ -382,7 +381,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 *    other nodes and lines, leaving all the rest undisturbed, for a very
 *    clean result, if it manages to create one.
 *    If a result is found with no exception, return.
-* 3. Peform overlay operation using a PrecisionModel(scale), which
+* 3. Perform overlay operation using a PrecisionModel(scale), which
 *    uses a SnapRoundingNoder. Every vertex will be noded to the snapping
 *    grid, resulting in a modified geometry. The SnapRoundingNoder approach
 *    reliably produces results, assuming valid inputs.
@@ -393,7 +392,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 #ifdef USE_OVERLAYNG_SNAPIFNEEDED
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << "Trying with OverlayNGRobust" << std::endl;
+    std::cerr << "Trying with OverlayNGRobust" << std::endl;
 #endif
 
     try {
@@ -417,7 +416,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
         }
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Attempt with OverlayNGRobust succeeded" << std::endl;
+        std::cerr << "Attempt with OverlayNGRobust succeeded" << std::endl;
 #endif
 
         return ret;
@@ -426,7 +425,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
         ::geos::ignore_unused_variable_warning(ex);
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "OverlayNGRobust: " << ex.what() << std::endl;
+        std::cerr << "OverlayNGRobust: " << ex.what() << std::endl;
 #endif
     }
 
@@ -442,7 +441,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     // Try with original input
     try {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Trying with original input." << std::endl;
+        std::cerr << "Trying with original input." << std::endl;
 #endif
         ret.reset(OverlayOp::overlayOp(g0, g1, OverlayOp::OpCode(opCode)));
 
@@ -451,14 +450,14 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 #endif
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Attempt with original input succeeded" << std::endl;
+        std::cerr << "Attempt with original input succeeded" << std::endl;
 #endif
         return ret;
     }
     catch(const geos::util::TopologyException& ex) {
         origException = ex;
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Original exception: " << ex.what() << std::endl;
+        std::cerr << "Original exception: " << ex.what() << std::endl;
 #endif
     }
 #endif // USE_ORIGINAL_INPUT
@@ -482,7 +481,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
         precision::CommonBitsRemover cbr;
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Trying with Common Bits Remover (CBR)" << std::endl;
+        std::cerr << "Trying with Common Bits Remover (CBR)" << std::endl;
 #endif
 
         cbr.add(g0);
@@ -512,7 +511,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 #endif
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Attempt with CBR succeeded" << std::endl;
+        std::cerr << "Attempt with CBR succeeded" << std::endl;
 #endif
 
         return ret;
@@ -520,7 +519,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     catch(const geos::util::TopologyException& ex) {
         ::geos::ignore_unused_variable_warning(ex);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "CBR: " << ex.what() << std::endl;
+        std::cerr << "CBR: " << ex.what() << std::endl;
 #endif
     }
 #endif
@@ -537,7 +536,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 #if USE_SNAPPING_POLICY
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << "Trying with snapping " << std::endl;
+    std::cerr << "Trying with snapping " << std::endl;
 #endif
 
     try {
@@ -546,7 +545,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
         check_valid(*ret, "SNAP: result", true, true);
 #endif
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "SnapOp succeeded" << std::endl;
+        std::cerr << "SnapOp succeeded" << std::endl;
 #endif
         return ret;
 
@@ -554,7 +553,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     catch(const geos::util::TopologyException& ex) {
         ::geos::ignore_unused_variable_warning(ex);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "SNAP: " << ex.what() << std::endl;
+        std::cerr << "SNAP: " << ex.what() << std::endl;
 #endif
     }
 
@@ -574,7 +573,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
             static_cast<long unsigned int>(g1->getFactory()->getPrecisionModel()->getScale());
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Original input scales are: "
+        std::cerr << "Original input scales are: "
                   << g0scale
                   << " and "
                   << g1scale
@@ -597,7 +596,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
             PrecisionModel pm(scale);
             GeometryFactory::Ptr gf = GeometryFactory::create(&pm);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-            cpp_compat_cerr << "Trying with scale " << scale << std::endl;
+            std::cerr << "Trying with scale " << scale << std::endl;
 #endif
 
             precision::GeometryPrecisionReducer reducer(*gf);
@@ -626,17 +625,18 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 #endif
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-                cpp_compat_cerr << "Attempt with scale " << scale << " succeeded" << std::endl;
+                std::cerr << "Attempt with scale " << scale << " succeeded" << std::endl;
 #endif
                 return ret;
             }
             catch(const geos::util::TopologyException& ex) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-                cpp_compat_cerr << "Reduced with scale (" << scale << "): "
+                std::cerr << "Reduced with scale (" << scale << "): "
                           << ex.what() << std::endl;
 #endif
+                (void)ex; // quiet compiler warning about unused variable
                 if(scale == 1) {
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -645,7 +645,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     }
     catch(const geos::util::TopologyException& ex) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Reduced: " << ex.what() << std::endl;
+        std::cerr << "Reduced: " << ex.what() << std::endl;
 #endif
         ::geos::ignore_unused_variable_warning(ex);
     }
@@ -666,7 +666,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
             static_cast<long unsigned int>(g1->getFactory()->getPrecisionModel()->getScale());
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Original input scales are: "
+        std::cerr << "Original input scales are: "
                   << g0scale
                   << " and "
                   << g1scale
@@ -688,20 +688,20 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
         for(double scale = maxScale; scale >= minScale; scale /= 10) {
             PrecisionModel pm(scale);
 #if GEOS_DEBUG_HEURISTICOVERLAY
-            cpp_compat_cerr << "Trying with precision scale " << scale << std::endl;
+            std::cerr << "Trying with precision scale " << scale << std::endl;
 #endif
 
             try {
                 ret = OverlayNG::overlay(g0, g1, opCode, &pm);
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-                cpp_compat_cerr << "Attempt with fixedNG scale " << scale << " succeeded" << std::endl;
+                std::cerr << "Attempt with fixedNG scale " << scale << " succeeded" << std::endl;
 #endif
                 return ret;
             }
             catch(const geos::util::TopologyException& ex) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-                cpp_compat_cerr << "fixedNG with scale (" << scale << "): "
+                std::cerr << "fixedNG with scale (" << scale << "): "
                           << ex.what() << std::endl;
 #endif
                 if(scale == 1) {
@@ -714,7 +714,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     }
     catch(const geos::util::TopologyException& ex) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Reduced: " << ex.what() << std::endl;
+        std::cerr << "Reduced: " << ex.what() << std::endl;
 #endif
         ::geos::ignore_unused_variable_warning(ex);
     }
@@ -736,7 +736,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 
         for(double tol = minTolerance; tol <= maxTolerance; tol += tolStep) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-            cpp_compat_cerr << "Trying simplifying with tolerance " << tol << std::endl;
+            std::cerr << "Trying simplifying with tolerance " << tol << std::endl;
 #endif
 
             GeomPtr rG0(simplify::TopologyPreservingSimplifier::simplify(g0, tol));
@@ -748,10 +748,10 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
             }
             catch(const geos::util::TopologyException& ex) {
                 if(tol >= maxTolerance) {
-                    throw ex;
+                    throw;
                 }
 #if GEOS_DEBUG_HEURISTICOVERLAY
-                cpp_compat_cerr << "Simplified with tolerance (" << tol << "): "
+                std::cerr << "Simplified with tolerance (" << tol << "): "
                           << ex.what() << std::endl;
 #endif
             }
@@ -763,7 +763,7 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
     }
     catch(const geos::util::TopologyException& ex) {
 #if GEOS_DEBUG_HEURISTICOVERLAY
-        cpp_compat_cerr << "Simplified: " << ex.what() << std::endl;
+        std::cerr << "Simplified: " << ex.what() << std::endl;
 #endif
     }
 
@@ -773,8 +773,8 @@ HeuristicOverlay(const Geometry* g0, const Geometry* g1, int opCode)
 /**************************************************************************/
 
 #if GEOS_DEBUG_HEURISTICOVERLAY
-    cpp_compat_cerr << "No attempts worked to union " << std::endl;
-    cpp_compat_cerr << "Input geometries:" << std::endl
+    std::cerr << "No attempts worked to union " << std::endl;
+    std::cerr << "Input geometries:" << std::endl
               << "<A>" << std::endl
               << g0->toString() << std::endl
               << "</A>" << std::endl

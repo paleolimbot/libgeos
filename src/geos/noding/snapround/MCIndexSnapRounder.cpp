@@ -1,4 +1,3 @@
-#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -30,7 +29,7 @@
 #include <vector>
 
 
-using namespace std;
+
 using namespace geos::geom;
 
 namespace geos {
@@ -41,7 +40,7 @@ namespace snapround { // geos.noding.snapround
 void
 MCIndexSnapRounder::findInteriorIntersections(MCIndexNoder& noder,
         NodedSegmentString::NonConstVect* segStrings,
-        vector<Coordinate>& intersections)
+        std::vector<Coordinate>& intersections)
 {
     IntersectionFinderAdder intFinderAdder(li, intersections);
     noder.setSegmentIntersector(&intFinderAdder);
@@ -50,7 +49,7 @@ MCIndexSnapRounder::findInteriorIntersections(MCIndexNoder& noder,
 
 /* private */
 void
-MCIndexSnapRounder::computeIntersectionSnaps(vector<Coordinate>& snapPts)
+MCIndexSnapRounder::computeIntersectionSnaps(std::vector<Coordinate>& snapPts)
 {
     for (Coordinate& snapPt: snapPts) {
         HotPixel hotPixel(snapPt, scaleFactor);
@@ -64,7 +63,7 @@ void
 MCIndexSnapRounder::computeVertexSnaps(NodedSegmentString* e)
 {
     CoordinateSequence& pts0 = *(e->getCoordinates());
-    for(size_t i = 0, n = pts0.size() - 1; i < n; ++i) {
+    for(std::size_t i = 0, n = pts0.size() - 1; i < n; ++i) {
         HotPixel hotPixel(pts0.getAt(i), scaleFactor);
         bool isNodeAdded = pointSnapper->snap(hotPixel, e, i);
         // if a node is created for a vertex, that vertex must be noded too
@@ -92,7 +91,7 @@ void
 MCIndexSnapRounder::snapRound(MCIndexNoder& noder,
                               SegmentString::NonConstVect* segStrings)
 {
-    vector<Coordinate> intersections;
+    std::vector<Coordinate> intersections;
     findInteriorIntersections(noder, segStrings, intersections);
     computeIntersectionSnaps(intersections);
     computeVertexSnaps(*segStrings);
@@ -119,7 +118,7 @@ void
 MCIndexSnapRounder::checkCorrectness(
     SegmentString::NonConstVect& inputSegmentStrings)
 {
-    unique_ptr<SegmentString::NonConstVect> resultSegStrings(
+    std::unique_ptr<SegmentString::NonConstVect> resultSegStrings(
         NodedSegmentString::getNodedSubstrings(inputSegmentStrings)
     );
 
@@ -128,7 +127,7 @@ MCIndexSnapRounder::checkCorrectness(
         nv.checkValid();
     }
     catch(const std::exception& ex) {
-        cpp_compat_cerr << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
         throw;
     }
 }
