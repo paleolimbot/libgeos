@@ -1,0 +1,3 @@
+development:
+  # change this to 'release' when CRAN accepts and 'devel' afterward
+  mode: devel
