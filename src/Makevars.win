@@ -1,5 +1,5 @@
 PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY_R_API
-PKG_LIBS = -geos -lstaticgeos
+PKG_LIBS = -Lgeos -lstaticgeos
 CXX_STD = CXX11
 
 STATLIB = geos/libstaticgeos.a
