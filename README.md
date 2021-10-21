@@ -7,7 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-![R-CMD-check](https://github.com/paleolimbot/libgeos/workflows/R-CMD-check/badge.svg)
+[![R-CMD-check](https://github.com/paleolimbot/libgeos/workflows/R-CMD-check/badge.svg)](https://github.com/paleolimbot/libgeos/actions)
 <!-- badges: end -->
 
 The goal of libgeos is to provide access to the
