@@ -19,9 +19,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-          # Skip R 3.6 for now (fails because the command to generate the
-          # shlib is too long)
-          #  - {os: windows-latest, r: '3.6'}
+          - {os: windows-latest, r: '3.6'}
           - {os: windows-latest, r: 'release'}
           - {os: windows-2022, r: 'devel-ucrt'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
