@@ -1,3 +1,7 @@
+# libgeos 3.10.0-1
+
+* Update to GEOS 3.10.0 (#9)
+
 # libgeos 3.9.1-1
 
 * Update to GEOS 3.9.1 (#3).

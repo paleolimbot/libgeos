@@ -33,6 +33,7 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/algorithm/RayCrossingCounter.o \
      geos/algorithm/RayCrossingCounterDD.o \
      geos/algorithm/RobustDeterminant.o \
+     geos/algorithm/SimplePointInRing.o \
      geos/edgegraph/EdgeGraph.o \
      geos/edgegraph/EdgeGraphBuilder.o \
      geos/edgegraph/HalfEdge.o \
@@ -84,8 +85,10 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/geom/util/Densifier.o \
      geos/geom/util/GeometryCombiner.o \
      geos/geom/util/GeometryEditor.o \
+     geos/geom/util/GeometryFixer.o \
      geos/geom/util/GeometryTransformer.o \
      geos/geom/util/LinearComponentExtracter.o \
+     geos/geom/util/NoOpGeometryOperation.o \
      geos/geom/util/PointExtracter.o \
      geos/geom/util/PolygonExtracter.o \
      geos/geom/util/ShortCircuitedGeometryVisitor.o \
@@ -151,10 +154,12 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/index/sweepline/SweepLineEvent.o \
      geos/index/sweepline/SweepLineIndex.o \
      geos/index/sweepline/SweepLineInterval.o \
-     geos/inlines.o \
      geos/io/ByteOrderDataInStream.o \
      geos/io/ByteOrderValues.o \
      geos/io/CLocalizer.o \
+     geos/io/GeoJSON.o \
+     geos/io/GeoJSONReader.o \
+     geos/io/GeoJSONWriter.o \
      geos/io/ParseException.o \
      geos/io/StringTokenizer.o \
      geos/io/Unload.o \
@@ -225,7 +230,6 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/operation/intersection/Rectangle.o \
      geos/operation/intersection/RectangleIntersection.o \
      geos/operation/intersection/RectangleIntersectionBuilder.o \
-     geos/operation/IsSimpleOp.o \
      geos/operation/linemerge/EdgeString.o \
      geos/operation/linemerge/LineMergeDirectedEdge.o \
      geos/operation/linemerge/LineMergeEdge.o \
@@ -244,7 +248,6 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/operation/overlay/PolygonBuilder.o \
      geos/operation/overlay/snap/GeometrySnapper.o \
      geos/operation/overlay/snap/LineStringSnapper.o \
-     geos/operation/overlay/snap/SnapIfNeededOverlayOp.o \
      geos/operation/overlay/snap/SnapOverlayOp.o \
      geos/operation/overlay/validate/FuzzyPointLocator.o \
      geos/operation/overlay/validate/OffsetPointGenerator.o \
@@ -297,22 +300,26 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/operation/relate/RelateOp.o \
      geos/operation/sharedpaths/SharedPathsOp.o \
      geos/operation/union/CascadedPolygonUnion.o \
-     geos/operation/union/CascadedUnion.o \
      geos/operation/union/CoverageUnion.o \
      geos/operation/union/OverlapUnion.o \
      geos/operation/union/PointGeometryUnion.o \
      geos/operation/union/UnaryUnionOp.o \
+     geos/operation/union/UnionStrategy.o \
      geos/operation/valid/ConnectedInteriorTester.o \
      geos/operation/valid/ConsistentAreaTester.o \
-     geos/operation/valid/IndexedNestedRingTester.o \
-     geos/operation/valid/IndexedNestedShellTester.o \
+     geos/operation/valid/IndexedNestedHoleTester.o \
+     geos/operation/valid/IndexedNestedPolygonTester.o \
+     geos/operation/valid/IsSimpleOp.o \
      geos/operation/valid/IsValidOp.o \
      geos/operation/valid/MakeValid.o \
-     geos/operation/valid/QuadtreeNestedRingTester.o \
+     geos/operation/valid/PolygonIntersectionAnalyzer.o \
+     geos/operation/valid/PolygonNode.o \
+     geos/operation/valid/PolygonRing.o \
+     geos/operation/valid/PolygonRingSelfNode.o \
+     geos/operation/valid/PolygonRingTouch.o \
+     geos/operation/valid/PolygonTopologyAnalyzer.o \
      geos/operation/valid/RepeatedPointRemover.o \
      geos/operation/valid/RepeatedPointTester.o \
-     geos/operation/valid/SimpleNestedRingTester.o \
-     geos/operation/valid/SweeplineNestedRingTester.o \
      geos/operation/valid/TopologyValidationError.o \
      geos/planargraph/algorithm/ConnectedSubgraphFinder.o \
      geos/planargraph/DirectedEdge.o \
@@ -328,7 +335,9 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/precision/EnhancedPrecisionOp.o \
      geos/precision/GeometryPrecisionReducer.o \
      geos/precision/MinimumClearance.o \
+     geos/precision/PointwisePrecisionReducerTransformer.o \
      geos/precision/PrecisionReducerCoordinateOperation.o \
+     geos/precision/PrecisionReducerTransformer.o \
      geos/precision/SimpleGeometryPrecisionReducer.o \
      geos/shape/fractal/HilbertCode.o \
      geos/shape/fractal/HilbertEncoder.o \
@@ -343,17 +352,28 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/simplify/TopologyPreservingSimplifier.o \
      geos/triangulate/DelaunayTriangulationBuilder.o \
      geos/triangulate/IncrementalDelaunayTriangulator.o \
+     geos/triangulate/polygon/ConstrainedDelaunayTriangulator.o \
+     geos/triangulate/polygon/PolygonEarClipper.o \
+     geos/triangulate/polygon/PolygonHoleJoiner.o \
+     geos/triangulate/polygon/PolygonTriangulator.o \
+     geos/triangulate/polygon/TriDelaunayImprover.o \
+     geos/triangulate/polygon/VertexSequencePackedRtree.o \
      geos/triangulate/quadedge/LastFoundQuadEdgeLocator.o \
      geos/triangulate/quadedge/LocateFailureException.o \
      geos/triangulate/quadedge/QuadEdge.o \
      geos/triangulate/quadedge/QuadEdgeSubdivision.o \
      geos/triangulate/quadedge/TrianglePredicate.o \
      geos/triangulate/quadedge/Vertex.o \
+     geos/triangulate/tri/Tri.o \
+     geos/triangulate/tri/TriangulationBuilder.o \
+     geos/triangulate/tri/TriEdge.o \
+     geos/triangulate/tri/TriList.o \
      geos/triangulate/VoronoiDiagramBuilder.o \
      geos/util/Assert.o \
      geos/util/GeometricShapeFactory.o \
      geos/util/Interrupt.o \
      geos/util/math.o \
      geos/util/Profiler.o \
+     ryu/d2s.o \
      libgeos-cpp-compat.o \
      libgeos-init.o

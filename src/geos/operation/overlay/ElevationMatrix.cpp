@@ -39,7 +39,7 @@
 #pragma warning(disable:4355)
 #endif
 
-using namespace std;
+
 using namespace geos::geom;
 
 namespace geos {
@@ -55,7 +55,7 @@ ElevationMatrixFilter::filter_rw(Coordinate* c) const
 {
 #if GEOS_DEBUG
     cpp_compat_cerr << "ElevationMatrixFilter::filter_rw(" << c->toString() << ") called"
-         << endl;
+         << std::endl;
 #endif
 
     // already has a Z value, nothing to do
@@ -72,7 +72,7 @@ ElevationMatrixFilter::filter_rw(Coordinate* c) const
             c->z = p_avgElevation;
         }
 #if GEOS_DEBUG
-        cpp_compat_cerr << "  z set to " << c->z << endl;
+        cpp_compat_cerr << "  z set to " << c->z << std::endl;
 #endif
     }
     catch(const util::IllegalArgumentException& /* ex */) {
@@ -85,7 +85,7 @@ ElevationMatrixFilter::filter_ro(const Coordinate* c)
 {
 #if GEOS_DEBUG
     cpp_compat_cerr << "ElevationMatrixFilter::filter_ro(" << c->toString() << ") called"
-         << endl;
+         << std::endl;
 #endif
     em.add(*c);
 }
@@ -101,10 +101,10 @@ ElevationMatrix::ElevationMatrix(const Envelope& newEnv,
 {
     cellwidth = env.getWidth() / cols;
     cellheight = env.getHeight() / rows;
-    if(! cellwidth) {
+    if(cellwidth == 0) {
         cols = 1;
     }
-    if(! cellheight) {
+    if(cellheight == 0) {
         rows = 1;
     }
 }
@@ -113,7 +113,7 @@ void
 ElevationMatrix::add(const Geometry* geom)
 {
 #if GEOS_DEBUG
-    cpp_compat_cerr << "ElevationMatrix::add(Geometry *) called" << endl;
+    cpp_compat_cerr << "ElevationMatrix::add(Geometry *) called" << std::endl;
 #endif // GEOS_DEBUG
 
     // Cannot add Geometries to an ElevationMatrix after it's average
@@ -125,16 +125,6 @@ ElevationMatrix::add(const Geometry* geom)
 
 }
 
-#if 0
-void
-ElevationMatrix::add(const CoordinateSequence* cs)
-{
-    unsigned int ncoords = cs->getSize();
-    for(unsigned int i = 0; i < ncoords; i++) {
-        add(cs->getAt(i));
-    }
-}
-#endif
 
 void
 ElevationMatrix::add(const Coordinate& c)
@@ -150,7 +140,7 @@ ElevationMatrix::add(const Coordinate& c)
         // coordinate do not overlap matrix
         cpp_compat_cerr << "ElevationMatrix::add(" << c.toString()
              << "): Coordinate does not overlap grid extent: "
-             << exp.what() << endl;
+             << exp.what() << std::endl;
         return;
     }
 }
@@ -160,36 +150,36 @@ ElevationMatrix::getCell(const Coordinate& c)
 {
     int col, row;
 
-    if(! cellwidth) {
+    if(cellwidth == 0) {
         col = 0;
     }
     else {
         double xoffset = c.x - env.getMinX();
         col = (int)(xoffset / cellwidth);
         if(col == (int)cols) {
-            col = cols - 1;
+            col = static_cast<int>(cols - 1);
         }
     }
-    if(! cellheight) {
+    if(cellheight == 0) {
         row = 0;
     }
     else {
         double yoffset = c.y - env.getMinY();
         row = (int)(yoffset / cellheight);
         if(row == (int)rows) {
-            row = rows - 1;
+            row = static_cast<int>(rows - 1);
         }
     }
-    int celloffset = (cols * row) + col;
+    int celloffset = static_cast<int>(cols) * row + col;
 
     if(celloffset < 0 || celloffset >= (int)(cols * rows)) {
-        ostringstream s;
+        std::ostringstream s;
         s << "ElevationMatrix::getCell got a Coordinate out of grid extent (" << env.toString() << ") - cols:" << cols <<
           " rows:" << rows;
         throw util::IllegalArgumentException(s.str());
     }
 
-    return cells[celloffset];
+    return cells[static_cast<std::size_t>(celloffset)];
 }
 
 const ElevationMatrixCell&
@@ -229,16 +219,16 @@ ElevationMatrix::getAvgElevation() const
     return avgElevation;
 }
 
-string
+std::string
 ElevationMatrix::print() const
 {
-    ostringstream ret;
-    ret << "Cols:" << cols << " Rows:" << rows << " AvgElevation:" << getAvgElevation() << endl;
+    std::ostringstream ret;
+    ret << "Cols:" << cols << " Rows:" << rows << " AvgElevation:" << getAvgElevation() << std::endl;
     for(unsigned int r = 0; r < rows; r++) {
         for(unsigned int c = 0; c < cols; c++) {
             ret << cells[(r * cols) + c].print() << '\t';
         }
-        ret << endl;
+        ret << std::endl;
     }
     return ret.str();
 }
