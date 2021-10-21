@@ -36,7 +36,7 @@ License: LGPL (>= 2.1)
 Copyright: file COPYRIGHTS
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 URL: https://paleolimbot.github.io/libgeos/, https://github.com/paleolimbot/libgeos
 BugReports: https://github.com/paleolimbot/libgeos/issues
 Suggests: 
