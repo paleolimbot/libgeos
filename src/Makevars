@@ -1,379 +1,378 @@
 PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY_R_API
-
 CXX_STD = CXX11
 
-OBJECTS = geos/algorithm/Angle.o \
-     geos/algorithm/Area.o \
-     geos/algorithm/BoundaryNodeRule.o \
-     geos/algorithm/Centroid.o \
-     geos/algorithm/CGAlgorithmsDD.o \
-     geos/algorithm/construct/LargestEmptyCircle.o \
-     geos/algorithm/construct/MaximumInscribedCircle.o \
-     geos/algorithm/ConvexHull.o \
-     geos/algorithm/Distance.o \
-     geos/algorithm/distance/DiscreteFrechetDistance.o \
-     geos/algorithm/distance/DiscreteHausdorffDistance.o \
-     geos/algorithm/distance/DistanceToPoint.o \
-     geos/algorithm/HCoordinate.o \
-     geos/algorithm/InteriorPointArea.o \
-     geos/algorithm/InteriorPointLine.o \
-     geos/algorithm/InteriorPointPoint.o \
-     geos/algorithm/Intersection.o \
-     geos/algorithm/Length.o \
-     geos/algorithm/LineIntersector.o \
-     geos/algorithm/locate/IndexedPointInAreaLocator.o \
-     geos/algorithm/locate/PointOnGeometryLocator.o \
-     geos/algorithm/locate/SimplePointInAreaLocator.o \
-     geos/algorithm/MinimumBoundingCircle.o \
-     geos/algorithm/MinimumDiameter.o \
-     geos/algorithm/NotRepresentableException.o \
-     geos/algorithm/Orientation.o \
-     geos/algorithm/PointLocation.o \
-     geos/algorithm/PointLocator.o \
-     geos/algorithm/RayCrossingCounter.o \
-     geos/algorithm/RayCrossingCounterDD.o \
-     geos/algorithm/RobustDeterminant.o \
-     geos/algorithm/SimplePointInRing.o \
-     geos/edgegraph/EdgeGraph.o \
-     geos/edgegraph/EdgeGraphBuilder.o \
-     geos/edgegraph/HalfEdge.o \
-     geos/edgegraph/MarkHalfEdge.o \
-     geos/geom/Coordinate.o \
-     geos/geom/CoordinateArraySequence.o \
-     geos/geom/CoordinateArraySequenceFactory.o \
-     geos/geom/CoordinateSequence.o \
-     geos/geom/DefaultCoordinateSequenceFactory.o \
-     geos/geom/Dimension.o \
-     geos/geom/Envelope.o \
-     geos/geom/Geometry.o \
-     geos/geom/GeometryCollection.o \
-     geos/geom/GeometryComponentFilter.o \
-     geos/geom/GeometryFactory.o \
-     geos/geom/HeuristicOverlay.o \
-     geos/geom/IntersectionMatrix.o \
-     geos/geom/LinearRing.o \
-     geos/geom/LineSegment.o \
-     geos/geom/LineString.o \
-     geos/geom/Location.o \
-     geos/geom/MultiLineString.o \
-     geos/geom/MultiPoint.o \
-     geos/geom/MultiPolygon.o \
-     geos/geom/Point.o \
-     geos/geom/Polygon.o \
-     geos/geom/Position.o \
-     geos/geom/PrecisionModel.o \
-     geos/geom/prep/AbstractPreparedPolygonContains.o \
-     geos/geom/prep/BasicPreparedGeometry.o \
-     geos/geom/prep/PreparedGeometry.o \
-     geos/geom/prep/PreparedGeometryFactory.o \
-     geos/geom/prep/PreparedLineString.o \
-     geos/geom/prep/PreparedLineStringDistance.o \
-     geos/geom/prep/PreparedLineStringIntersects.o \
-     geos/geom/prep/PreparedLineStringNearestPoints.o \
-     geos/geom/prep/PreparedPoint.o \
-     geos/geom/prep/PreparedPolygon.o \
-     geos/geom/prep/PreparedPolygonContains.o \
-     geos/geom/prep/PreparedPolygonContainsProperly.o \
-     geos/geom/prep/PreparedPolygonCovers.o \
-     geos/geom/prep/PreparedPolygonDistance.o \
-     geos/geom/prep/PreparedPolygonIntersects.o \
-     geos/geom/prep/PreparedPolygonPredicate.o \
-     geos/geom/Quadrant.o \
-     geos/geom/Triangle.o \
-     geos/geom/util/ComponentCoordinateExtracter.o \
-     geos/geom/util/CoordinateOperation.o \
-     geos/geom/util/Densifier.o \
-     geos/geom/util/GeometryCombiner.o \
-     geos/geom/util/GeometryEditor.o \
-     geos/geom/util/GeometryFixer.o \
-     geos/geom/util/GeometryTransformer.o \
-     geos/geom/util/LinearComponentExtracter.o \
-     geos/geom/util/NoOpGeometryOperation.o \
-     geos/geom/util/PointExtracter.o \
-     geos/geom/util/PolygonExtracter.o \
-     geos/geom/util/ShortCircuitedGeometryVisitor.o \
-     geos/geom/util/SineStarFactory.o \
-     geos/geomgraph/Depth.o \
-     geos/geomgraph/DirectedEdge.o \
-     geos/geomgraph/DirectedEdgeStar.o \
-     geos/geomgraph/Edge.o \
-     geos/geomgraph/EdgeEnd.o \
-     geos/geomgraph/EdgeEndStar.o \
-     geos/geomgraph/EdgeIntersectionList.o \
-     geos/geomgraph/EdgeList.o \
-     geos/geomgraph/EdgeNodingValidator.o \
-     geos/geomgraph/EdgeRing.o \
-     geos/geomgraph/GeometryGraph.o \
-     geos/geomgraph/GraphComponent.o \
-     geos/geomgraph/index/MonotoneChainEdge.o \
-     geos/geomgraph/index/MonotoneChainIndexer.o \
-     geos/geomgraph/index/SegmentIntersector.o \
-     geos/geomgraph/index/SimpleEdgeSetIntersector.o \
-     geos/geomgraph/index/SimpleMCSweepLineIntersector.o \
-     geos/geomgraph/index/SimpleSweepLineIntersector.o \
-     geos/geomgraph/index/SweepLineEvent.o \
-     geos/geomgraph/index/SweepLineSegment.o \
-     geos/geomgraph/Label.o \
-     geos/geomgraph/Node.o \
-     geos/geomgraph/NodeFactory.o \
-     geos/geomgraph/NodeMap.o \
-     geos/geomgraph/PlanarGraph.o \
-     geos/geomgraph/TopologyLocation.o \
-     geos/geos_ts_c.o \
-     geos/index/bintree/Bintree.o \
-     geos/index/bintree/Interval.o \
-     geos/index/bintree/Key.o \
-     geos/index/bintree/Node.o \
-     geos/index/bintree/NodeBase.o \
-     geos/index/bintree/Root.o \
-     geos/index/chain/MonotoneChain.o \
-     geos/index/chain/MonotoneChainBuilder.o \
-     geos/index/chain/MonotoneChainOverlapAction.o \
-     geos/index/chain/MonotoneChainSelectAction.o \
-     geos/index/intervalrtree/IntervalRTreeBranchNode.o \
-     geos/index/intervalrtree/IntervalRTreeLeafNode.o \
-     geos/index/intervalrtree/SortedPackedIntervalRTree.o \
-     geos/index/kdtree/KdNode.o \
-     geos/index/kdtree/KdTree.o \
-     geos/index/quadtree/IntervalSize.o \
-     geos/index/quadtree/Key.o \
-     geos/index/quadtree/Node.o \
-     geos/index/quadtree/NodeBase.o \
-     geos/index/quadtree/Quadtree.o \
-     geos/index/quadtree/Root.o \
-     geos/index/strtree/AbstractSTRtree.o \
-     geos/index/strtree/BoundablePair.o \
-     geos/index/strtree/EnvelopeUtil.o \
-     geos/index/strtree/GeometryItemDistance.o \
-     geos/index/strtree/Interval.o \
-     geos/index/strtree/SimpleSTRdistance.o \
-     geos/index/strtree/SimpleSTRnode.o \
-     geos/index/strtree/SimpleSTRtree.o \
-     geos/index/strtree/SIRtree.o \
-     geos/index/strtree/STRtree.o \
-     geos/index/sweepline/SweepLineEvent.o \
-     geos/index/sweepline/SweepLineIndex.o \
-     geos/index/sweepline/SweepLineInterval.o \
-     geos/io/ByteOrderDataInStream.o \
-     geos/io/ByteOrderValues.o \
-     geos/io/CLocalizer.o \
-     geos/io/GeoJSON.o \
-     geos/io/GeoJSONReader.o \
-     geos/io/GeoJSONWriter.o \
-     geos/io/ParseException.o \
-     geos/io/StringTokenizer.o \
-     geos/io/Unload.o \
-     geos/io/WKBReader.o \
-     geos/io/WKBWriter.o \
-     geos/io/WKTReader.o \
-     geos/io/WKTWriter.o \
-     geos/io/Writer.o \
-     geos/linearref/ExtractLineByLocation.o \
-     geos/linearref/LengthIndexedLine.o \
-     geos/linearref/LengthIndexOfPoint.o \
-     geos/linearref/LengthLocationMap.o \
-     geos/linearref/LinearGeometryBuilder.o \
-     geos/linearref/LinearIterator.o \
-     geos/linearref/LinearLocation.o \
-     geos/linearref/LocationIndexOfLine.o \
-     geos/linearref/LocationIndexOfPoint.o \
-     geos/math/DD.o \
-     geos/noding/BasicSegmentString.o \
-     geos/noding/FastNodingValidator.o \
-     geos/noding/FastSegmentSetIntersectionFinder.o \
-     geos/noding/GeometryNoder.o \
-     geos/noding/IntersectionAdder.o \
-     geos/noding/IntersectionFinderAdder.o \
-     geos/noding/IteratedNoder.o \
-     geos/noding/MCIndexNoder.o \
-     geos/noding/MCIndexSegmentSetMutualIntersector.o \
-     geos/noding/NodedSegmentString.o \
-     geos/noding/NodingIntersectionFinder.o \
-     geos/noding/NodingValidator.o \
-     geos/noding/Octant.o \
-     geos/noding/OrientedCoordinateArray.o \
-     geos/noding/ScaledNoder.o \
-     geos/noding/SegmentIntersectionDetector.o \
-     geos/noding/SegmentNode.o \
-     geos/noding/SegmentNodeList.o \
-     geos/noding/SegmentString.o \
-     geos/noding/SegmentStringUtil.o \
-     geos/noding/SimpleNoder.o \
-     geos/noding/snap/SnappingIntersectionAdder.o \
-     geos/noding/snap/SnappingNoder.o \
-     geos/noding/snap/SnappingPointIndex.o \
-     geos/noding/snapround/HotPixel.o \
-     geos/noding/snapround/HotPixelIndex.o \
-     geos/noding/snapround/MCIndexPointSnapper.o \
-     geos/noding/snapround/MCIndexSnapRounder.o \
-     geos/noding/snapround/SnapRoundingIntersectionAdder.o \
-     geos/noding/snapround/SnapRoundingNoder.o \
-     geos/noding/ValidatingNoder.o \
-     geos/operation/buffer/BufferBuilder.o \
-     geos/operation/buffer/BufferInputLineSimplifier.o \
-     geos/operation/buffer/BufferOp.o \
-     geos/operation/buffer/BufferParameters.o \
-     geos/operation/buffer/BufferSubgraph.o \
-     geos/operation/buffer/OffsetCurveBuilder.o \
-     geos/operation/buffer/OffsetCurveSetBuilder.o \
-     geos/operation/buffer/OffsetSegmentGenerator.o \
-     geos/operation/buffer/RightmostEdgeFinder.o \
-     geos/operation/buffer/SubgraphDepthLocater.o \
-     geos/operation/distance/ConnectedElementLocationFilter.o \
-     geos/operation/distance/ConnectedElementPointFilter.o \
-     geos/operation/distance/DistanceOp.o \
-     geos/operation/distance/FacetSequence.o \
-     geos/operation/distance/FacetSequenceTreeBuilder.o \
-     geos/operation/distance/GeometryLocation.o \
-     geos/operation/distance/IndexedFacetDistance.o \
-     geos/operation/GeometryGraphOperation.o \
-     geos/operation/intersection/Rectangle.o \
-     geos/operation/intersection/RectangleIntersection.o \
-     geos/operation/intersection/RectangleIntersectionBuilder.o \
-     geos/operation/linemerge/EdgeString.o \
-     geos/operation/linemerge/LineMergeDirectedEdge.o \
-     geos/operation/linemerge/LineMergeEdge.o \
-     geos/operation/linemerge/LineMergeGraph.o \
-     geos/operation/linemerge/LineMerger.o \
-     geos/operation/linemerge/LineSequencer.o \
-     geos/operation/overlay/EdgeSetNoder.o \
-     geos/operation/overlay/ElevationMatrix.o \
-     geos/operation/overlay/ElevationMatrixCell.o \
-     geos/operation/overlay/LineBuilder.o \
-     geos/operation/overlay/MaximalEdgeRing.o \
-     geos/operation/overlay/MinimalEdgeRing.o \
-     geos/operation/overlay/OverlayNodeFactory.o \
-     geos/operation/overlay/OverlayOp.o \
-     geos/operation/overlay/PointBuilder.o \
-     geos/operation/overlay/PolygonBuilder.o \
-     geos/operation/overlay/snap/GeometrySnapper.o \
-     geos/operation/overlay/snap/LineStringSnapper.o \
-     geos/operation/overlay/snap/SnapOverlayOp.o \
-     geos/operation/overlay/validate/FuzzyPointLocator.o \
-     geos/operation/overlay/validate/OffsetPointGenerator.o \
-     geos/operation/overlay/validate/OverlayResultValidator.o \
-     geos/operation/overlayng/Edge.o \
-     geos/operation/overlayng/EdgeKey.o \
-     geos/operation/overlayng/EdgeMerger.o \
-     geos/operation/overlayng/EdgeNodingBuilder.o \
-     geos/operation/overlayng/EdgeSourceInfo.o \
-     geos/operation/overlayng/ElevationModel.o \
-     geos/operation/overlayng/IndexedPointOnLineLocator.o \
-     geos/operation/overlayng/InputGeometry.o \
-     geos/operation/overlayng/IntersectionPointBuilder.o \
-     geos/operation/overlayng/LineBuilder.o \
-     geos/operation/overlayng/LineLimiter.o \
-     geos/operation/overlayng/MaximalEdgeRing.o \
-     geos/operation/overlayng/OverlayEdge.o \
-     geos/operation/overlayng/OverlayEdgeRing.o \
-     geos/operation/overlayng/OverlayGraph.o \
-     geos/operation/overlayng/OverlayLabel.o \
-     geos/operation/overlayng/OverlayLabeller.o \
-     geos/operation/overlayng/OverlayMixedPoints.o \
-     geos/operation/overlayng/OverlayNG.o \
-     geos/operation/overlayng/OverlayNGRobust.o \
-     geos/operation/overlayng/OverlayPoints.o \
-     geos/operation/overlayng/OverlayUtil.o \
-     geos/operation/overlayng/PolygonBuilder.o \
-     geos/operation/overlayng/PrecisionReducer.o \
-     geos/operation/overlayng/PrecisionUtil.o \
-     geos/operation/overlayng/RingClipper.o \
-     geos/operation/overlayng/RobustClipEnvelopeComputer.o \
-     geos/operation/overlayng/UnaryUnionNG.o \
-     geos/operation/polygonize/BuildArea.o \
-     geos/operation/polygonize/EdgeRing.o \
-     geos/operation/polygonize/HoleAssigner.o \
-     geos/operation/polygonize/PolygonizeDirectedEdge.o \
-     geos/operation/polygonize/PolygonizeEdge.o \
-     geos/operation/polygonize/PolygonizeGraph.o \
-     geos/operation/polygonize/Polygonizer.o \
-     geos/operation/predicate/RectangleContains.o \
-     geos/operation/predicate/RectangleIntersects.o \
-     geos/operation/predicate/SegmentIntersectionTester.o \
-     geos/operation/relate/EdgeEndBuilder.o \
-     geos/operation/relate/EdgeEndBundle.o \
-     geos/operation/relate/EdgeEndBundleStar.o \
-     geos/operation/relate/RelateComputer.o \
-     geos/operation/relate/RelateNode.o \
-     geos/operation/relate/RelateNodeFactory.o \
-     geos/operation/relate/RelateNodeGraph.o \
-     geos/operation/relate/RelateOp.o \
-     geos/operation/sharedpaths/SharedPathsOp.o \
-     geos/operation/union/CascadedPolygonUnion.o \
-     geos/operation/union/CoverageUnion.o \
-     geos/operation/union/OverlapUnion.o \
-     geos/operation/union/PointGeometryUnion.o \
-     geos/operation/union/UnaryUnionOp.o \
-     geos/operation/union/UnionStrategy.o \
-     geos/operation/valid/ConnectedInteriorTester.o \
-     geos/operation/valid/ConsistentAreaTester.o \
-     geos/operation/valid/IndexedNestedHoleTester.o \
-     geos/operation/valid/IndexedNestedPolygonTester.o \
-     geos/operation/valid/IsSimpleOp.o \
-     geos/operation/valid/IsValidOp.o \
-     geos/operation/valid/MakeValid.o \
-     geos/operation/valid/PolygonIntersectionAnalyzer.o \
-     geos/operation/valid/PolygonNode.o \
-     geos/operation/valid/PolygonRing.o \
-     geos/operation/valid/PolygonRingSelfNode.o \
-     geos/operation/valid/PolygonRingTouch.o \
-     geos/operation/valid/PolygonTopologyAnalyzer.o \
-     geos/operation/valid/RepeatedPointRemover.o \
-     geos/operation/valid/RepeatedPointTester.o \
-     geos/operation/valid/TopologyValidationError.o \
-     geos/planargraph/algorithm/ConnectedSubgraphFinder.o \
-     geos/planargraph/DirectedEdge.o \
-     geos/planargraph/DirectedEdgeStar.o \
-     geos/planargraph/Edge.o \
-     geos/planargraph/Node.o \
-     geos/planargraph/NodeMap.o \
-     geos/planargraph/PlanarGraph.o \
-     geos/planargraph/Subgraph.o \
-     geos/precision/CommonBits.o \
-     geos/precision/CommonBitsOp.o \
-     geos/precision/CommonBitsRemover.o \
-     geos/precision/EnhancedPrecisionOp.o \
-     geos/precision/GeometryPrecisionReducer.o \
-     geos/precision/MinimumClearance.o \
-     geos/precision/PointwisePrecisionReducerTransformer.o \
-     geos/precision/PrecisionReducerCoordinateOperation.o \
-     geos/precision/PrecisionReducerTransformer.o \
-     geos/precision/SimpleGeometryPrecisionReducer.o \
-     geos/shape/fractal/HilbertCode.o \
-     geos/shape/fractal/HilbertEncoder.o \
-     geos/shape/fractal/MortonCode.o \
-     geos/simplify/DouglasPeuckerLineSimplifier.o \
-     geos/simplify/DouglasPeuckerSimplifier.o \
-     geos/simplify/LineSegmentIndex.o \
-     geos/simplify/TaggedLineSegment.o \
-     geos/simplify/TaggedLinesSimplifier.o \
-     geos/simplify/TaggedLineString.o \
-     geos/simplify/TaggedLineStringSimplifier.o \
-     geos/simplify/TopologyPreservingSimplifier.o \
-     geos/triangulate/DelaunayTriangulationBuilder.o \
-     geos/triangulate/IncrementalDelaunayTriangulator.o \
-     geos/triangulate/polygon/ConstrainedDelaunayTriangulator.o \
-     geos/triangulate/polygon/PolygonEarClipper.o \
-     geos/triangulate/polygon/PolygonHoleJoiner.o \
-     geos/triangulate/polygon/PolygonTriangulator.o \
-     geos/triangulate/polygon/TriDelaunayImprover.o \
-     geos/triangulate/polygon/VertexSequencePackedRtree.o \
-     geos/triangulate/quadedge/LastFoundQuadEdgeLocator.o \
-     geos/triangulate/quadedge/LocateFailureException.o \
-     geos/triangulate/quadedge/QuadEdge.o \
-     geos/triangulate/quadedge/QuadEdgeSubdivision.o \
-     geos/triangulate/quadedge/TrianglePredicate.o \
-     geos/triangulate/quadedge/Vertex.o \
-     geos/triangulate/tri/Tri.o \
-     geos/triangulate/tri/TriangulationBuilder.o \
-     geos/triangulate/tri/TriEdge.o \
-     geos/triangulate/tri/TriList.o \
-     geos/triangulate/VoronoiDiagramBuilder.o \
-     geos/util/Assert.o \
-     geos/util/GeometricShapeFactory.o \
-     geos/util/Interrupt.o \
-     geos/util/math.o \
-     geos/util/Profiler.o \
-     ryu/d2s.o \
-     libgeos-cpp-compat.o \
-     libgeos-init.o
+OBJECTS = geos/algorithm/Angle.o\
+ geos/algorithm/Area.o\
+ geos/algorithm/BoundaryNodeRule.o\
+ geos/algorithm/Centroid.o\
+ geos/algorithm/CGAlgorithmsDD.o\
+ geos/algorithm/construct/LargestEmptyCircle.o\
+ geos/algorithm/construct/MaximumInscribedCircle.o\
+ geos/algorithm/ConvexHull.o\
+ geos/algorithm/Distance.o\
+ geos/algorithm/distance/DiscreteFrechetDistance.o\
+ geos/algorithm/distance/DiscreteHausdorffDistance.o\
+ geos/algorithm/distance/DistanceToPoint.o\
+ geos/algorithm/HCoordinate.o\
+ geos/algorithm/InteriorPointArea.o\
+ geos/algorithm/InteriorPointLine.o\
+ geos/algorithm/InteriorPointPoint.o\
+ geos/algorithm/Intersection.o\
+ geos/algorithm/Length.o\
+ geos/algorithm/LineIntersector.o\
+ geos/algorithm/locate/IndexedPointInAreaLocator.o\
+ geos/algorithm/locate/PointOnGeometryLocator.o\
+ geos/algorithm/locate/SimplePointInAreaLocator.o\
+ geos/algorithm/MinimumBoundingCircle.o\
+ geos/algorithm/MinimumDiameter.o\
+ geos/algorithm/NotRepresentableException.o\
+ geos/algorithm/Orientation.o\
+ geos/algorithm/PointLocation.o\
+ geos/algorithm/PointLocator.o\
+ geos/algorithm/RayCrossingCounter.o\
+ geos/algorithm/RayCrossingCounterDD.o\
+ geos/algorithm/RobustDeterminant.o\
+ geos/algorithm/SimplePointInRing.o\
+ geos/edgegraph/EdgeGraph.o\
+ geos/edgegraph/EdgeGraphBuilder.o\
+ geos/edgegraph/HalfEdge.o\
+ geos/edgegraph/MarkHalfEdge.o\
+ geos/geom/Coordinate.o\
+ geos/geom/CoordinateArraySequence.o\
+ geos/geom/CoordinateArraySequenceFactory.o\
+ geos/geom/CoordinateSequence.o\
+ geos/geom/DefaultCoordinateSequenceFactory.o\
+ geos/geom/Dimension.o\
+ geos/geom/Envelope.o\
+ geos/geom/Geometry.o\
+ geos/geom/GeometryCollection.o\
+ geos/geom/GeometryComponentFilter.o\
+ geos/geom/GeometryFactory.o\
+ geos/geom/HeuristicOverlay.o\
+ geos/geom/IntersectionMatrix.o\
+ geos/geom/LinearRing.o\
+ geos/geom/LineSegment.o\
+ geos/geom/LineString.o\
+ geos/geom/Location.o\
+ geos/geom/MultiLineString.o\
+ geos/geom/MultiPoint.o\
+ geos/geom/MultiPolygon.o\
+ geos/geom/Point.o\
+ geos/geom/Polygon.o\
+ geos/geom/Position.o\
+ geos/geom/PrecisionModel.o\
+ geos/geom/prep/AbstractPreparedPolygonContains.o\
+ geos/geom/prep/BasicPreparedGeometry.o\
+ geos/geom/prep/PreparedGeometry.o\
+ geos/geom/prep/PreparedGeometryFactory.o\
+ geos/geom/prep/PreparedLineString.o\
+ geos/geom/prep/PreparedLineStringDistance.o\
+ geos/geom/prep/PreparedLineStringIntersects.o\
+ geos/geom/prep/PreparedLineStringNearestPoints.o\
+ geos/geom/prep/PreparedPoint.o\
+ geos/geom/prep/PreparedPolygon.o\
+ geos/geom/prep/PreparedPolygonContains.o\
+ geos/geom/prep/PreparedPolygonContainsProperly.o\
+ geos/geom/prep/PreparedPolygonCovers.o\
+ geos/geom/prep/PreparedPolygonDistance.o\
+ geos/geom/prep/PreparedPolygonIntersects.o\
+ geos/geom/prep/PreparedPolygonPredicate.o\
+ geos/geom/Quadrant.o\
+ geos/geom/Triangle.o\
+ geos/geom/util/ComponentCoordinateExtracter.o\
+ geos/geom/util/CoordinateOperation.o\
+ geos/geom/util/Densifier.o\
+ geos/geom/util/GeometryCombiner.o\
+ geos/geom/util/GeometryEditor.o\
+ geos/geom/util/GeometryFixer.o\
+ geos/geom/util/GeometryTransformer.o\
+ geos/geom/util/LinearComponentExtracter.o\
+ geos/geom/util/NoOpGeometryOperation.o\
+ geos/geom/util/PointExtracter.o\
+ geos/geom/util/PolygonExtracter.o\
+ geos/geom/util/ShortCircuitedGeometryVisitor.o\
+ geos/geom/util/SineStarFactory.o\
+ geos/geomgraph/Depth.o\
+ geos/geomgraph/DirectedEdge.o\
+ geos/geomgraph/DirectedEdgeStar.o\
+ geos/geomgraph/Edge.o\
+ geos/geomgraph/EdgeEnd.o\
+ geos/geomgraph/EdgeEndStar.o\
+ geos/geomgraph/EdgeIntersectionList.o\
+ geos/geomgraph/EdgeList.o\
+ geos/geomgraph/EdgeNodingValidator.o\
+ geos/geomgraph/EdgeRing.o\
+ geos/geomgraph/GeometryGraph.o\
+ geos/geomgraph/GraphComponent.o\
+ geos/geomgraph/index/MonotoneChainEdge.o\
+ geos/geomgraph/index/MonotoneChainIndexer.o\
+ geos/geomgraph/index/SegmentIntersector.o\
+ geos/geomgraph/index/SimpleEdgeSetIntersector.o\
+ geos/geomgraph/index/SimpleMCSweepLineIntersector.o\
+ geos/geomgraph/index/SimpleSweepLineIntersector.o\
+ geos/geomgraph/index/SweepLineEvent.o\
+ geos/geomgraph/index/SweepLineSegment.o\
+ geos/geomgraph/Label.o\
+ geos/geomgraph/Node.o\
+ geos/geomgraph/NodeFactory.o\
+ geos/geomgraph/NodeMap.o\
+ geos/geomgraph/PlanarGraph.o\
+ geos/geomgraph/TopologyLocation.o\
+ geos/geos_ts_c.o\
+ geos/index/bintree/Bintree.o\
+ geos/index/bintree/Interval.o\
+ geos/index/bintree/Key.o\
+ geos/index/bintree/Node.o\
+ geos/index/bintree/NodeBase.o\
+ geos/index/bintree/Root.o\
+ geos/index/chain/MonotoneChain.o\
+ geos/index/chain/MonotoneChainBuilder.o\
+ geos/index/chain/MonotoneChainOverlapAction.o\
+ geos/index/chain/MonotoneChainSelectAction.o\
+ geos/index/intervalrtree/IntervalRTreeBranchNode.o\
+ geos/index/intervalrtree/IntervalRTreeLeafNode.o\
+ geos/index/intervalrtree/SortedPackedIntervalRTree.o\
+ geos/index/kdtree/KdNode.o\
+ geos/index/kdtree/KdTree.o\
+ geos/index/quadtree/IntervalSize.o\
+ geos/index/quadtree/Key.o\
+ geos/index/quadtree/Node.o\
+ geos/index/quadtree/NodeBase.o\
+ geos/index/quadtree/Quadtree.o\
+ geos/index/quadtree/Root.o\
+ geos/index/strtree/AbstractSTRtree.o\
+ geos/index/strtree/BoundablePair.o\
+ geos/index/strtree/EnvelopeUtil.o\
+ geos/index/strtree/GeometryItemDistance.o\
+ geos/index/strtree/Interval.o\
+ geos/index/strtree/SimpleSTRdistance.o\
+ geos/index/strtree/SimpleSTRnode.o\
+ geos/index/strtree/SimpleSTRtree.o\
+ geos/index/strtree/SIRtree.o\
+ geos/index/strtree/STRtree.o\
+ geos/index/sweepline/SweepLineEvent.o\
+ geos/index/sweepline/SweepLineIndex.o\
+ geos/index/sweepline/SweepLineInterval.o\
+ geos/io/ByteOrderDataInStream.o\
+ geos/io/ByteOrderValues.o\
+ geos/io/CLocalizer.o\
+ geos/io/GeoJSON.o\
+ geos/io/GeoJSONReader.o\
+ geos/io/GeoJSONWriter.o\
+ geos/io/ParseException.o\
+ geos/io/StringTokenizer.o\
+ geos/io/Unload.o\
+ geos/io/WKBReader.o\
+ geos/io/WKBWriter.o\
+ geos/io/WKTReader.o\
+ geos/io/WKTWriter.o\
+ geos/io/Writer.o\
+ geos/linearref/ExtractLineByLocation.o\
+ geos/linearref/LengthIndexedLine.o\
+ geos/linearref/LengthIndexOfPoint.o\
+ geos/linearref/LengthLocationMap.o\
+ geos/linearref/LinearGeometryBuilder.o\
+ geos/linearref/LinearIterator.o\
+ geos/linearref/LinearLocation.o\
+ geos/linearref/LocationIndexOfLine.o\
+ geos/linearref/LocationIndexOfPoint.o\
+ geos/math/DD.o\
+ geos/noding/BasicSegmentString.o\
+ geos/noding/FastNodingValidator.o\
+ geos/noding/FastSegmentSetIntersectionFinder.o\
+ geos/noding/GeometryNoder.o\
+ geos/noding/IntersectionAdder.o\
+ geos/noding/IntersectionFinderAdder.o\
+ geos/noding/IteratedNoder.o\
+ geos/noding/MCIndexNoder.o\
+ geos/noding/MCIndexSegmentSetMutualIntersector.o\
+ geos/noding/NodedSegmentString.o\
+ geos/noding/NodingIntersectionFinder.o\
+ geos/noding/NodingValidator.o\
+ geos/noding/Octant.o\
+ geos/noding/OrientedCoordinateArray.o\
+ geos/noding/ScaledNoder.o\
+ geos/noding/SegmentIntersectionDetector.o\
+ geos/noding/SegmentNode.o\
+ geos/noding/SegmentNodeList.o\
+ geos/noding/SegmentString.o\
+ geos/noding/SegmentStringUtil.o\
+ geos/noding/SimpleNoder.o\
+ geos/noding/snap/SnappingIntersectionAdder.o\
+ geos/noding/snap/SnappingNoder.o\
+ geos/noding/snap/SnappingPointIndex.o\
+ geos/noding/snapround/HotPixel.o\
+ geos/noding/snapround/HotPixelIndex.o\
+ geos/noding/snapround/MCIndexPointSnapper.o\
+ geos/noding/snapround/MCIndexSnapRounder.o\
+ geos/noding/snapround/SnapRoundingIntersectionAdder.o\
+ geos/noding/snapround/SnapRoundingNoder.o\
+ geos/noding/ValidatingNoder.o\
+ geos/operation/buffer/BufferBuilder.o\
+ geos/operation/buffer/BufferInputLineSimplifier.o\
+ geos/operation/buffer/BufferOp.o\
+ geos/operation/buffer/BufferParameters.o\
+ geos/operation/buffer/BufferSubgraph.o\
+ geos/operation/buffer/OffsetCurveBuilder.o\
+ geos/operation/buffer/OffsetCurveSetBuilder.o\
+ geos/operation/buffer/OffsetSegmentGenerator.o\
+ geos/operation/buffer/RightmostEdgeFinder.o\
+ geos/operation/buffer/SubgraphDepthLocater.o\
+ geos/operation/distance/ConnectedElementLocationFilter.o\
+ geos/operation/distance/ConnectedElementPointFilter.o\
+ geos/operation/distance/DistanceOp.o\
+ geos/operation/distance/FacetSequence.o\
+ geos/operation/distance/FacetSequenceTreeBuilder.o\
+ geos/operation/distance/GeometryLocation.o\
+ geos/operation/distance/IndexedFacetDistance.o\
+ geos/operation/GeometryGraphOperation.o\
+ geos/operation/intersection/Rectangle.o\
+ geos/operation/intersection/RectangleIntersection.o\
+ geos/operation/intersection/RectangleIntersectionBuilder.o\
+ geos/operation/linemerge/EdgeString.o\
+ geos/operation/linemerge/LineMergeDirectedEdge.o\
+ geos/operation/linemerge/LineMergeEdge.o\
+ geos/operation/linemerge/LineMergeGraph.o\
+ geos/operation/linemerge/LineMerger.o\
+ geos/operation/linemerge/LineSequencer.o\
+ geos/operation/overlay/EdgeSetNoder.o\
+ geos/operation/overlay/ElevationMatrix.o\
+ geos/operation/overlay/ElevationMatrixCell.o\
+ geos/operation/overlay/LineBuilder.o\
+ geos/operation/overlay/MaximalEdgeRing.o\
+ geos/operation/overlay/MinimalEdgeRing.o\
+ geos/operation/overlay/OverlayNodeFactory.o\
+ geos/operation/overlay/OverlayOp.o\
+ geos/operation/overlay/PointBuilder.o\
+ geos/operation/overlay/PolygonBuilder.o\
+ geos/operation/overlay/snap/GeometrySnapper.o\
+ geos/operation/overlay/snap/LineStringSnapper.o\
+ geos/operation/overlay/snap/SnapOverlayOp.o\
+ geos/operation/overlay/validate/FuzzyPointLocator.o\
+ geos/operation/overlay/validate/OffsetPointGenerator.o\
+ geos/operation/overlay/validate/OverlayResultValidator.o\
+ geos/operation/overlayng/Edge.o\
+ geos/operation/overlayng/EdgeKey.o\
+ geos/operation/overlayng/EdgeMerger.o\
+ geos/operation/overlayng/EdgeNodingBuilder.o\
+ geos/operation/overlayng/EdgeSourceInfo.o\
+ geos/operation/overlayng/ElevationModel.o\
+ geos/operation/overlayng/IndexedPointOnLineLocator.o\
+ geos/operation/overlayng/InputGeometry.o\
+ geos/operation/overlayng/IntersectionPointBuilder.o\
+ geos/operation/overlayng/LineBuilder.o\
+ geos/operation/overlayng/LineLimiter.o\
+ geos/operation/overlayng/MaximalEdgeRing.o\
+ geos/operation/overlayng/OverlayEdge.o\
+ geos/operation/overlayng/OverlayEdgeRing.o\
+ geos/operation/overlayng/OverlayGraph.o\
+ geos/operation/overlayng/OverlayLabel.o\
+ geos/operation/overlayng/OverlayLabeller.o\
+ geos/operation/overlayng/OverlayMixedPoints.o\
+ geos/operation/overlayng/OverlayNG.o\
+ geos/operation/overlayng/OverlayNGRobust.o\
+ geos/operation/overlayng/OverlayPoints.o\
+ geos/operation/overlayng/OverlayUtil.o\
+ geos/operation/overlayng/PolygonBuilder.o\
+ geos/operation/overlayng/PrecisionReducer.o\
+ geos/operation/overlayng/PrecisionUtil.o\
+ geos/operation/overlayng/RingClipper.o\
+ geos/operation/overlayng/RobustClipEnvelopeComputer.o\
+ geos/operation/overlayng/UnaryUnionNG.o\
+ geos/operation/polygonize/BuildArea.o\
+ geos/operation/polygonize/EdgeRing.o\
+ geos/operation/polygonize/HoleAssigner.o\
+ geos/operation/polygonize/PolygonizeDirectedEdge.o\
+ geos/operation/polygonize/PolygonizeEdge.o\
+ geos/operation/polygonize/PolygonizeGraph.o\
+ geos/operation/polygonize/Polygonizer.o\
+ geos/operation/predicate/RectangleContains.o\
+ geos/operation/predicate/RectangleIntersects.o\
+ geos/operation/predicate/SegmentIntersectionTester.o\
+ geos/operation/relate/EdgeEndBuilder.o\
+ geos/operation/relate/EdgeEndBundle.o\
+ geos/operation/relate/EdgeEndBundleStar.o\
+ geos/operation/relate/RelateComputer.o\
+ geos/operation/relate/RelateNode.o\
+ geos/operation/relate/RelateNodeFactory.o\
+ geos/operation/relate/RelateNodeGraph.o\
+ geos/operation/relate/RelateOp.o\
+ geos/operation/sharedpaths/SharedPathsOp.o\
+ geos/operation/union/CascadedPolygonUnion.o\
+ geos/operation/union/CoverageUnion.o\
+ geos/operation/union/OverlapUnion.o\
+ geos/operation/union/PointGeometryUnion.o\
+ geos/operation/union/UnaryUnionOp.o\
+ geos/operation/union/UnionStrategy.o\
+ geos/operation/valid/ConnectedInteriorTester.o\
+ geos/operation/valid/ConsistentAreaTester.o\
+ geos/operation/valid/IndexedNestedHoleTester.o\
+ geos/operation/valid/IndexedNestedPolygonTester.o\
+ geos/operation/valid/IsSimpleOp.o\
+ geos/operation/valid/IsValidOp.o\
+ geos/operation/valid/MakeValid.o\
+ geos/operation/valid/PolygonIntersectionAnalyzer.o\
+ geos/operation/valid/PolygonNode.o\
+ geos/operation/valid/PolygonRing.o\
+ geos/operation/valid/PolygonRingSelfNode.o\
+ geos/operation/valid/PolygonRingTouch.o\
+ geos/operation/valid/PolygonTopologyAnalyzer.o\
+ geos/operation/valid/RepeatedPointRemover.o\
+ geos/operation/valid/RepeatedPointTester.o\
+ geos/operation/valid/TopologyValidationError.o\
+ geos/planargraph/algorithm/ConnectedSubgraphFinder.o\
+ geos/planargraph/DirectedEdge.o\
+ geos/planargraph/DirectedEdgeStar.o\
+ geos/planargraph/Edge.o\
+ geos/planargraph/Node.o\
+ geos/planargraph/NodeMap.o\
+ geos/planargraph/PlanarGraph.o\
+ geos/planargraph/Subgraph.o\
+ geos/precision/CommonBits.o\
+ geos/precision/CommonBitsOp.o\
+ geos/precision/CommonBitsRemover.o\
+ geos/precision/EnhancedPrecisionOp.o\
+ geos/precision/GeometryPrecisionReducer.o\
+ geos/precision/MinimumClearance.o\
+ geos/precision/PointwisePrecisionReducerTransformer.o\
+ geos/precision/PrecisionReducerCoordinateOperation.o\
+ geos/precision/PrecisionReducerTransformer.o\
+ geos/precision/SimpleGeometryPrecisionReducer.o\
+ geos/shape/fractal/HilbertCode.o\
+ geos/shape/fractal/HilbertEncoder.o\
+ geos/shape/fractal/MortonCode.o\
+ geos/simplify/DouglasPeuckerLineSimplifier.o\
+ geos/simplify/DouglasPeuckerSimplifier.o\
+ geos/simplify/LineSegmentIndex.o\
+ geos/simplify/TaggedLineSegment.o\
+ geos/simplify/TaggedLinesSimplifier.o\
+ geos/simplify/TaggedLineString.o\
+ geos/simplify/TaggedLineStringSimplifier.o\
+ geos/simplify/TopologyPreservingSimplifier.o\
+ geos/triangulate/DelaunayTriangulationBuilder.o\
+ geos/triangulate/IncrementalDelaunayTriangulator.o\
+ geos/triangulate/polygon/ConstrainedDelaunayTriangulator.o\
+ geos/triangulate/polygon/PolygonEarClipper.o\
+ geos/triangulate/polygon/PolygonHoleJoiner.o\
+ geos/triangulate/polygon/PolygonTriangulator.o\
+ geos/triangulate/polygon/TriDelaunayImprover.o\
+ geos/triangulate/polygon/VertexSequencePackedRtree.o\
+ geos/triangulate/quadedge/LastFoundQuadEdgeLocator.o\
+ geos/triangulate/quadedge/LocateFailureException.o\
+ geos/triangulate/quadedge/QuadEdge.o\
+ geos/triangulate/quadedge/QuadEdgeSubdivision.o\
+ geos/triangulate/quadedge/TrianglePredicate.o\
+ geos/triangulate/quadedge/Vertex.o\
+ geos/triangulate/tri/Tri.o\
+ geos/triangulate/tri/TriangulationBuilder.o\
+ geos/triangulate/tri/TriEdge.o\
+ geos/triangulate/tri/TriList.o\
+ geos/triangulate/VoronoiDiagramBuilder.o\
+ geos/util/Assert.o\
+ geos/util/GeometricShapeFactory.o\
+ geos/util/Interrupt.o\
+ geos/util/math.o\
+ geos/util/Profiler.o\
+ ryu/d2s.o\
+ libgeos-cpp-compat.o\
+ libgeos-init.o
