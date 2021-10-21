@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>GEOS version information — libgeos_version • libgeos</title>
+<title>Changelog • libgeos</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,7 @@
 
 
 
-<meta property="og:title" content="GEOS version information — libgeos_version" />
-<meta property="og:description" content="GEOS version information" />
+<meta property="og:title" content="Changelog" />
 
 
 <meta name="robots" content="noindex">
@@ -59,7 +58,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-topic">
+    <div class="container template-news">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -111,32 +110,74 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>GEOS version information</h1>
-    <small class="dont-index">Source: <a href='https://github.com/paleolimbot/libgeos/blob/master/R/libgeos-package.R'><code>R/libgeos-package.R</code></a></small>
-    <div class="hidden name"><code>libgeos_version.Rd</code></div>
+      <h1 data-toc-skip>Changelog <small></small></h1>
+      <small>Source: <a href='https://github.com/paleolimbot/libgeos/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div class="ref-description">
-    <p>GEOS version information</p>
-    </div>
-
-    <pre class="usage"><span class='fu'>libgeos_version</span><span class='op'>(</span><span class='op'>)</span></pre>
-
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>The version string returned by <code>GEOSversion();</code></p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>libgeos_version</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] "3.10.0-CAPI-1.16.0"</div><div class='input'>
-</div></pre>
+    <div id="libgeos-3100-1" class="section level1">
+<h1 class="page-header" data-toc-text="3.10.0-1">
+<a href="#libgeos-3100-1" class="anchor"></a>libgeos 3.10.0-1<small> Unreleased </small>
+</h1>
+<ul>
+<li>Update to GEOS 3.10.0 (<a href='https://github.com/paleolimbot/libgeos/issues/9'>#9</a>)</li>
+</ul>
+</div>
+    <div id="libgeos-391-1" class="section level1">
+<h1 class="page-header" data-toc-text="3.9.1-1">
+<a href="#libgeos-391-1" class="anchor"></a>libgeos 3.9.1-1<small> 2021-05-13 </small>
+</h1>
+<ul>
+<li>Update to GEOS 3.9.1 (<a href='https://github.com/paleolimbot/libgeos/issues/3'>#3</a>).</li>
+<li>Added an exported callable <code>libgeos_version_int()</code> that can be used to resolve runtime/compile-time differences when loading the exported GEOS callables (<a href='https://github.com/paleolimbot/libgeos/issues/4'>#4</a>).</li>
+<li>Removed C++ helpers and simplified linking tests (<a href='https://github.com/paleolimbot/libgeos/issues/4'>#4</a>).</li>
+<li>Simplified pattern for removing references to <code>std::cerr</code> from GEOS sources (<a href='https://github.com/paleolimbot/libgeos/issues/5'>#5</a>).</li>
+</ul>
+</div>
+    <div id="libgeos-381-4" class="section level1">
+<h1 class="page-header" data-toc-text="3.8.1-4">
+<a href="#libgeos-381-4" class="anchor"></a>libgeos 3.8.1-4<small> 2021-03-22 </small>
+</h1>
+<ul>
+<li>Backported facilities for checking runtime versions during package load from the future version 3.9.1-1.</li>
+</ul>
+</div>
+    <div id="libgeos-381-3" class="section level1">
+<h1 class="page-header" data-toc-text="3.8.1-3">
+<a href="#libgeos-381-3" class="anchor"></a>libgeos 3.8.1-3<small> 2020-07-31 </small>
+</h1>
+<ul>
+<li>Fixed warnings from the link-time optimizer, which reported naming conflicts between the C++ header types and the abstract C types used in the header API.</li>
+</ul>
+</div>
+    <div id="libgeos-381-2" class="section level1">
+<h1 class="page-header" data-toc-text="3.8.1-2">
+<a href="#libgeos-381-2" class="anchor"></a>libgeos 3.8.1-2<small> 2020-07-21 </small>
+</h1>
+<ul>
+<li>Removed the ability to link to system ‘GEOS’, as with extensive testing it was determined that the enitre API could not be guaranteed to function on all platforms when linking occurred.</li>
+<li>Fixed the type definitions in the internal C API header such that they could be properly identified by the sanitizer.</li>
+</ul>
+</div>
+    <div id="libgeos-381-1" class="section level1">
+<h1 class="page-header" data-toc-text="3.8.1-1">
+<a href="#libgeos-381-1" class="anchor"></a>libgeos 3.8.1-1<small> 2020-07-13 </small>
+</h1>
+<p>Added the ability to link to system ‘GEOS’ if a copy with version &gt;3.8.0 was installed.</p>
+</div>
+    <div id="libgeos-381-0" class="section level1">
+<h1 class="page-header" data-toc-text="3.8.1-0">
+<a href="#libgeos-381-0" class="anchor"></a>libgeos 3.8.1-0<small> 2020-07-08 </small>
+</h1>
+<p>Initial version using GEOS 3.8.1.</p>
+</div>
   </div>
+
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
     </nav>
   </div>
+
 </div>
 
 
