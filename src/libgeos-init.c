@@ -72,6 +72,101 @@ typedef struct GEOSGeoJSONReader_t GEOSGeoJSONReader;
 typedef struct GEOSGeoJSONWriter_t GEOSGeoJSONWriter;
 typedef void (*GEOSMessageHandler)(const char *fmt, ...);
 
+enum GEOSGeomTypes {
+    /** Point */
+    GEOS_POINT,
+    /** Linestring */
+    GEOS_LINESTRING,
+    /** Linear ring, used within polygons */
+    GEOS_LINEARRING,
+    /** Polygon */
+    GEOS_POLYGON,
+    /** Multipoint, a homogeneous collection of points */
+    GEOS_MULTIPOINT,
+    /** Multilinestring, a homogeneous collection of linestrings */
+    GEOS_MULTILINESTRING,
+    /** Multipolygon, a homogeneous collection of polygons */
+    GEOS_MULTIPOLYGON,
+    /** Geometry collection, a heterogeneous collection of geometry */
+    GEOS_GEOMETRYCOLLECTION
+};
+enum GEOSWKBByteOrders {
+    /** Big Endian */
+    GEOS_WKB_XDR = 0,
+    /** Little Endian */
+    GEOS_WKB_NDR = 1
+};
+enum GEOSWKBFlavors {
+    /** Extended */
+    GEOS_WKB_EXTENDED = 1,
+    /** ISO */
+    GEOS_WKB_ISO = 2
+};
+enum GEOSBufCapStyles {
+
+    /** End is rounded, with end point of original line in the centre of the round cap. */
+	GEOSBUF_CAP_ROUND = 1,
+
+    /** End is flat, with end point of original line at the end of the buffer */
+	GEOSBUF_CAP_FLAT = 2,
+
+    /** End is flat, with end point of original line in the middle of a square enclosing that point */
+	GEOSBUF_CAP_SQUARE = 3
+};
+enum GEOSBufJoinStyles {
+    /**
+    * Join is rounded, essentially each line is terminated
+    * in a round cap. Form round corner.
+    */
+	GEOSBUF_JOIN_ROUND = 1,
+    /**
+    * Join is flat, with line between buffer edges,
+    * through the join point. Forms flat corner.
+    */
+	GEOSBUF_JOIN_MITRE = 2,
+    /**
+    * Join is the point at which the two buffer edges intersect.
+    * Forms sharp corner.
+    */
+	GEOSBUF_JOIN_BEVEL = 3
+};
+enum GEOSRelateBoundaryNodeRules {
+    /** See geos::algorithm::BoundaryNodeRule::getBoundaryRuleMod2() */
+    GEOSRELATE_BNR_MOD2 = 1,
+    /** Same as \ref GEOSRELATE_BNR_MOD2 */
+    GEOSRELATE_BNR_OGC = 1,
+    /** See geos::algorithm::BoundaryNodeRule::getBoundaryEndPoint() */
+	GEOSRELATE_BNR_ENDPOINT = 2,
+    /** See geos::algorithm::BoundaryNodeRule::getBoundaryMultivalentEndPoint() */
+	GEOSRELATE_BNR_MULTIVALENT_ENDPOINT = 3,
+    /** See geos::algorithm::BoundaryNodeRule::getBoundaryMonovalentEndPoint() */
+	GEOSRELATE_BNR_MONOVALENT_ENDPOINT = 4
+};
+enum GEOSValidFlags
+{
+    /** Allow self-touching rings to form a hole in a polygon. */
+	GEOSVALID_ALLOW_SELFTOUCHING_RING_FORMING_HOLE = 1
+};
+enum GEOSMakeValidMethods {
+    /** Original method, combines all rings into
+        a set of noded lines and then extracts valid
+        polygons from that linework. */
+    GEOS_MAKE_VALID_LINEWORK = 0,
+    /** Structured method, first makes all rings valid
+        then merges shells and subtracts holes from
+        shells to generate valid result. Assumes that
+        holes and shells are correctly categorized. */
+    GEOS_MAKE_VALID_STRUCTURE = 1
+};
+enum GEOSPrecisionRules {
+    /** The output is always valid. Collapsed geometry elements (including both polygons and lines) are removed. */
+    GEOS_PREC_VALID_OUTPUT = 0,
+    /** Precision reduction is performed pointwise. Output geometry may be invalid due to collapse or self-intersection. (This might be better called "GEOS_PREC_POINTWISE" - the current name is historical.) */
+    GEOS_PREC_NO_TOPO = 1,
+    /** Like the default mode, except that collapsed linear geometry elements are preserved. Collapsed polygonal input elements are removed. */
+    GEOS_PREC_KEEP_COLLAPSED = 2
+};
+
 #define GEOS_DLL
 GEOSContextHandle_t GEOS_DLL GEOS_init_r(void);
 void GEOS_DLL GEOS_finish_r(GEOSContextHandle_t handle);

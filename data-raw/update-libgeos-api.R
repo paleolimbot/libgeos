@@ -198,6 +198,8 @@ int libgeos_version_int() {{
 // uses create problems for the LTO build of R-devel
 { paste0(typedefs_chr, collapse = "\n") }
 
+{ paste0(enums_chr, collapse = "\n") }
+
 #define GEOS_DLL
 { paste0(def, collapse = "\n") }
 
