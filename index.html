@@ -39,7 +39,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">libgeos</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">3.9.1-1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">3.10.0-0.9000</span>
       </span>
     </div>
 
@@ -54,7 +54,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/paleolimbot/libgeos/">
+  <a href="https://github.com/paleolimbot/libgeos/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -71,27 +71,26 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="libgeos" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#libgeos" class="anchor" aria-hidden="true"></a>libgeos</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="libgeos">libgeos<a class="anchor" aria-label="anchor" href="#libgeos"></a>
+</h1></div>
 <!-- badges: start -->
 
-<p>The goal of libgeos is to provide access to the <a href="https://trac.osgeo.org/geos/" class="external-link">GEOS</a> C API for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS library, modified slightly to eliminate errors on all the platorms checked by CRAN and GitHub actions. This means you don’t have to install anything (other than the package) to take advantage of GEOS functions in R. It also means you don’t need a configure script if you’re writing a package that needs GEOS functionality (just <code>LinkingTo: libgeos</code>). Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license. See the <a href="https://paleolimbot.github.io/geos/" class="external-link">geos R package</a> for an R API to GEOS.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor" aria-hidden="true"></a>Installation</h2>
+<p>The goal of libgeos is to provide access to the <a href="https://trac.osgeo.org/geos/" class="external-link">GEOS</a> <a href="https://geos.osgeo.org/doxygen/geos__c_8h.html" class="external-link">C API</a> for high-performance geometry operations within the R package framework. This package contains a copy of the GEOS library, modified slightly to eliminate errors on all the platorms checked by CRAN and GitHub actions. This means you don’t have to install anything (other than the package) to take advantage of GEOS functions in R. It also means you don’t need a configure script if you’re writing a package that needs GEOS functionality (just <code>LinkingTo: libgeos</code>). Because GEOS is license under the LGPL, dynamically linking to GEOS (e.g., through the C API exposed in this package) is generally allowed from a package with any license. See the <a href="https://paleolimbot.github.io/geos/" class="external-link">geos R package</a> for an R API to GEOS.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>You can install the released version of libgeos from <a href="https://cran.r-project.org/" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"libgeos"</span><span class="op">)</span></code></pre></div>
 <p>To install a binary on supported Linux platforms, you can use <a href="https://packagemanager.rstudio.com/" class="external-link">RStudio Package Manager’s public instance</a> (see <a href="https://packagemanager.rstudio.com/client/#/repos/1/overview" class="external-link">here</a> for how to configure on your platform).</p>
-<p>You can install the development version of libgeos from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install the development version from <a href="https://r-universe.dev/" class="external-link">RUniverse</a> with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"paleolimbot/libgeos"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"libgeos"</span>, repos <span class="op">=</span> <span class="st">"https://paleolimbot.r-universe.dev"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor" aria-hidden="true"></a>Example</h2>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
 <p>This package only exists for its exported C API. You can link to libgeos from a package by specifying <code>LinkingTo: libgeos</code> and <code>Imports: libgeos</code> in your DESCRIPTION. You can link to libgeos interactively from Rcpp using <code>// [[Rcpp::depends(libgeos)]]</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="pp">#include </span><span class="im">&lt;Rcpp.h&gt;</span></span>
 <span id="cb3-2"><a href="#cb3-2"></a></span>
@@ -122,7 +121,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">version</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "3.9.1-CAPI-1.14.2"</span></code></pre></div>
+<span class="co">#&gt; [1] "3.10.0-CAPI-1.16.0"</span></code></pre></div>
 <p>You can link to libegeos interactively from cpp11 using <code>[[cpp11::linking_to(libgeos)]]</code>:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="pp">#include </span><span class="im">&lt;cpp11.hpp&gt;</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a></span>
@@ -151,7 +150,7 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">cpp_libgeos_init_api</span><span class="op">(</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Version.html" class="external-link">version</a></span><span class="op">(</span><span class="op">)</span>
-<span class="co">#&gt; [1] "3.9.1-CAPI-1.14.2"</span></code></pre></div>
+<span class="co">#&gt; [1] "3.10.0-CAPI-1.16.0"</span></code></pre></div>
 </div>
 </div>
   </div>
@@ -160,11 +159,11 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=libgeos">https://​cloud.r-project.org/​package=libgeos</a>
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=libgeos" class="external-link">https://​cloud.r-project.org/​package=libgeos</a>
 </li>
-<li>Browse source code at <br><a href="https://github.com/paleolimbot/libgeos/">https://​github.com/​paleolimbot/​libgeos/​</a>
+<li>Browse source code at <br><a href="https://github.com/paleolimbot/libgeos/" class="external-link">https://​github.com/​paleolimbot/​libgeos/​</a>
 </li>
-<li>Report a bug at <br><a href="https://github.com/paleolimbot/libgeos/issues">https://​github.com/​paleolimbot/​libgeos/​issues</a>
+<li>Report a bug at <br><a href="https://github.com/paleolimbot/libgeos/issues" class="external-link">https://​github.com/​paleolimbot/​libgeos/​issues</a>
 </li>
 </ul>
 </div>
@@ -181,7 +180,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Dewey Dunnington <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-9415-4582" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Dewey Dunnington <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-9415-4582" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>GEOS authors <br><small class="roles"> Author </small>  </li>
 <li><a href="authors.html">More on authors...</a></li>
 </ul>
@@ -205,7 +204,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 1.9000.9000.9000.</p>
 </div>
 
       </footer>
