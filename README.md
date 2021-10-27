@@ -11,19 +11,18 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 <!-- badges: end -->
 
 The goal of libgeos is to provide access to the
-[GEOS](https://trac.osgeo.org/geos/) [C
-API](https://geos.osgeo.org/doxygen/geos__c_8h.html) for
-high-performance geometry operations within the R package framework.
-This package contains a copy of the GEOS library, modified slightly to
-eliminate errors on all the platorms checked by CRAN and GitHub actions.
-This means you don’t have to install anything (other than the package)
-to take advantage of GEOS functions in R. It also means you don’t need a
-configure script if you’re writing a package that needs GEOS
-functionality (just `LinkingTo: libgeos`). Because GEOS is license under
-the LGPL, dynamically linking to GEOS (e.g., through the C API exposed
-in this package) is generally allowed from a package with any license.
-See the [geos R package](https://paleolimbot.github.io/geos/) for an R
-API to GEOS.
+[GEOS](https://trac.osgeo.org/geos/) C API for high-performance geometry
+operations within the R package framework. This package contains a copy
+of the GEOS library, modified slightly to eliminate errors on all the
+platorms checked by CRAN and GitHub actions. This means you don’t have
+to install anything (other than the package) to take advantage of GEOS
+functions in R. It also means you don’t need a configure script if
+you’re writing a package that needs GEOS functionality (just
+`LinkingTo: libgeos`). Because GEOS is license under the LGPL,
+dynamically linking to GEOS (e.g., through the C API exposed in this
+package) is generally allowed from a package with any license. See the
+[geos R package](https://paleolimbot.github.io/geos/) for an R API to
+GEOS.
 
 ## Installation
 
