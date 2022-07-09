@@ -1,6 +1,6 @@
 Package: libgeos
 Title: Open Source Geometry Engine ('GEOS') C API
-Version: 3.11.0-1
+Version: 3.11.0-0.9000
 Authors@R: 
     c(
       person(given = "Dewey",
@@ -36,7 +36,7 @@ License: LGPL (>= 2.1)
 Copyright: file COPYRIGHTS
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 URL: https://paleolimbot.github.io/libgeos/, https://github.com/paleolimbot/libgeos
 BugReports: https://github.com/paleolimbot/libgeos/issues
 Suggests: 
