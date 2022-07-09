@@ -61,7 +61,7 @@ PolygonEarClipper::createNextLinks(std::size_t size) const
 
 /* public static */
 void
-PolygonEarClipper::triangulate(std::vector<Coordinate>& polyShell, TriList& triListResult)
+PolygonEarClipper::triangulate(std::vector<Coordinate>& polyShell, TriList<Tri>& triListResult)
 {
     PolygonEarClipper clipper(polyShell);
     return clipper.compute(triListResult);
@@ -78,7 +78,7 @@ PolygonEarClipper::setSkipFlatCorners(bool p_isFlatCornersSkipped)
 
 /* public */
 void
-PolygonEarClipper::compute(TriList& triList)
+PolygonEarClipper::compute(TriList<Tri>& triList)
 {
     /**
      * Count scanned corners, to catch infinite loops
@@ -100,8 +100,8 @@ PolygonEarClipper::compute(TriList& triList)
         * after enough ears are removed)
         */
         if (! isConvex(corner)) {
-            // remove the corner if it is flat or a repeated point
-            bool isCornerRemoved = hasRepeatedPoint(corner)
+            // remove the corner if it is invalid or flat (if required)
+            bool isCornerRemoved = isCornerInvalid(corner)
                 || (isFlatCornersSkipped && isFlat(corner));
             if (isCornerRemoved) {
                 removeCorner();
@@ -337,9 +337,9 @@ PolygonEarClipper::isFlat(const std::array<Coordinate, 3>& pts) const
 
 /* private static */
 bool
-PolygonEarClipper::hasRepeatedPoint(const std::array<Coordinate, 3>& pts) const
+PolygonEarClipper::isCornerInvalid(const std::array<Coordinate, 3>& pts) const
 {
-    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]);
+    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]) || pts[0].equals2D(pts[2]);
 }
 
 

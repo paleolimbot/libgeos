@@ -40,6 +40,10 @@ using namespace geos::geom;
 #define GEOS_DEBUG 0
 #endif
 
+#if GEOS_DEBUG
+#include <iostream>
+#endif
+
 namespace geos {
 namespace operation { // geos.operation
 namespace linemerge { // geos.operation.linemerge
@@ -52,7 +56,8 @@ LineMerger::add(std::vector<const Geometry*>* geometries)
     }
 }
 
-LineMerger::LineMerger():
+LineMerger::LineMerger(bool directed):
+    isDirected(directed),
     factory(nullptr)
 {
 }
@@ -184,7 +189,17 @@ LineMerger::buildEdgeStringsForNonDegree2Nodes()
 #if GEOS_DEBUG
         std::cerr << "Node " << i << ": " << *node << std::endl;
 #endif
-        if(node->getDegree() != 2) {
+        bool isStartNode = (node->getDegree() != 2);
+
+        // For directed merge a node also has to be processed
+        // if both edges are incoming or outgoing
+        if (!isStartNode && isDirected) {
+            const auto& edges = node->getOutEdges()->getEdges();
+            assert(edges.size() == 2);
+            isStartNode = (edges[0]->getEdgeDirection() == edges[1]->getEdgeDirection());
+        }
+
+        if (isStartNode) {
             buildEdgeStringsStartingAt(node);
             node->setMarked(true);
 #if GEOS_DEBUG
@@ -202,6 +217,9 @@ LineMerger::buildEdgeStringsStartingAt(Node* node)
     for(std::size_t i = 0; i < size; i++) {
         LineMergeDirectedEdge* directedEdge =
                             detail::down_cast<LineMergeDirectedEdge*>(edges[i]);
+        if(isDirected && !directedEdge->getEdgeDirection()) {
+            continue;
+        }
         if(directedEdge->getEdge()->isMarked()) {
             continue;
         }
@@ -217,7 +235,7 @@ LineMerger::buildEdgeStringStartingWith(LineMergeDirectedEdge* start)
     do {
         edgeString->add(current);
         current->getEdge()->setMarked(true);
-        current = current->getNext();
+        current = current->getNext(isDirected);
     }
     while(current != nullptr && current != start);
     return edgeString;

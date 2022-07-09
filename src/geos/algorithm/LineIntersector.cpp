@@ -29,6 +29,7 @@
 
 #include <algorithm> // for max()
 #include <string>
+#include <sstream>
 #include <cmath> // for fabs()
 #include <cassert>
 
@@ -37,7 +38,7 @@
 #define GEOS_DEBUG 0
 #endif
 
-#ifdef GEOS_DEBUG
+#if GEOS_DEBUG
 #include <iostream>
 #endif
 
@@ -75,7 +76,7 @@ LineIntersector::computeEdgeDistance(const Coordinate& p, const Coordinate& p0, 
         }
         // <FIX>
         // hack to ensure that non-endpoints always have a non-zero distance
-        if(dist == 0.0 && !(p == p0)) {
+        if(dist == 0.0) {
             dist = std::max(pdx, pdy);
         }
     }
@@ -100,20 +101,24 @@ LineIntersector::computeIntersection(const Coordinate& p1, const Coordinate& p2,
 std::string
 LineIntersector::toString() const
 {
-    std::string str = inputLines[0][0]->toString() + "_"
-                 + inputLines[0][1]->toString() + " "
-                 + inputLines[1][0]->toString() + "_"
-                 + inputLines[1][1]->toString() + " : ";
+    auto getCoordString = [](const Coordinate* coord) -> std::string {
+        return coord ? coord->toString() : "<none>";
+    };
+    std::ostringstream ss;
+    ss << getCoordString(inputLines[0][0]) << "_"
+       << getCoordString(inputLines[0][1]) << " "
+       << getCoordString(inputLines[1][0]) << "_"
+       << getCoordString(inputLines[1][1]) << " : ";
     if(isEndPoint()) {
-        str += " endpoint";
+        ss << " endpoint";
     }
     if(isProperVar) {
-        str += " proper";
+        ss << " proper";
     }
     if(isCollinear()) {
-        str += " collinear";
+        ss << " collinear";
     }
-    return str;
+    return ss.str();
 }
 
 /*public static*/
@@ -229,7 +234,7 @@ LineIntersector::interpolateZ(const Coordinate& p,
     xoff = (p.x - p1.x);
     yoff = (p.y - p1.y);
     double pdist = (xoff * xoff + yoff * yoff);
-    double fract = sqrt(pdist / seglen);
+    double fract = std::sqrt(pdist / seglen);
     double zoff = zgap * fract;
     //double interpolated = p1.z < p2.z ? p1.z+zoff : p1.z-zoff;
     double interpolated = p1.z + zoff;
@@ -600,7 +605,7 @@ LineIntersector::zInterpolate(const Coordinate& p, const Coordinate& p1, const C
     double xoff = (p.x - p1.x);
     double yoff = (p.y - p1.y);
     double plen = (xoff * xoff + yoff * yoff);
-    double frac = sqrt(plen / seglen);
+    double frac = std::sqrt(plen / seglen);
     double zoff = dz * frac;
     double zInterpolated = p1z + zoff;
 #if GEOS_DEBUG
@@ -671,6 +676,3 @@ LineIntersector::nearestEndpoint(const Coordinate& p1, const Coordinate& p2,
 } // namespace geos.algorithm
 } // namespace geos
 
-#ifndef GEOS_INLINE
-# include "geos/algorithm/LineIntersector.inl"
-#endif

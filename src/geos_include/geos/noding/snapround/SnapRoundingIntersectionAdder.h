@@ -19,8 +19,6 @@
 #include <vector>
 #include <memory>
 
-#include <geos/inline.h>
-
 #include <geos/noding/Noder.h> // for inheritance
 #include <geos/algorithm/LineIntersector.h> // for composition
 #include <geos/geom/Coordinate.h> // for use in vector
@@ -65,11 +63,6 @@ namespace snapround { // geos::noding::snapround
 class GEOS_DLL SnapRoundingIntersectionAdder: public SegmentIntersector { // implements SegmentIntersector
 
 private:
-    /**
-    * The division factor used to determine
-    * nearness distance tolerance for interior intersection detection.
-    */
-    static constexpr int NEARNESS_FACTOR = 100;
 
     algorithm::LineIntersector li;
     std::unique_ptr<std::vector<geom::Coordinate>> intersections;
@@ -95,7 +88,11 @@ private:
 
 public:
 
-    SnapRoundingIntersectionAdder(const geom::PrecisionModel* newPm);
+    SnapRoundingIntersectionAdder(double p_nearnessTol)
+        : SegmentIntersector()
+        , intersections(new std::vector<geom::Coordinate>)
+        , nearnessTol(p_nearnessTol)
+    {}
 
     std::unique_ptr<std::vector<geom::Coordinate>> getIntersections() { return std::move(intersections); };
 
@@ -121,8 +118,4 @@ public:
 } // namespace geos::noding::snapround
 } // namespace geos::noding
 } // namespace geos
-
-
-
-
 

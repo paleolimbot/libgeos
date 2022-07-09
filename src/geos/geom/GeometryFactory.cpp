@@ -46,12 +46,8 @@
 #define GEOS_DEBUG 0
 #endif
 
-#ifdef GEOS_DEBUG
+#if GEOS_DEBUG
 #include <iostream>
-#endif
-
-#ifndef GEOS_INLINE
-# include <geos/geom/GeometryFactory.inl>
 #endif
 
 namespace geos {
@@ -87,7 +83,7 @@ GeometryFactory::GeometryFactory()
 {
 #if GEOS_DEBUG
     std::cerr << "GEOS_DEBUG: GeometryFactory[" << this << "]::GeometryFactory()" << std::endl;
-    std::cerr << "\tcreate PrecisionModel[" << precisionModel << "]" << std::endl;
+    std::cerr << "\tcreate PrecisionModel[" << &precisionModel << "]" << std::endl;
 #endif
 }
 
@@ -470,6 +466,15 @@ GeometryFactory::createLinearRing(CoordinateSequence::Ptr && newCoords) const
 }
 
 /*public*/
+std::unique_ptr<LinearRing>
+GeometryFactory::createLinearRing(std::vector<Coordinate> && newCoords)
+const
+{
+    // Can't use make_unique with protected constructor
+    return std::unique_ptr<LinearRing>(new LinearRing(std::move(newCoords), *this));
+}
+
+/*public*/
 LinearRing*
 GeometryFactory::createLinearRing(const CoordinateSequence& fromCoords) const
 {
@@ -637,6 +642,15 @@ const
 /*public*/
 std::unique_ptr<LineString>
 GeometryFactory::createLineString(CoordinateSequence::Ptr && newCoords)
+const
+{
+    // Can't use make_unique with protected constructor
+    return std::unique_ptr<LineString>(new LineString(std::move(newCoords), *this));
+}
+
+/*public*/
+std::unique_ptr<LineString>
+GeometryFactory::createLineString(std::vector<Coordinate> && newCoords)
 const
 {
     // Can't use make_unique with protected constructor

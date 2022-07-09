@@ -12,13 +12,10 @@
  *
  **********************************************************************/
 
-#ifndef GEOS_GEOM_TRIANGLE_H
-#define GEOS_GEOM_TRIANGLE_H
+#pragma once
 
 #include <geos/export.h>
 #include <geos/geom/Coordinate.h>
-
-#include <geos/inline.h>
 
 namespace geos {
 namespace geom { // geos::geom
@@ -132,7 +129,48 @@ public:
     */
     bool isAcute() { return isAcute(p0, p1, p2); };
 
+    /**
+    * Computes the length of the longest side of a triangle
+    *
+    * @param a  a vertex of the triangle
+    * @param b  a vertex of the triangle
+    * @param c  a vertex of the triangle
+    * @return the length of the longest side of the triangle
+    */
+    static double longestSideLength(
+        const Coordinate& a,
+        const Coordinate& b,
+        const Coordinate& c);
 
+    /**
+    * Compute the length of the perimeter of a triangle
+    *
+    * @param a a vertex of the triangle
+    * @param b a vertex of the triangle
+    * @param c a vertex of the triangle
+    * @return the length of the triangle perimeter
+    */
+    static double length(const Coordinate& a, const Coordinate& b, const Coordinate& c);
+
+    /**
+    * Computes the length of the perimeter of this triangle.
+    *
+    * @return the length of the perimeter
+    */
+    double length() const;
+
+    /**
+    * Computes the 2D area of a triangle. The area value is always non-negative.
+    *
+    * @param a vertex of the triangle
+    * @param b vertex of the triangle
+    * @param c vertex of the triangle
+    * @return the area of the triangle
+    *
+    */
+    static double area(const Coordinate& a, const Coordinate& b, const Coordinate& c);
+
+    double area() const;
 
 private:
 
@@ -155,11 +193,7 @@ private:
 };
 
 
+
 } // namespace geos::geom
 } // namespace geos
 
-//#ifdef GEOS_INLINE
-//# include "geos/geom/Triangle.inl"
-//#endif
-
-#endif // ndef GEOS_GEOM_TRIANGLE_H

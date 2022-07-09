@@ -14,6 +14,13 @@ funs_3.9.1 <- read_file("https://raw.githubusercontent.com/paleolimbot/libgeos/v
   setdiff(funs_3.8.1) %>%
   setdiff("libgeos_version_int")
 
+funs_3.10.0 <- read_file("https://raw.githubusercontent.com/paleolimbot/libgeos/v3.10.0-1/inst/include/libgeos.c") %>%
+  str_match_all('R_GetCCallable\\("libgeos", "([^\\"]+)"\\)') %>%
+  .[[1]] %>%
+  .[, 2] %>%
+  setdiff(c(funs_3.8.1, funs_3.9.1)) %>%
+  setdiff("libgeos_version_int")
+
 capi_header <- read_file("src/geos_include/geos_c.h")
 
 version_defs_chr <- read_lines(capi_header)[54:81]
@@ -128,14 +135,21 @@ function_header_defs_3.9.1 <- function_header_defs %>%
 
 function_header_defs_3.10.0 <- function_header_defs %>%
   setdiff(function_header_defs_common) %>%
-  setdiff(function_header_defs_3.9.1)
+  setdiff(function_header_defs_3.9.1) %>%
+  filter(name %in% funs_3.10.0)
+
+function_header_defs_3.11.0 <- function_header_defs %>%
+  setdiff(function_header_defs_common) %>%
+  setdiff(function_header_defs_3.9.1) %>%
+  setdiff(function_header_defs_3.10.0)
 
 libgeos_c <- with(
   list(
     function_header_defs = function_header_defs,
     function_header_defs_common = function_header_defs_common,
     function_header_defs_3.9.1 = function_header_defs_3.9.1,
-    function_header_defs_3.10.0 = function_header_defs_3.10.0
+    function_header_defs_3.10.0 = function_header_defs_3.10.0,
+    function_header_defs_3.11.0 = function_header_defs_3.11.0
   ),
   glue::glue(
     '
@@ -164,6 +178,11 @@ void libgeos_init_api() {{
   // exported in libgeos >= 3.10.0
   if (libgeos_version_int() >= LIBGEOS_VERSION_INT(3, 10, 0)) {{
 { paste0("  ", function_header_defs_3.10.0$init_def, collapse = "\n") }
+  }}
+
+  // exported in libgeos >= 3.11.0
+  if (libgeos_version_int() >= LIBGEOS_VERSION_INT(3, 11, 0)) {{
+{ paste0("  ", function_header_defs_3.11.0$init_def, collapse = "\n") }
   }}
 }}
 

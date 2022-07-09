@@ -40,7 +40,7 @@
 #define GEOS_DEBUG 0
 #endif
 
-#ifdef GEOS_DEBUG
+#if GEOS_DEBUG
 #include <iostream>
 #endif
 
@@ -202,7 +202,7 @@ GeometryTransformer::transformLinearRing(
     CoordinateSequence::Ptr seq(transformCoordinates(
                                     geom->getCoordinatesRO(), geom));
 
-    auto seqSize = seq->size();
+    std::size_t seqSize = seq ? seq->size() : 0;
 
     // ensure a valid LinearRing
     if(seqSize > 0 && seqSize < 4 && ! preserveType) {
