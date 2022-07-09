@@ -1,3 +1,4 @@
+#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -145,7 +146,7 @@ LineStringTransformer::transformCoordinates(
     const Geometry* parent)
 {
 #if GEOS_DEBUG
-    std::cerr << __FUNCTION__ << ": parent: " << parent
+    cpp_compat_cerr << __FUNCTION__ << ": parent: " << parent
               << std::endl;
 #endif
     if(dynamic_cast<const LineString*>(parent)) {
@@ -154,7 +155,7 @@ LineStringTransformer::transformCoordinates(
 
         TaggedLineString* taggedLine = it->second;
 #if GEOS_DEBUG
-        std::cerr << "LineStringTransformer[" << this << "] "
+        cpp_compat_cerr << "LineStringTransformer[" << this << "] "
                   << " getting result Coordinates from "
                   << " TaggedLineString[" << taggedLine << "]"
                   << std::endl;
@@ -300,7 +301,7 @@ TopologyPreservingSimplifier::getResultGeometry()
         inputGeom->apply_ro(&lsmbf);
 
 #if GEOS_DEBUG
-        std::cerr << "LineStringMapBuilderFilter applied, "
+        cpp_compat_cerr << "LineStringMapBuilderFilter applied, "
                   << " lineStringMap contains "
                   << linestringMap.size() << " elements\n";
 #endif
@@ -311,14 +312,14 @@ TopologyPreservingSimplifier::getResultGeometry()
 
 
 #if GEOS_DEBUG
-        std::cerr << "all TaggedLineString simplified\n";
+        cpp_compat_cerr << "all TaggedLineString simplified\n";
 #endif
 
         LineStringTransformer trans(linestringMap);
         result = trans.transform(inputGeom);
 
 #if GEOS_DEBUG
-        std::cerr << "inputGeom transformed\n";
+        cpp_compat_cerr << "inputGeom transformed\n";
 #endif
 
     }
@@ -343,7 +344,7 @@ TopologyPreservingSimplifier::getResultGeometry()
     }
 
 #if GEOS_DEBUG
-    std::cerr << "returning result\n";
+    cpp_compat_cerr << "returning result\n";
 #endif
 
     return result;

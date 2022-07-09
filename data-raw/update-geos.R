@@ -107,14 +107,16 @@ objects <- list.files("src", pattern = "\\.c(pp)?$", recursive = TRUE, full.name
   paste("    ", ., "\\", collapse = "\n") %>%
   gsub("\\\\\\s*$", "", .)
 
+# Update OBJECTS in Makevars (copied to clipboard)
 clipr::write_clip(objects)
 usethis::edit_file("src/Makevars")
+usethis::edit_file("src/Makevars.win")
 
 #' Reminders about manual modifications that are needed
-#' - noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr
 #' - src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr
-#' - src/simplify__TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr
-#' - src/util__Profiler.cpp: Replace cerr with cpp_compat_cerr
-#' - update include in include_nlohmann_json.hpp to point to custom nlohmann_json.hpp
-#' - Update OBJECTS in Makevars (copied to clipboard)
+usethis::edit_file("src/geos/operation/overlay/ElevationMatrix.cpp")
+#' - src/simplify/TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr
+usethis::edit_file("src/geos/simplify/TopologyPreservingSimplifier.cpp")
+#' - util/Profiler.cpp: Replace cerr with cpp_compat_cerr
+usethis::edit_file("src/geos/util/Profiler.cpp")
 #' - Update exported C API using update-libgeos-api.R

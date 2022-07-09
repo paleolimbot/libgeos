@@ -1,3 +1,4 @@
+#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -97,7 +98,7 @@ Profiler::stop(std::string name)
 {
     auto iter = profs.find(name);
     if(iter == profs.end()) {
-        std::cerr << name << ": no such Profile started";
+        cpp_compat_cerr << name << ": no such Profile started";
         return;
     }
     iter->second->stop();
