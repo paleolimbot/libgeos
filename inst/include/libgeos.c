@@ -61,12 +61,17 @@ GEOSGeometry* (*GEOSGeom_createEmptyPolygon_r)( GEOSContextHandle_t) = NULL;
 GEOSGeometry* (*GEOSGeom_createPolygon_r)( GEOSContextHandle_t, GEOSGeometry*, GEOSGeometry**, unsigned int) = NULL;
 GEOSGeometry* (*GEOSGeom_createCollection_r)( GEOSContextHandle_t, int, GEOSGeometry**, unsigned int) = NULL;
 GEOSGeometry* (*GEOSGeom_createEmptyCollection_r)( GEOSContextHandle_t, int) = NULL;
+GEOSGeometry* (*GEOSGeom_createRectangle_r)( GEOSContextHandle_t, double, double, double, double) = NULL;
 GEOSGeometry* (*GEOSGeom_clone_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 void (*GEOSGeom_destroy_r)( GEOSContextHandle_t, GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSEnvelope_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSIntersection_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSIntersectionPrec_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double) = NULL;
 GEOSGeometry* (*GEOSConvexHull_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
+GEOSGeometry* (*GEOSConcaveHull_r)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int) = NULL;
+GEOSGeometry* (*GEOSPolygonHullSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, double) = NULL;
+GEOSGeometry* (*GEOSPolygonHullSimplifyMode_r)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, unsigned int, double) = NULL;
+GEOSGeometry* (*GEOSConcaveHullOfPolygons_r)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int, unsigned int) = NULL;
 GEOSGeometry* (*GEOSMinimumRotatedRectangle_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSMaximumInscribedCircle_r)( GEOSContextHandle_t, const GEOSGeometry*, double) = NULL;
 GEOSGeometry* (*GEOSLargestEmptyCircle_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double) = NULL;
@@ -94,6 +99,7 @@ GEOSGeometry* (*GEOSPolygonizer_getCutEdges_r)( GEOSContextHandle_t, const GEOSG
 GEOSGeometry* (*GEOSPolygonize_full_r)( GEOSContextHandle_t, const GEOSGeometry*, GEOSGeometry**, GEOSGeometry**, GEOSGeometry**) = NULL;
 GEOSGeometry* (*GEOSBuildArea_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSLineMerge_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
+GEOSGeometry* (*GEOSLineMergeDirected_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSReverse_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, double) = NULL;
 GEOSGeometry* (*GEOSTopologyPreserveSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, double) = NULL;
@@ -156,6 +162,7 @@ int (*GEOSMakeValidParams_setKeepCollapsed_r)( GEOSContextHandle_t, GEOSMakeVali
 int (*GEOSMakeValidParams_setMethod_r)( GEOSContextHandle_t, GEOSMakeValidParams*, enum GEOSMakeValidMethods) = NULL;
 GEOSGeometry* (*GEOSMakeValid_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSMakeValidWithParams_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSMakeValidParams*) = NULL;
+GEOSGeometry* (*GEOSRemoveRepeatedPoints_r)( GEOSContextHandle_t, const GEOSGeometry*, double) = NULL;
 char* (*GEOSGeomType_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 int (*GEOSGeomTypeId_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 int (*GEOSGetSRID_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
@@ -182,6 +189,7 @@ int (*GEOSGeom_getXMin_r)( GEOSContextHandle_t, const GEOSGeometry*, double*) = 
 int (*GEOSGeom_getYMin_r)( GEOSContextHandle_t, const GEOSGeometry*, double*) = NULL;
 int (*GEOSGeom_getXMax_r)( GEOSContextHandle_t, const GEOSGeometry*, double*) = NULL;
 int (*GEOSGeom_getYMax_r)( GEOSContextHandle_t, const GEOSGeometry*, double*) = NULL;
+int (*GEOSGeom_getExtent_r)( GEOSContextHandle_t, const GEOSGeometry*, double*, double*, double*, double*) = NULL;
 GEOSGeometry* (*GEOSGeomGetPointN_r)( GEOSContextHandle_t, const GEOSGeometry*, int) = NULL;
 GEOSGeometry* (*GEOSGeomGetStartPoint_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 GEOSGeometry* (*GEOSGeomGetEndPoint_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
@@ -194,12 +202,15 @@ int (*GEOSHausdorffDistance_r)( GEOSContextHandle_t, const GEOSGeometry*, const 
 int (*GEOSHausdorffDistanceDensify_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double, double*) = NULL;
 int (*GEOSFrechetDistance_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double*) = NULL;
 int (*GEOSFrechetDistanceDensify_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double, double*) = NULL;
+int (*GEOSHilbertCode_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, unsigned int, unsigned int *code ) = NULL;
 int (*GEOSGeomGetLength_r)( GEOSContextHandle_t, const GEOSGeometry*, double*) = NULL;
 GEOSCoordSequence* (*GEOSNearestPoints_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*) = NULL;
+GEOSGeometry* (*GEOSGeom_transformXY_r)( GEOSContextHandle_t, const GEOSGeometry*, GEOSTransformXYCallback, void*) = NULL;
 int (*GEOSOrientationIndex_r)( GEOSContextHandle_t, double, double, double, double, double, double) = NULL;
 GEOSWKTReader* (*GEOSWKTReader_create_r)( GEOSContextHandle_t) = NULL;
 void (*GEOSWKTReader_destroy_r)(GEOSContextHandle_t, GEOSWKTReader*) = NULL;
 GEOSGeometry* (*GEOSWKTReader_read_r)( GEOSContextHandle_t, GEOSWKTReader*, const char*) = NULL;
+void (*GEOSWKTReader_setFixStructure_r)( GEOSContextHandle_t, GEOSWKTReader*, char) = NULL;
 GEOSWKTWriter* (*GEOSWKTWriter_create_r)( GEOSContextHandle_t) = NULL;
 void (*GEOSWKTWriter_destroy_r)( GEOSContextHandle_t, GEOSWKTWriter*) = NULL;
 char* (*GEOSWKTWriter_write_r)( GEOSContextHandle_t, GEOSWKTWriter*, const GEOSGeometry*) = NULL;
@@ -210,6 +221,7 @@ int (*GEOSWKTWriter_getOutputDimension_r)( GEOSContextHandle_t, GEOSWKTWriter*) 
 void (*GEOSWKTWriter_setOld3D_r)( GEOSContextHandle_t, GEOSWKTWriter*, int) = NULL;
 GEOSWKBReader* (*GEOSWKBReader_create_r)( GEOSContextHandle_t) = NULL;
 void (*GEOSWKBReader_destroy_r)( GEOSContextHandle_t, GEOSWKBReader*) = NULL;
+void (*GEOSWKBReader_setFixStructure_r)( GEOSContextHandle_t, GEOSWKBReader*, char) = NULL;
 GEOSGeometry* (*GEOSWKBReader_read_r)( GEOSContextHandle_t, GEOSWKBReader*, const unsigned char*, size_t) = NULL;
 GEOSGeometry* (*GEOSWKBReader_readHEX_r)( GEOSContextHandle_t, GEOSWKBReader*, const unsigned char*, size_t) = NULL;
 GEOSWKBWriter* (*GEOSWKBWriter_create_r)( GEOSContextHandle_t) = NULL;
@@ -497,5 +509,21 @@ void libgeos_init_api() {
     GEOSGeoJSONWriter_create_r = (GEOSGeoJSONWriter* (*)( GEOSContextHandle_t)) R_GetCCallable("libgeos", "GEOSGeoJSONWriter_create_r");
     GEOSGeoJSONWriter_destroy_r = (void (*)(GEOSContextHandle_t, GEOSGeoJSONWriter*)) R_GetCCallable("libgeos", "GEOSGeoJSONWriter_destroy_r");
     GEOSGeoJSONWriter_writeGeometry_r = (char* (*)( GEOSContextHandle_t, GEOSGeoJSONWriter*, const GEOSGeometry*, int)) R_GetCCallable("libgeos", "GEOSGeoJSONWriter_writeGeometry_r");
+  }
+
+  // exported in libgeos >= 3.11.0
+  if (libgeos_version_int() >= LIBGEOS_VERSION_INT(3, 11, 0)) {
+    GEOSGeom_createRectangle_r = (GEOSGeometry* (*)( GEOSContextHandle_t, double, double, double, double)) R_GetCCallable("libgeos", "GEOSGeom_createRectangle_r");
+    GEOSConcaveHull_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int)) R_GetCCallable("libgeos", "GEOSConcaveHull_r");
+    GEOSPolygonHullSimplify_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, double)) R_GetCCallable("libgeos", "GEOSPolygonHullSimplify_r");
+    GEOSPolygonHullSimplifyMode_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, unsigned int, double)) R_GetCCallable("libgeos", "GEOSPolygonHullSimplifyMode_r");
+    GEOSConcaveHullOfPolygons_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int, unsigned int)) R_GetCCallable("libgeos", "GEOSConcaveHullOfPolygons_r");
+    GEOSLineMergeDirected_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*)) R_GetCCallable("libgeos", "GEOSLineMergeDirected_r");
+    GEOSRemoveRepeatedPoints_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, double)) R_GetCCallable("libgeos", "GEOSRemoveRepeatedPoints_r");
+    GEOSGeom_getExtent_r = (int (*)( GEOSContextHandle_t, const GEOSGeometry*, double*, double*, double*, double*)) R_GetCCallable("libgeos", "GEOSGeom_getExtent_r");
+    GEOSHilbertCode_r = (int (*)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, unsigned int, unsigned int *code )) R_GetCCallable("libgeos", "GEOSHilbertCode_r");
+    GEOSGeom_transformXY_r = (GEOSGeometry* (*)( GEOSContextHandle_t, const GEOSGeometry*, GEOSTransformXYCallback, void*)) R_GetCCallable("libgeos", "GEOSGeom_transformXY_r");
+    GEOSWKTReader_setFixStructure_r = (void (*)( GEOSContextHandle_t, GEOSWKTReader*, char)) R_GetCCallable("libgeos", "GEOSWKTReader_setFixStructure_r");
+    GEOSWKBReader_setFixStructure_r = (void (*)( GEOSContextHandle_t, GEOSWKBReader*, char)) R_GetCCallable("libgeos", "GEOSWKBReader_setFixStructure_r");
   }
 }

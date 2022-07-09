@@ -10,6 +10,7 @@
 using std::size_t;
 #endif
 
+/* ====================================================================== */
 /* Version */
 /* ====================================================================== */
 
@@ -19,25 +20,24 @@ using std::size_t;
 #define GEOS_VERSION_MAJOR 3
 #endif
 #ifndef GEOS_VERSION_MINOR
-#define GEOS_VERSION_MINOR 10
+#define GEOS_VERSION_MINOR 11
 #endif
 #ifndef GEOS_VERSION_PATCH
 #define GEOS_VERSION_PATCH 0
 #endif
 #ifndef GEOS_VERSION
-#define GEOS_VERSION "3.10.0"
+#define GEOS_VERSION "3.11.0"
 #endif
 #ifndef GEOS_JTS_PORT
 #define GEOS_JTS_PORT "1.18.0"
 #endif
 
 #define GEOS_CAPI_VERSION_MAJOR 1
-#define GEOS_CAPI_VERSION_MINOR 16
+#define GEOS_CAPI_VERSION_MINOR 17
 #define GEOS_CAPI_VERSION_PATCH 0
-#define GEOS_CAPI_VERSION "3.10.0-CAPI-1.16.0"
+#define GEOS_CAPI_VERSION "3.11.0-CAPI-1.17.0"
 
 #define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
-#define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
 
 // how integer versions are calculated
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
@@ -64,6 +64,10 @@ typedef int (*GEOSDistanceCallback)(
     const void* item1,
     const void* item2,
     double* distance,
+    void* userdata);
+typedef int (*GEOSTransformXYCallback)(
+    double* x,
+    double* y,
     void* userdata);
 typedef void (GEOSInterruptCallback)(void);
 typedef struct GEOSWKTReader_t GEOSWKTReader;
@@ -168,6 +172,12 @@ enum GEOSPrecisionRules {
     /** Like the default mode, except that collapsed linear geometry elements are preserved. Collapsed polygonal input elements are removed. */
     GEOS_PREC_KEEP_COLLAPSED = 2
 };
+enum GEOSPolygonHullParameterModes {
+    /** See geos::simplify::PolygonHullSimplifier::hull() */
+    GEOSHULL_PARAM_VERTEX_RATIO = 1,
+    /** See geos::simplify::PolygonHullSimplifier::hullByAreaDelta() */
+    GEOSHULL_PARAM_AREA_RATIO = 2
+};
 
 extern GEOSContextHandle_t (*GEOS_init_r)(void);
 extern void (*GEOS_finish_r)(GEOSContextHandle_t);
@@ -223,12 +233,17 @@ extern GEOSGeometry* (*GEOSGeom_createEmptyPolygon_r)( GEOSContextHandle_t);
 extern GEOSGeometry* (*GEOSGeom_createPolygon_r)( GEOSContextHandle_t, GEOSGeometry*, GEOSGeometry**, unsigned int);
 extern GEOSGeometry* (*GEOSGeom_createCollection_r)( GEOSContextHandle_t, int, GEOSGeometry**, unsigned int);
 extern GEOSGeometry* (*GEOSGeom_createEmptyCollection_r)( GEOSContextHandle_t, int);
+extern GEOSGeometry* (*GEOSGeom_createRectangle_r)( GEOSContextHandle_t, double, double, double, double);
 extern GEOSGeometry* (*GEOSGeom_clone_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern void (*GEOSGeom_destroy_r)( GEOSContextHandle_t, GEOSGeometry*);
 extern GEOSGeometry* (*GEOSEnvelope_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSIntersection_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSIntersectionPrec_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSConvexHull_r)( GEOSContextHandle_t, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSConcaveHull_r)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int);
+extern GEOSGeometry* (*GEOSPolygonHullSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, double);
+extern GEOSGeometry* (*GEOSPolygonHullSimplifyMode_r)( GEOSContextHandle_t, const GEOSGeometry*, unsigned int, unsigned int, double);
+extern GEOSGeometry* (*GEOSConcaveHullOfPolygons_r)( GEOSContextHandle_t, const GEOSGeometry*, double, unsigned int, unsigned int);
 extern GEOSGeometry* (*GEOSMinimumRotatedRectangle_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSMaximumInscribedCircle_r)( GEOSContextHandle_t, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSLargestEmptyCircle_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double);
@@ -256,6 +271,7 @@ extern GEOSGeometry* (*GEOSPolygonizer_getCutEdges_r)( GEOSContextHandle_t, cons
 extern GEOSGeometry* (*GEOSPolygonize_full_r)( GEOSContextHandle_t, const GEOSGeometry*, GEOSGeometry**, GEOSGeometry**, GEOSGeometry**);
 extern GEOSGeometry* (*GEOSBuildArea_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSLineMerge_r)( GEOSContextHandle_t, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSLineMergeDirected_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSReverse_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, double);
 extern GEOSGeometry* (*GEOSTopologyPreserveSimplify_r)( GEOSContextHandle_t, const GEOSGeometry*, double);
@@ -318,6 +334,7 @@ extern int (*GEOSMakeValidParams_setKeepCollapsed_r)( GEOSContextHandle_t, GEOSM
 extern int (*GEOSMakeValidParams_setMethod_r)( GEOSContextHandle_t, GEOSMakeValidParams*, enum GEOSMakeValidMethods);
 extern GEOSGeometry* (*GEOSMakeValid_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSMakeValidWithParams_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSMakeValidParams*);
+extern GEOSGeometry* (*GEOSRemoveRepeatedPoints_r)( GEOSContextHandle_t, const GEOSGeometry*, double);
 extern char* (*GEOSGeomType_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern int (*GEOSGeomTypeId_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern int (*GEOSGetSRID_r)( GEOSContextHandle_t, const GEOSGeometry*);
@@ -344,6 +361,7 @@ extern int (*GEOSGeom_getXMin_r)( GEOSContextHandle_t, const GEOSGeometry*, doub
 extern int (*GEOSGeom_getYMin_r)( GEOSContextHandle_t, const GEOSGeometry*, double*);
 extern int (*GEOSGeom_getXMax_r)( GEOSContextHandle_t, const GEOSGeometry*, double*);
 extern int (*GEOSGeom_getYMax_r)( GEOSContextHandle_t, const GEOSGeometry*, double*);
+extern int (*GEOSGeom_getExtent_r)( GEOSContextHandle_t, const GEOSGeometry*, double*, double*, double*, double*);
 extern GEOSGeometry* (*GEOSGeomGetPointN_r)( GEOSContextHandle_t, const GEOSGeometry*, int);
 extern GEOSGeometry* (*GEOSGeomGetStartPoint_r)( GEOSContextHandle_t, const GEOSGeometry*);
 extern GEOSGeometry* (*GEOSGeomGetEndPoint_r)( GEOSContextHandle_t, const GEOSGeometry*);
@@ -356,12 +374,15 @@ extern int (*GEOSHausdorffDistance_r)( GEOSContextHandle_t, const GEOSGeometry*,
 extern int (*GEOSHausdorffDistanceDensify_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double, double*);
 extern int (*GEOSFrechetDistance_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double*);
 extern int (*GEOSFrechetDistanceDensify_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, double, double*);
+extern int (*GEOSHilbertCode_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*, unsigned int, unsigned int *code );
 extern int (*GEOSGeomGetLength_r)( GEOSContextHandle_t, const GEOSGeometry*, double*);
 extern GEOSCoordSequence* (*GEOSNearestPoints_r)( GEOSContextHandle_t, const GEOSGeometry*, const GEOSGeometry*);
+extern GEOSGeometry* (*GEOSGeom_transformXY_r)( GEOSContextHandle_t, const GEOSGeometry*, GEOSTransformXYCallback, void*);
 extern int (*GEOSOrientationIndex_r)( GEOSContextHandle_t, double, double, double, double, double, double);
 extern GEOSWKTReader* (*GEOSWKTReader_create_r)( GEOSContextHandle_t);
 extern void (*GEOSWKTReader_destroy_r)(GEOSContextHandle_t, GEOSWKTReader*);
 extern GEOSGeometry* (*GEOSWKTReader_read_r)( GEOSContextHandle_t, GEOSWKTReader*, const char*);
+extern void (*GEOSWKTReader_setFixStructure_r)( GEOSContextHandle_t, GEOSWKTReader*, char);
 extern GEOSWKTWriter* (*GEOSWKTWriter_create_r)( GEOSContextHandle_t);
 extern void (*GEOSWKTWriter_destroy_r)( GEOSContextHandle_t, GEOSWKTWriter*);
 extern char* (*GEOSWKTWriter_write_r)( GEOSContextHandle_t, GEOSWKTWriter*, const GEOSGeometry*);
@@ -372,6 +393,7 @@ extern int (*GEOSWKTWriter_getOutputDimension_r)( GEOSContextHandle_t, GEOSWKTWr
 extern void (*GEOSWKTWriter_setOld3D_r)( GEOSContextHandle_t, GEOSWKTWriter*, int);
 extern GEOSWKBReader* (*GEOSWKBReader_create_r)( GEOSContextHandle_t);
 extern void (*GEOSWKBReader_destroy_r)( GEOSContextHandle_t, GEOSWKBReader*);
+extern void (*GEOSWKBReader_setFixStructure_r)( GEOSContextHandle_t, GEOSWKBReader*, char);
 extern GEOSGeometry* (*GEOSWKBReader_read_r)( GEOSContextHandle_t, GEOSWKBReader*, const unsigned char*, size_t);
 extern GEOSGeometry* (*GEOSWKBReader_readHEX_r)( GEOSContextHandle_t, GEOSWKBReader*, const unsigned char*, size_t);
 extern GEOSWKBWriter* (*GEOSWKBWriter_create_r)( GEOSContextHandle_t);

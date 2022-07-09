@@ -3,6 +3,7 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+/* ====================================================================== */
 /* Version */
 /* ====================================================================== */
 
@@ -12,25 +13,24 @@
 #define GEOS_VERSION_MAJOR 3
 #endif
 #ifndef GEOS_VERSION_MINOR
-#define GEOS_VERSION_MINOR 10
+#define GEOS_VERSION_MINOR 11
 #endif
 #ifndef GEOS_VERSION_PATCH
 #define GEOS_VERSION_PATCH 0
 #endif
 #ifndef GEOS_VERSION
-#define GEOS_VERSION "3.10.0"
+#define GEOS_VERSION "3.11.0"
 #endif
 #ifndef GEOS_JTS_PORT
 #define GEOS_JTS_PORT "1.18.0"
 #endif
 
 #define GEOS_CAPI_VERSION_MAJOR 1
-#define GEOS_CAPI_VERSION_MINOR 16
+#define GEOS_CAPI_VERSION_MINOR 17
 #define GEOS_CAPI_VERSION_PATCH 0
-#define GEOS_CAPI_VERSION "3.10.0-CAPI-1.16.0"
+#define GEOS_CAPI_VERSION "3.11.0-CAPI-1.17.0"
 
 #define GEOS_CAPI_FIRST_INTERFACE GEOS_CAPI_VERSION_MAJOR
-#define GEOS_CAPI_LAST_INTERFACE (GEOS_CAPI_VERSION_MAJOR+GEOS_CAPI_VERSION_MINOR)
 
 // we need a utility function to get the runtime version in a form that is
 // queryable from the inst/include/libgeos.c, because future GEOS versions
@@ -62,6 +62,10 @@ typedef int (*GEOSDistanceCallback)(
     const void* item1,
     const void* item2,
     double* distance,
+    void* userdata);
+typedef int (*GEOSTransformXYCallback)(
+    double* x,
+    double* y,
     void* userdata);
 typedef void (GEOSInterruptCallback)(void);
 typedef struct GEOSWKTReader_t GEOSWKTReader;
@@ -166,6 +170,12 @@ enum GEOSPrecisionRules {
     /** Like the default mode, except that collapsed linear geometry elements are preserved. Collapsed polygonal input elements are removed. */
     GEOS_PREC_KEEP_COLLAPSED = 2
 };
+enum GEOSPolygonHullParameterModes {
+    /** See geos::simplify::PolygonHullSimplifier::hull() */
+    GEOSHULL_PARAM_VERTEX_RATIO = 1,
+    /** See geos::simplify::PolygonHullSimplifier::hullByAreaDelta() */
+    GEOSHULL_PARAM_AREA_RATIO = 2
+};
 
 #define GEOS_DLL
 GEOSContextHandle_t GEOS_DLL GEOS_init_r(void);
@@ -222,12 +232,17 @@ GEOSGeometry* GEOS_DLL GEOSGeom_createEmptyPolygon_r( GEOSContextHandle_t handle
 GEOSGeometry* GEOS_DLL GEOSGeom_createPolygon_r( GEOSContextHandle_t handle, GEOSGeometry* shell, GEOSGeometry** holes, unsigned int nholes);
 GEOSGeometry* GEOS_DLL GEOSGeom_createCollection_r( GEOSContextHandle_t handle, int type, GEOSGeometry* *geoms, unsigned int ngeoms);
 GEOSGeometry* GEOS_DLL GEOSGeom_createEmptyCollection_r( GEOSContextHandle_t handle, int type);
+GEOSGeometry* GEOS_DLL GEOSGeom_createRectangle_r( GEOSContextHandle_t handle, double xmin, double ymin, double xmax, double ymax);
 GEOSGeometry* GEOS_DLL GEOSGeom_clone_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 void GEOS_DLL GEOSGeom_destroy_r( GEOSContextHandle_t handle, GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSEnvelope_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSIntersection_r( GEOSContextHandle_t handle, const GEOSGeometry* g1, const GEOSGeometry* g2);
 GEOSGeometry* GEOS_DLL GEOSIntersectionPrec_r( GEOSContextHandle_t handle, const GEOSGeometry* g1, const GEOSGeometry* g2, double gridSize);
 GEOSGeometry* GEOS_DLL GEOSConvexHull_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
+GEOSGeometry* GEOS_DLL GEOSConcaveHull_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double ratio, unsigned int allowHoles);
+GEOSGeometry* GEOS_DLL GEOSPolygonHullSimplify_r( GEOSContextHandle_t handle, const GEOSGeometry* g, unsigned int isOuter, double vertexNumFraction);
+GEOSGeometry* GEOS_DLL GEOSPolygonHullSimplifyMode_r( GEOSContextHandle_t handle, const GEOSGeometry* g, unsigned int isOuter, unsigned int parameterMode, double parameter);
+GEOSGeometry* GEOS_DLL GEOSConcaveHullOfPolygons_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double lengthRatio, unsigned int isTight, unsigned int isHolesAllowed);
 GEOSGeometry* GEOS_DLL GEOSMinimumRotatedRectangle_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSMaximumInscribedCircle_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double tolerance);
 GEOSGeometry* GEOS_DLL GEOSLargestEmptyCircle_r( GEOSContextHandle_t handle, const GEOSGeometry* g, const GEOSGeometry* boundary, double tolerance);
@@ -255,6 +270,7 @@ GEOSGeometry* GEOS_DLL GEOSPolygonizer_getCutEdges_r( GEOSContextHandle_t handle
 GEOSGeometry* GEOS_DLL GEOSPolygonize_full_r( GEOSContextHandle_t handle, const GEOSGeometry* input, GEOSGeometry** cuts, GEOSGeometry** dangles, GEOSGeometry** invalidRings);
 GEOSGeometry* GEOS_DLL GEOSBuildArea_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSLineMerge_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
+GEOSGeometry* GEOS_DLL GEOSLineMergeDirected_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSReverse_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSSimplify_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double tolerance);
 GEOSGeometry* GEOS_DLL GEOSTopologyPreserveSimplify_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double tolerance);
@@ -317,6 +333,7 @@ int GEOS_DLL GEOSMakeValidParams_setKeepCollapsed_r( GEOSContextHandle_t handle,
 int GEOS_DLL GEOSMakeValidParams_setMethod_r( GEOSContextHandle_t handle, GEOSMakeValidParams* p, enum GEOSMakeValidMethods method);
 GEOSGeometry* GEOS_DLL GEOSMakeValid_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 GEOSGeometry* GEOS_DLL GEOSMakeValidWithParams_r( GEOSContextHandle_t handle, const GEOSGeometry* g, const GEOSMakeValidParams* makeValidParams);
+GEOSGeometry* GEOS_DLL GEOSRemoveRepeatedPoints_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double tolerance);
 char* GEOS_DLL GEOSGeomType_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 int GEOS_DLL GEOSGeomTypeId_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
 int GEOS_DLL GEOSGetSRID_r( GEOSContextHandle_t handle, const GEOSGeometry* g);
@@ -343,6 +360,7 @@ int GEOS_DLL GEOSGeom_getXMin_r( GEOSContextHandle_t handle, const GEOSGeometry*
 int GEOS_DLL GEOSGeom_getYMin_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
 int GEOS_DLL GEOSGeom_getXMax_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
 int GEOS_DLL GEOSGeom_getYMax_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
+int GEOS_DLL GEOSGeom_getExtent_r( GEOSContextHandle_t handle, const GEOSGeometry* g, double* xmin, double* ymin, double* xmax, double* ymax);
 GEOSGeometry* GEOS_DLL GEOSGeomGetPointN_r( GEOSContextHandle_t handle, const GEOSGeometry *g, int n);
 GEOSGeometry* GEOS_DLL GEOSGeomGetStartPoint_r( GEOSContextHandle_t handle, const GEOSGeometry *g);
 GEOSGeometry* GEOS_DLL GEOSGeomGetEndPoint_r( GEOSContextHandle_t handle, const GEOSGeometry *g);
@@ -355,12 +373,15 @@ int GEOS_DLL GEOSHausdorffDistance_r( GEOSContextHandle_t handle, const GEOSGeom
 int GEOS_DLL GEOSHausdorffDistanceDensify_r( GEOSContextHandle_t handle, const GEOSGeometry *g1, const GEOSGeometry *g2, double densifyFrac, double *dist);
 int GEOS_DLL GEOSFrechetDistance_r( GEOSContextHandle_t handle, const GEOSGeometry *g1, const GEOSGeometry *g2, double *dist);
 int GEOS_DLL GEOSFrechetDistanceDensify_r( GEOSContextHandle_t handle, const GEOSGeometry *g1, const GEOSGeometry *g2, double densifyFrac, double *dist);
+int GEOS_DLL GEOSHilbertCode_r( GEOSContextHandle_t handle, const GEOSGeometry *geom, const GEOSGeometry* extent, unsigned int level, unsigned int *code );
 int GEOS_DLL GEOSGeomGetLength_r( GEOSContextHandle_t handle, const GEOSGeometry *g, double *length);
 GEOSCoordSequence* GEOS_DLL GEOSNearestPoints_r( GEOSContextHandle_t handle, const GEOSGeometry* g1, const GEOSGeometry* g2);
+GEOSGeometry* GEOS_DLL GEOSGeom_transformXY_r( GEOSContextHandle_t handle, const GEOSGeometry* g, GEOSTransformXYCallback callback, void* userdata);
 int GEOS_DLL GEOSOrientationIndex_r( GEOSContextHandle_t handle, double Ax, double Ay, double Bx, double By, double Px, double Py);
 GEOSWKTReader* GEOS_DLL GEOSWKTReader_create_r( GEOSContextHandle_t handle);
 void GEOS_DLL GEOSWKTReader_destroy_r(GEOSContextHandle_t handle, GEOSWKTReader* reader);
 GEOSGeometry* GEOS_DLL GEOSWKTReader_read_r( GEOSContextHandle_t handle, GEOSWKTReader* reader, const char *wkt);
+void GEOS_DLL GEOSWKTReader_setFixStructure_r( GEOSContextHandle_t handle, GEOSWKTReader *reader, char doFix);
 GEOSWKTWriter* GEOS_DLL GEOSWKTWriter_create_r( GEOSContextHandle_t handle);
 void GEOS_DLL GEOSWKTWriter_destroy_r( GEOSContextHandle_t handle, GEOSWKTWriter* writer);
 char* GEOS_DLL GEOSWKTWriter_write_r( GEOSContextHandle_t handle, GEOSWKTWriter* writer, const GEOSGeometry* g);
@@ -371,6 +392,7 @@ int GEOS_DLL GEOSWKTWriter_getOutputDimension_r( GEOSContextHandle_t handle, GEO
 void GEOS_DLL GEOSWKTWriter_setOld3D_r( GEOSContextHandle_t handle, GEOSWKTWriter *writer, int useOld3D);
 GEOSWKBReader* GEOS_DLL GEOSWKBReader_create_r( GEOSContextHandle_t handle);
 void GEOS_DLL GEOSWKBReader_destroy_r( GEOSContextHandle_t handle, GEOSWKBReader* reader);
+void GEOS_DLL GEOSWKBReader_setFixStructure_r( GEOSContextHandle_t handle, GEOSWKBReader *reader, char doFix);
 GEOSGeometry* GEOS_DLL GEOSWKBReader_read_r( GEOSContextHandle_t handle, GEOSWKBReader* reader, const unsigned char *wkb, size_t size);
 GEOSGeometry* GEOS_DLL GEOSWKBReader_readHEX_r( GEOSContextHandle_t handle, GEOSWKBReader* reader, const unsigned char *hex, size_t size);
 GEOSWKBWriter* GEOS_DLL GEOSWKBWriter_create_r( GEOSContextHandle_t handle);
@@ -482,12 +504,17 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSGeom_createPolygon_r", (DL_FUNC) &GEOSGeom_createPolygon_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_createCollection_r", (DL_FUNC) &GEOSGeom_createCollection_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_createEmptyCollection_r", (DL_FUNC) &GEOSGeom_createEmptyCollection_r);
+    R_RegisterCCallable("libgeos", "GEOSGeom_createRectangle_r", (DL_FUNC) &GEOSGeom_createRectangle_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_clone_r", (DL_FUNC) &GEOSGeom_clone_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_destroy_r", (DL_FUNC) &GEOSGeom_destroy_r);
     R_RegisterCCallable("libgeos", "GEOSEnvelope_r", (DL_FUNC) &GEOSEnvelope_r);
     R_RegisterCCallable("libgeos", "GEOSIntersection_r", (DL_FUNC) &GEOSIntersection_r);
     R_RegisterCCallable("libgeos", "GEOSIntersectionPrec_r", (DL_FUNC) &GEOSIntersectionPrec_r);
     R_RegisterCCallable("libgeos", "GEOSConvexHull_r", (DL_FUNC) &GEOSConvexHull_r);
+    R_RegisterCCallable("libgeos", "GEOSConcaveHull_r", (DL_FUNC) &GEOSConcaveHull_r);
+    R_RegisterCCallable("libgeos", "GEOSPolygonHullSimplify_r", (DL_FUNC) &GEOSPolygonHullSimplify_r);
+    R_RegisterCCallable("libgeos", "GEOSPolygonHullSimplifyMode_r", (DL_FUNC) &GEOSPolygonHullSimplifyMode_r);
+    R_RegisterCCallable("libgeos", "GEOSConcaveHullOfPolygons_r", (DL_FUNC) &GEOSConcaveHullOfPolygons_r);
     R_RegisterCCallable("libgeos", "GEOSMinimumRotatedRectangle_r", (DL_FUNC) &GEOSMinimumRotatedRectangle_r);
     R_RegisterCCallable("libgeos", "GEOSMaximumInscribedCircle_r", (DL_FUNC) &GEOSMaximumInscribedCircle_r);
     R_RegisterCCallable("libgeos", "GEOSLargestEmptyCircle_r", (DL_FUNC) &GEOSLargestEmptyCircle_r);
@@ -515,6 +542,7 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSPolygonize_full_r", (DL_FUNC) &GEOSPolygonize_full_r);
     R_RegisterCCallable("libgeos", "GEOSBuildArea_r", (DL_FUNC) &GEOSBuildArea_r);
     R_RegisterCCallable("libgeos", "GEOSLineMerge_r", (DL_FUNC) &GEOSLineMerge_r);
+    R_RegisterCCallable("libgeos", "GEOSLineMergeDirected_r", (DL_FUNC) &GEOSLineMergeDirected_r);
     R_RegisterCCallable("libgeos", "GEOSReverse_r", (DL_FUNC) &GEOSReverse_r);
     R_RegisterCCallable("libgeos", "GEOSSimplify_r", (DL_FUNC) &GEOSSimplify_r);
     R_RegisterCCallable("libgeos", "GEOSTopologyPreserveSimplify_r", (DL_FUNC) &GEOSTopologyPreserveSimplify_r);
@@ -577,6 +605,7 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSMakeValidParams_setMethod_r", (DL_FUNC) &GEOSMakeValidParams_setMethod_r);
     R_RegisterCCallable("libgeos", "GEOSMakeValid_r", (DL_FUNC) &GEOSMakeValid_r);
     R_RegisterCCallable("libgeos", "GEOSMakeValidWithParams_r", (DL_FUNC) &GEOSMakeValidWithParams_r);
+    R_RegisterCCallable("libgeos", "GEOSRemoveRepeatedPoints_r", (DL_FUNC) &GEOSRemoveRepeatedPoints_r);
     R_RegisterCCallable("libgeos", "GEOSGeomType_r", (DL_FUNC) &GEOSGeomType_r);
     R_RegisterCCallable("libgeos", "GEOSGeomTypeId_r", (DL_FUNC) &GEOSGeomTypeId_r);
     R_RegisterCCallable("libgeos", "GEOSGetSRID_r", (DL_FUNC) &GEOSGetSRID_r);
@@ -603,6 +632,7 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSGeom_getYMin_r", (DL_FUNC) &GEOSGeom_getYMin_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_getXMax_r", (DL_FUNC) &GEOSGeom_getXMax_r);
     R_RegisterCCallable("libgeos", "GEOSGeom_getYMax_r", (DL_FUNC) &GEOSGeom_getYMax_r);
+    R_RegisterCCallable("libgeos", "GEOSGeom_getExtent_r", (DL_FUNC) &GEOSGeom_getExtent_r);
     R_RegisterCCallable("libgeos", "GEOSGeomGetPointN_r", (DL_FUNC) &GEOSGeomGetPointN_r);
     R_RegisterCCallable("libgeos", "GEOSGeomGetStartPoint_r", (DL_FUNC) &GEOSGeomGetStartPoint_r);
     R_RegisterCCallable("libgeos", "GEOSGeomGetEndPoint_r", (DL_FUNC) &GEOSGeomGetEndPoint_r);
@@ -615,12 +645,15 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSHausdorffDistanceDensify_r", (DL_FUNC) &GEOSHausdorffDistanceDensify_r);
     R_RegisterCCallable("libgeos", "GEOSFrechetDistance_r", (DL_FUNC) &GEOSFrechetDistance_r);
     R_RegisterCCallable("libgeos", "GEOSFrechetDistanceDensify_r", (DL_FUNC) &GEOSFrechetDistanceDensify_r);
+    R_RegisterCCallable("libgeos", "GEOSHilbertCode_r", (DL_FUNC) &GEOSHilbertCode_r);
     R_RegisterCCallable("libgeos", "GEOSGeomGetLength_r", (DL_FUNC) &GEOSGeomGetLength_r);
     R_RegisterCCallable("libgeos", "GEOSNearestPoints_r", (DL_FUNC) &GEOSNearestPoints_r);
+    R_RegisterCCallable("libgeos", "GEOSGeom_transformXY_r", (DL_FUNC) &GEOSGeom_transformXY_r);
     R_RegisterCCallable("libgeos", "GEOSOrientationIndex_r", (DL_FUNC) &GEOSOrientationIndex_r);
     R_RegisterCCallable("libgeos", "GEOSWKTReader_create_r", (DL_FUNC) &GEOSWKTReader_create_r);
     R_RegisterCCallable("libgeos", "GEOSWKTReader_destroy_r", (DL_FUNC) &GEOSWKTReader_destroy_r);
     R_RegisterCCallable("libgeos", "GEOSWKTReader_read_r", (DL_FUNC) &GEOSWKTReader_read_r);
+    R_RegisterCCallable("libgeos", "GEOSWKTReader_setFixStructure_r", (DL_FUNC) &GEOSWKTReader_setFixStructure_r);
     R_RegisterCCallable("libgeos", "GEOSWKTWriter_create_r", (DL_FUNC) &GEOSWKTWriter_create_r);
     R_RegisterCCallable("libgeos", "GEOSWKTWriter_destroy_r", (DL_FUNC) &GEOSWKTWriter_destroy_r);
     R_RegisterCCallable("libgeos", "GEOSWKTWriter_write_r", (DL_FUNC) &GEOSWKTWriter_write_r);
@@ -631,6 +664,7 @@ void R_init_libgeos(DllInfo *dll) {
     R_RegisterCCallable("libgeos", "GEOSWKTWriter_setOld3D_r", (DL_FUNC) &GEOSWKTWriter_setOld3D_r);
     R_RegisterCCallable("libgeos", "GEOSWKBReader_create_r", (DL_FUNC) &GEOSWKBReader_create_r);
     R_RegisterCCallable("libgeos", "GEOSWKBReader_destroy_r", (DL_FUNC) &GEOSWKBReader_destroy_r);
+    R_RegisterCCallable("libgeos", "GEOSWKBReader_setFixStructure_r", (DL_FUNC) &GEOSWKBReader_setFixStructure_r);
     R_RegisterCCallable("libgeos", "GEOSWKBReader_read_r", (DL_FUNC) &GEOSWKBReader_read_r);
     R_RegisterCCallable("libgeos", "GEOSWKBReader_readHEX_r", (DL_FUNC) &GEOSWKBReader_readHEX_r);
     R_RegisterCCallable("libgeos", "GEOSWKBWriter_create_r", (DL_FUNC) &GEOSWKBWriter_create_r);
