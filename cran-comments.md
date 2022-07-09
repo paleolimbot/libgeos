@@ -1,5 +1,5 @@
 
-This submission updates the internal version of GEOS to 3.10.0.
+This submission updates the internal version of GEOS to 3.11.0.
 
 ## Test environments
 
