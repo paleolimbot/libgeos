@@ -113,6 +113,8 @@ usethis::edit_file("src/Makevars")
 usethis::edit_file("src/Makevars.win")
 
 #' Reminders about manual modifications that are needed
+#' - noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr
+usethis::edit_file("src/geos/noding/snapround/MCIndexSnapRounder.cpp")
 #' - src/operation__overlay__ElevationMatrix.cpp: Replace cerr with cpp_compat_cerr
 usethis::edit_file("src/geos/operation/overlay/ElevationMatrix.cpp")
 #' - src/simplify/TopologyPreservingSimplifier.cpp: Replace cerr with cpp_compat_cerr
