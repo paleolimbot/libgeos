@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # download GEOS
-source_url <- "http://download.osgeo.org/geos/geos-3.10.0.tar.bz2"
+source_url <- "http://download.osgeo.org/geos/geos-3.11.0.tar.bz2"
 curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
 
@@ -52,28 +52,36 @@ dest_dirs <- c(
 dest_dirs[!dir.exists(dest_dirs)] %>% walk(dir.create, recursive = TRUE)
 
 # copy source files
+stopifnot(file.copy(headers$path, headers$final_path))
+stopifnot(file.copy(source_files$path, source_files$final_path))
 stopifnot(
-  file.copy(headers$path, headers$final_path),
-  file.copy(source_files$path, source_files$final_path),
-
-  # also need to copy the C API cpp and header
   file.copy(
     file.path(geos_dir, "capi/geos_c.h"),
     "src/geos_include/geos_c.h"
-  ),
+  )
+)
+stopifnot(
   file.copy(
     file.path(geos_dir, "capi/geos_ts_c.cpp"),
     "src/geos/geos_ts_c.cpp"
-  ),
+  )
+)
 
-  # need the custom JSON includer
-  # using the modified version from libproj that already works with
-  # CRAN specs on all platforms (so don't copy json.hpp)
+dir.create("src/geos_include/geos/vend")
+stopifnot(
   file.copy(
     file.path(geos_dir, "include/geos/vend/include_nlohmann_json.hpp"),
     "src/geos_include/geos/vend/include_nlohmann_json.hpp"
-  ),
+  )
+)
 
+# we need to point this to our own version of nlohmann_json
+# which we've modified to pass the cran checks
+usethis::edit_file("src/geos_include/geos/vend/include_nlohmann_json.hpp")
+
+dir.create("src/ryu")
+dir.create("src/geos_include/ryu")
+stopifnot(
   # need to copy ryu library
   file.copy(
     file.path(geos_dir, "src/deps/ryu/d2s.c"),
@@ -87,7 +95,8 @@ stopifnot(
         "d2s_full_table.h", "d2s_intrinsics.h",
         "digit_table.h", "ryu.h"
       )
-    )
+    ),
+    "src/geos_include/ryu"
   )
 )
 
@@ -99,6 +108,7 @@ objects <- list.files("src", pattern = "\\.c(pp)?$", recursive = TRUE, full.name
   gsub("\\\\\\s*$", "", .)
 
 clipr::write_clip(objects)
+usethis::edit_file("src/Makevars")
 
 #' Reminders about manual modifications that are needed
 #' - noding__snapround__MCIndexSnapRounder.cpp: Replace cerr with cpp_compat_cerr
