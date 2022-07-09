@@ -19,7 +19,7 @@
 #include <geos/triangulate/VoronoiDiagramBuilder.h>
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <vector>
 #include <iostream>
 
@@ -55,7 +55,7 @@ VoronoiDiagramBuilder::setSites(const geom::Geometry& geom)
 void
 VoronoiDiagramBuilder::setSites(const geom::CoordinateSequence& coords)
 {
-    siteCoords = operation::valid::RepeatedPointRemover::removeRepeatedPoints(&coords);
+    siteCoords = DelaunayTriangulationBuilder::unique(&coords);
 }
 
 void

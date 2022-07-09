@@ -50,8 +50,6 @@
 
 #include <geos/operation/valid/RepeatedPointRemover.h>
 
-#include <geos/inline.h>
-
 #include <vector>
 #include <memory> // std::unique_ptr
 #include <cassert>
@@ -61,9 +59,6 @@
 #define GEOS_DEBUG 0
 #endif
 
-#ifndef GEOS_INLINE
-# include "geos/geomgraph/GeometryGraph.inl"
-#endif
 
 using namespace geos::geomgraph::index;
 using namespace geos::algorithm;
@@ -355,15 +350,7 @@ std::unique_ptr<SegmentIntersector>
 GeometryGraph::computeSelfNodes(LineIntersector& li,
                                 bool computeRingSelfNodes, const Envelope* env)
 {
-    return computeSelfNodes(li, computeRingSelfNodes, false, env);
-}
-
-std::unique_ptr<SegmentIntersector>
-GeometryGraph::computeSelfNodes(LineIntersector& li,
-                                bool computeRingSelfNodes, bool isDoneIfProperInt, const Envelope* env)
-{
     auto si = detail::make_unique<SegmentIntersector>(&li, true, false);
-    si->setIsDoneIfProperInt(isDoneIfProperInt);
     std::unique_ptr<EdgeSetIntersector> esi(createEdgeSetIntersector());
 
     typedef std::vector<Edge*> EC;
@@ -565,4 +552,3 @@ GeometryGraph::determineBoundary(
 
 } // namespace geos.geomgraph
 } // namespace geos
-

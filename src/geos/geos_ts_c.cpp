@@ -17,36 +17,6 @@
  *
  ***********************************************************************/
 
-#include <geos/geom/Coordinate.h>
-#include <geos/geom/Geometry.h>
-#include <geos/geom/prep/PreparedGeometry.h>
-#include <geos/geom/prep/PreparedGeometryFactory.h>
-#include <geos/geom/GeometryCollection.h>
-#include <geos/geom/Polygon.h>
-#include <geos/geom/Point.h>
-#include <geos/geom/MultiPoint.h>
-#include <geos/geom/MultiLineString.h>
-#include <geos/geom/MultiPolygon.h>
-#include <geos/geom/LinearRing.h>
-#include <geos/geom/LineSegment.h>
-#include <geos/geom/LineString.h>
-#include <geos/geom/PrecisionModel.h>
-#include <geos/geom/GeometryFactory.h>
-#include <geos/geom/CoordinateSequenceFactory.h>
-#include <geos/geom/FixedSizeCoordinateSequence.h>
-#include <geos/geom/Coordinate.h>
-#include <geos/geom/IntersectionMatrix.h>
-#include <geos/geom/Envelope.h>
-#include <geos/geom/util/Densifier.h>
-#include <geos/geom/util/GeometryFixer.h>
-#include <geos/index/strtree/TemplateSTRtree.h>
-#include <geos/index/ItemVisitor.h>
-#include <geos/io/WKTReader.h>
-#include <geos/io/WKBReader.h>
-#include <geos/io/WKTWriter.h>
-#include <geos/io/WKBWriter.h>
-#include <geos/io/GeoJSONReader.h>
-#include <geos/io/GeoJSONWriter.h>
 #include <geos/algorithm/BoundaryNodeRule.h>
 #include <geos/algorithm/MinimumBoundingCircle.h>
 #include <geos/algorithm/MinimumDiameter.h>
@@ -55,24 +25,56 @@
 #include <geos/algorithm/construct/LargestEmptyCircle.h>
 #include <geos/algorithm/distance/DiscreteHausdorffDistance.h>
 #include <geos/algorithm/distance/DiscreteFrechetDistance.h>
-#include <geos/simplify/DouglasPeuckerSimplifier.h>
-#include <geos/simplify/TopologyPreservingSimplifier.h>
+#include <geos/algorithm/hull/ConcaveHull.h>
+#include <geos/algorithm/hull/ConcaveHullOfPolygons.h>
+#include <geos/geom/Coordinate.h>
+#include <geos/geom/CoordinateArraySequence.h>
+#include <geos/geom/CoordinateSequenceFactory.h>
+#include <geos/geom/Envelope.h>
+#include <geos/geom/FixedSizeCoordinateSequence.h>
+#include <geos/geom/Geometry.h>
+#include <geos/geom/GeometryCollection.h>
+#include <geos/geom/GeometryFactory.h>
+#include <geos/geom/IntersectionMatrix.h>
+#include <geos/geom/LinearRing.h>
+#include <geos/geom/LineSegment.h>
+#include <geos/geom/LineString.h>
+#include <geos/geom/MultiLineString.h>
+#include <geos/geom/MultiPoint.h>
+#include <geos/geom/MultiPolygon.h>
+#include <geos/geom/Point.h>
+#include <geos/geom/Polygon.h>
+#include <geos/geom/PrecisionModel.h>
+#include <geos/geom/prep/PreparedGeometry.h>
+#include <geos/geom/prep/PreparedGeometryFactory.h>
+#include <geos/geom/util/Densifier.h>
+#include <geos/geom/util/GeometryFixer.h>
+#include <geos/index/ItemVisitor.h>
+#include <geos/index/strtree/TemplateSTRtree.h>
+#include <geos/io/WKBReader.h>
+#include <geos/io/WKBWriter.h>
+#include <geos/io/WKTReader.h>
+#include <geos/io/WKTWriter.h>
+#include <geos/io/GeoJSONReader.h>
+#include <geos/io/GeoJSONWriter.h>
+#include <geos/linearref/LengthIndexedLine.h>
 #include <geos/noding/GeometryNoder.h>
 #include <geos/noding/Noder.h>
 #include <geos/operation/buffer/BufferBuilder.h>
 #include <geos/operation/buffer/BufferOp.h>
 #include <geos/operation/buffer/BufferParameters.h>
+#include <geos/operation/buffer/OffsetCurve.h>
 #include <geos/operation/distance/DistanceOp.h>
 #include <geos/operation/distance/IndexedFacetDistance.h>
 #include <geos/operation/linemerge/LineMerger.h>
+#include <geos/operation/intersection/Rectangle.h>
+#include <geos/operation/intersection/RectangleIntersection.h>
 #include <geos/operation/overlay/OverlayOp.h>
 #include <geos/operation/overlay/snap/GeometrySnapper.h>
 #include <geos/operation/overlayng/PrecisionReducer.h>
 #include <geos/operation/overlayng/OverlayNG.h>
 #include <geos/operation/overlayng/OverlayNGRobust.h>
 #include <geos/operation/overlayng/UnaryUnionNG.h>
-#include <geos/operation/intersection/Rectangle.h>
-#include <geos/operation/intersection/RectangleIntersection.h>
 #include <geos/operation/polygonize/Polygonizer.h>
 #include <geos/operation/polygonize/BuildArea.h>
 #include <geos/operation/relate/RelateOp.h>
@@ -81,8 +83,12 @@
 #include <geos/operation/union/CoverageUnion.h>
 #include <geos/operation/valid/IsValidOp.h>
 #include <geos/operation/valid/MakeValid.h>
+#include <geos/operation/valid/RepeatedPointRemover.h>
 #include <geos/precision/GeometryPrecisionReducer.h>
-#include <geos/linearref/LengthIndexedLine.h>
+#include <geos/shape/fractal/HilbertEncoder.h>
+#include <geos/simplify/DouglasPeuckerSimplifier.h>
+#include <geos/simplify/PolygonHullSimplifier.h>
+#include <geos/simplify/TopologyPreservingSimplifier.h>
 #include <geos/triangulate/DelaunayTriangulationBuilder.h>
 #include <geos/triangulate/VoronoiDiagramBuilder.h>
 #include <geos/triangulate/polygon/ConstrainedDelaunayTriangulator.h>
@@ -157,6 +163,7 @@ using geos::geom::PrecisionModel;
 using geos::geom::CoordinateSequence;
 using geos::geom::GeometryCollection;
 using geos::geom::GeometryFactory;
+using geos::geom::Envelope;
 
 using geos::io::WKTReader;
 using geos::io::WKTWriter;
@@ -167,9 +174,12 @@ using geos::io::GeoJSONWriter;
 
 using geos::algorithm::distance::DiscreteFrechetDistance;
 using geos::algorithm::distance::DiscreteHausdorffDistance;
+using geos::algorithm::hull::ConcaveHull;
+using geos::algorithm::hull::ConcaveHullOfPolygons;
 
 using geos::operation::buffer::BufferBuilder;
 using geos::operation::buffer::BufferParameters;
+using geos::operation::buffer::OffsetCurve;
 using geos::operation::distance::IndexedFacetDistance;
 using geos::operation::geounion::CascadedPolygonUnion;
 using geos::operation::overlayng::OverlayNG;
@@ -178,6 +188,8 @@ using geos::operation::overlayng::OverlayNGRobust;
 using geos::operation::valid::TopologyValidationError;
 
 using geos::precision::GeometryPrecisionReducer;
+
+using geos::simplify::PolygonHullSimplifier;
 
 using geos::util::IllegalArgumentException;
 
@@ -1166,13 +1178,8 @@ extern "C" {
             );
             bp.setMitreLimit(mitreLimit);
 
-            bool isLeftSide = true;
-            if(width < 0) {
-                isLeftSide = false;
-                width = -width;
-            }
-            BufferBuilder bufBuilder(bp);
-            std::unique_ptr<Geometry> g3 = bufBuilder.bufferLineSingleSided(g1, width, isLeftSide);
+            OffsetCurve oc(*g1, width, bp);
+            std::unique_ptr<Geometry> g3 = oc.getCurve();
             g3->setSRID(g1->getSRID());
             return g3.release();
         });
@@ -1214,6 +1221,83 @@ extern "C" {
         });
     }
 
+    Geometry*
+    GEOSConcaveHull_r(GEOSContextHandle_t extHandle,
+        const Geometry* g1,
+        double ratio,
+        unsigned int allowHoles)
+    {
+        return execute(extHandle, [&]() {
+            ConcaveHull hull(g1);
+            hull.setMaximumEdgeLengthRatio(ratio);
+            hull.setHolesAllowed(allowHoles);
+            std::unique_ptr<Geometry> g3 = hull.getHull();
+            g3->setSRID(g1->getSRID());
+            return g3.release();
+        });
+    }
+
+    Geometry*
+    GEOSPolygonHullSimplify_r(GEOSContextHandle_t extHandle,
+        const Geometry* g1,
+        unsigned int isOuter,
+        double vertexNumFraction)
+    {
+        return execute(extHandle, [&]() {
+            std::unique_ptr<Geometry> g3 = PolygonHullSimplifier::hull(g1, isOuter, vertexNumFraction);
+            g3->setSRID(g1->getSRID());
+            return g3.release();
+        });
+    }
+
+  enum GEOSPolygonHullParameterModes {
+    /** See geos::simplify::PolygonHullSimplifier::hull() */
+    GEOSHULL_PARAM_VERTEX_RATIO = 1,
+    /** See geos::simplify::PolygonHullSimplifier::hullByAreaDelta() */
+    GEOSHULL_PARAM_AREA_RATIO = 2
+  };
+
+    Geometry*
+    GEOSPolygonHullSimplifyMode_r(GEOSContextHandle_t extHandle,
+        const Geometry* g1,
+        unsigned int isOuter,
+        unsigned int parameterMode,
+        double parameter)
+    {
+        return execute(extHandle, [&]() {
+            if (parameterMode == GEOSHULL_PARAM_AREA_RATIO) {
+                std::unique_ptr<Geometry> g3 = PolygonHullSimplifier::hullByAreaDelta(g1, isOuter, parameter);
+                g3->setSRID(g1->getSRID());
+                return g3.release();
+            }
+            else if (parameterMode == GEOSHULL_PARAM_VERTEX_RATIO) {
+                std::unique_ptr<Geometry> g3 = PolygonHullSimplifier::hull(g1, isOuter, parameter);
+                g3->setSRID(g1->getSRID());
+                return g3.release();
+            }
+            else {
+                throw IllegalArgumentException("GEOSPolygonHullSimplifyMode_r: Unknown parameterMode");
+            }
+        });
+    }
+
+    Geometry*
+    GEOSConcaveHullOfPolygons_r(GEOSContextHandle_t extHandle,
+        const Geometry* g1,
+        double lengthRatio,
+        unsigned int isTight,
+        unsigned int isHolesAllowed)
+    {
+        return execute(extHandle, [&]() {
+            std::unique_ptr<Geometry> g3 =
+                ConcaveHullOfPolygons::concaveHullByLengthRatio(
+                    g1, lengthRatio,
+                    isTight > 0,
+                    isHolesAllowed > 0);
+            g3->setSRID(g1->getSRID());
+            return g3.release();
+        });
+    }
 
     Geometry*
     GEOSMinimumRotatedRectangle_r(GEOSContextHandle_t extHandle, const Geometry* g)
@@ -1478,6 +1562,35 @@ extern "C" {
             return g3.release();
         });
     }
+
+    Geometry*
+    GEOSGeom_transformXY_r(GEOSContextHandle_t handle, const GEOSGeometry* g, GEOSTransformXYCallback callback, void* userdata) {
+
+        struct TransformFilter : public geos::geom::CoordinateFilter {
+            TransformFilter(GEOSTransformXYCallback p_callback,
+                            void* p_userdata) :
+                            m_callback(p_callback),
+                            m_userdata(p_userdata) {}
+
+            void filter_rw(geos::geom::Coordinate* c) const final {
+                if (!m_callback(&(c->x), &(c->y), m_userdata)) {
+                    throw std::runtime_error(std::string("Failed to transform coordinates."));
+                }
+            }
+
+            GEOSTransformXYCallback m_callback;
+            void* m_userdata;
+        };
+
+        return execute(handle, [&]() {
+            TransformFilter filter(callback, userdata);
+            auto ret = g->clone();
+            ret->apply_rw(&filter);
+            ret->geometryChanged();
+            return ret.release();
+        });
+    }
+
 
 //-------------------------------------------------------------------
 // memory management functions
@@ -1795,6 +1908,21 @@ extern "C" {
         });
     }
 
+    int
+    GEOSHilbertCode_r(GEOSContextHandle_t extHandle, const GEOSGeometry *geom,
+                const GEOSGeometry* extent, unsigned int level,
+                unsigned int *code)
+    {
+        using geos::shape::fractal::HilbertEncoder;
+
+        return execute(extHandle, 0, [&]() {
+            geos::geom::Envelope e = *extent->getEnvelopeInternal();
+            HilbertEncoder encoder(level, e);
+            *code = encoder.encode(geom->getEnvelopeInternal());
+            return 1;
+        });
+    }
+
     Geometry*
     GEOSMinimumBoundingCircle_r(GEOSContextHandle_t extHandle, const Geometry* g,
         double* radius, Geometry** center)
@@ -2025,6 +2153,21 @@ extern "C" {
     }
 
     Geometry*
+    GEOSRemoveRepeatedPoints_r(
+        GEOSContextHandle_t extHandle,
+        const Geometry* g,
+        double tolerance)
+    {
+        using geos::operation::valid::RepeatedPointRemover;
+
+        return execute(extHandle, [&]() {
+            auto out = RepeatedPointRemover::removeRepeatedPoints(g, tolerance);
+            out->setSRID(g->getSRID());
+            return out.release();
+        });
+    }
+
+    Geometry*
     GEOSPolygonizer_getCutEdges_r(GEOSContextHandle_t extHandle, const Geometry* const* g, unsigned int ngeoms)
     {
         using geos::operation::polygonize::Polygonizer;
@@ -2128,6 +2271,26 @@ extern "C" {
             GEOSContextHandleInternal_t* handle = reinterpret_cast<GEOSContextHandleInternal_t*>(extHandle);
             const GeometryFactory* gf = handle->geomFactory;
             LineMerger lmrgr;
+            lmrgr.add(g);
+
+            auto lines = lmrgr.getMergedLineStrings();
+
+            auto out = gf->buildGeometry(std::move(lines));
+            out->setSRID(g->getSRID());
+
+            return out.release();
+        });
+    }
+
+    Geometry*
+    GEOSLineMergeDirected_r(GEOSContextHandle_t extHandle, const Geometry* g)
+    {
+        using geos::operation::linemerge::LineMerger;
+
+        return execute(extHandle, [&]() {
+            GEOSContextHandleInternal_t* handle = reinterpret_cast<GEOSContextHandleInternal_t*>(extHandle);
+            const GeometryFactory* gf = handle->geomFactory;
+            LineMerger lmrgr(true);
             lmrgr.add(g);
 
             auto lines = lmrgr.getMergedLineStrings();
@@ -2357,11 +2520,18 @@ extern "C" {
 
             class CoordinateBufferCopier : public geos::geom::CoordinateFilter {
             public:
-                CoordinateBufferCopier(double* p_buf, bool p_hasZ, bool p_hasM) : buf(p_buf), m(p_hasM), dim(2 + p_hasZ) {}
+                CoordinateBufferCopier(double* p_buf, bool p_hasZ, bool p_hasM) : buf(p_buf), m(p_hasM), z(p_hasZ) {}
 
                 void filter_ro(const geos::geom::Coordinate* c) override {
-                    std::memcpy(buf, c, dim * sizeof(double));
-                    buf += dim;
+                    *buf = c->x;
+                    buf++;
+                    *buf = c->y;
+                    buf++;
+
+                    if (z) {
+                        *buf = c->z;
+                        buf++;
+                    }
 
                     if (m) {
                         *buf = std::numeric_limits<double>::quiet_NaN();
@@ -2371,12 +2541,18 @@ extern "C" {
 
             private:
                 double* buf;
-                bool m;
-                size_t dim;
+                const bool m;
+                const bool z;
             };
 
             CoordinateBufferCopier cop(buf, hasZ, hasM);
-            cs->apply_ro(&cop);
+            // Speculatively check to see if our input is a CoordinateArraySequence.
+            // If so, gcc can inline the filter.
+            if (auto cas = dynamic_cast<const geos::geom::CoordinateArraySequence*>(cs)) {
+                cas->apply_ro(&cop);
+            } else {
+                cs->apply_ro(&cop);
+            }
 
             return 1;
         });
@@ -2672,6 +2848,19 @@ extern "C" {
     }
 
     Geometry*
+    GEOSGeom_createRectangle_r(GEOSContextHandle_t extHandle,
+                            double xmin, double ymin,
+                            double xmax, double ymax)
+    {
+        return execute(extHandle, [&]() {
+            GEOSContextHandleInternal_t* handle = reinterpret_cast<GEOSContextHandleInternal_t*>(extHandle);
+            const GeometryFactory* gf = handle->geomFactory;
+            geos::geom::Envelope env(xmin, xmax, ymin, ymax);
+            return (gf->toGeometry(&env)).release();
+        });
+    }
+
+    Geometry*
     GEOSGeom_clone_r(GEOSContextHandle_t extHandle, const Geometry* g)
     {
         return execute(extHandle, [&]() {
@@ -2686,15 +2875,18 @@ extern "C" {
         using namespace geos::geom;
 
         return execute(extHandle, [&]() {
-            const PrecisionModel* pm = g->getPrecisionModel();
-            double cursize = pm->isFloating() ? 0 : 1.0 / pm->getScale();
             std::unique_ptr<PrecisionModel> newpm;
             if(gridSize != 0) {
-                newpm.reset(new PrecisionModel(1.0 / std::abs(gridSize)));
+                // Use negative scale to indicate you actually want a gridSize
+                double scale = -1.0 * std::abs(gridSize);
+                newpm.reset(new PrecisionModel(scale));
             }
             else {
                 newpm.reset(new PrecisionModel());
             }
+
+            const PrecisionModel* pm = g->getPrecisionModel();
+            double cursize = pm->isFloating() ? 0 : 1.0 / pm->getScale();
             Geometry* ret;
             GeometryFactory::Ptr gf =
                 GeometryFactory::create(newpm.get(), g->getSRID());
@@ -2794,6 +2986,22 @@ extern "C" {
         });
     }
 
+    int
+    GEOSGeom_getExtent_r(GEOSContextHandle_t extHandle, const Geometry* g, double* xmin, double* ymin, double* xmax, double* ymax)
+    {
+        return execute(extHandle, 0, [&]() {
+            if(g->isEmpty()) {
+                return 0;
+            }
+            const Envelope* extent = g->getEnvelopeInternal();
+            *xmin = extent->getMinX();
+            *ymin = extent->getMinY();
+            *xmax = extent->getMaxX();
+            *ymax = extent->getMaxY();
+            return 1;
+        });
+    }
+
     Geometry*
     GEOSSimplify_r(GEOSContextHandle_t extHandle, const Geometry* g1, double tolerance)
     {
@@ -2836,6 +3044,14 @@ extern "C" {
     {
         return execute(extHandle, [&]() {
             delete reader;
+        });
+    }
+
+    void
+    GEOSWKTReader_setFixStructure_r(GEOSContextHandle_t extHandle, WKTReader* reader, char doFix)
+    {
+        return execute(extHandle, [&]() {
+            return reader->setFixStructure(doFix);
         });
     }
 
@@ -2935,6 +3151,14 @@ extern "C" {
     {
         execute(extHandle, [&]() {
             delete reader;
+        });
+    }
+
+    void
+    GEOSWKBReader_setFixStructure_r(GEOSContextHandle_t extHandle, WKBReader* reader, char doFix)
+    {
+        return execute(extHandle, [&]() {
+            return reader->setFixStructure(doFix);
         });
     }
 

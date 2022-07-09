@@ -1,4 +1,3 @@
-#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -19,7 +18,8 @@
 #include <string>
 #include <sstream>
 #include <utility>
-
+#include <iomanip>
+#include <locale>
 
 
 namespace geos {
@@ -54,20 +54,30 @@ Profile::getTot() const
     return static_cast<double>(totaltime.count());
 }
 
+
 std::string
 Profile::getTotFormatted() const
 {
-    std::stringstream usec;
-    usec << totaltime.count();
-
-    std::string fmt = usec.str();
-    int insertPosition = static_cast<int>(fmt.length()) - 3;
-    while (insertPosition > 0) {
-        fmt.insert(static_cast<std::string::size_type>(insertPosition), ",");
-        insertPosition-=3;
-    }
-    return fmt + " usec";
+    std::stringstream ss;
+    ss.imbue(std::locale(""));
+    ss << std::fixed << totaltime.count();
+    return ss.str();
 }
+
+// std::string
+// Profile::getTotFormatted() const
+// {
+//     std::stringstream usec;
+//     usec << totaltime.count();
+
+//     std::string fmt = usec.str();
+//     int insertPosition = static_cast<int>(fmt.length()) - 3;
+//     while (insertPosition > 0) {
+//         fmt.insert(static_cast<std::string::size_type>(insertPosition), ",");
+//         insertPosition-=3;
+//     }
+//     return fmt << " usec";
+// }
 
 size_t
 Profile::getNumTimings() const
@@ -87,7 +97,7 @@ Profiler::stop(std::string name)
 {
     auto iter = profs.find(name);
     if(iter == profs.end()) {
-        cpp_compat_cerr << name << ": no such Profile started";
+        std::cerr << name << ": no such Profile started";
         return;
     }
     iter->second->stop();

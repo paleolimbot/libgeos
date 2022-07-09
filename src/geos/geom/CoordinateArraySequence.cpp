@@ -17,6 +17,7 @@
 #include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/CoordinateFilter.h>
+#include <geos/util/IllegalArgumentException.h>
 #include <geos/util.h>
 
 #include <sstream>
@@ -250,14 +251,6 @@ CoordinateArraySequence::apply_rw(const CoordinateFilter* filter)
         filter->filter_rw(&coord);
     }
     dimension = 0; // re-check (see http://trac.osgeo.org/geos/ticket/435)
-}
-
-void
-CoordinateArraySequence::apply_ro(CoordinateFilter* filter) const
-{
-    for(const auto& coord : vect) {
-        filter->filter_ro(&coord);
-    }
 }
 
 } // namespace geos::geom

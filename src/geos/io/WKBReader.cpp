@@ -31,6 +31,7 @@
 #include <geos/geom/MultiPolygon.h>
 #include <geos/geom/CoordinateSequenceFactory.h>
 #include <geos/geom/CoordinateSequence.h>
+#include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/PrecisionModel.h>
 
 #include <iomanip>
@@ -51,11 +52,18 @@ WKBReader::WKBReader(geom::GeometryFactory const& f)
     , inputDimension(2)
     , hasZ(false)
     , hasM(false)
+    , fixStructure(false)
     {}
 
 WKBReader::WKBReader()
     : WKBReader(*(GeometryFactory::getDefaultInstance()))
     {}
+
+void
+WKBReader::setFixStructure(bool doFixStructure)
+{
+    fixStructure = doFixStructure;
+}
 
 std::ostream&
 WKBReader::printHEX(std::istream& is, std::ostream& os)
@@ -217,7 +225,7 @@ WKBReader::read(std::istream& is)
     is.seekg(0, std::ios::beg);
 
     std::vector<unsigned char> buf(static_cast<size_t>(size));
-    is.read((char*) buf.data(), static_cast<std::streamsize>(size));
+    is.read(reinterpret_cast<char*>(buf.data()), static_cast<std::streamsize>(size));
 
     return read(buf.data(), buf.size());
 }
@@ -366,6 +374,12 @@ WKBReader::readLinearRing()
     std::size_t << "WKB npoints: " << size << std::endl;
 #endif
     auto pts = readCoordinateSequence(size);
+    // Replace unclosed ring with closed
+    if (fixStructure && !pts->isRing()) {
+        std::unique_ptr<CoordinateArraySequence> cas(new CoordinateArraySequence(*pts));
+        cas->closeRing();
+        pts.reset(cas.release());
+    }
     return factory.createLinearRing(std::move(pts));
 }
 

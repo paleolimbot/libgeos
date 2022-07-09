@@ -12,12 +12,12 @@
  *
  **********************************************************************/
 
-#ifndef GEOS_GEOM_FIXEDSIZECOORDINATESEQUENCE_H
-#define GEOS_GEOM_FIXEDSIZECOORDINATESEQUENCE_H
+#pragma once
 
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/CoordinateFilter.h>
 #include <geos/geom/CoordinateSequence.h>
+#include <geos/util/IllegalArgumentException.h>
 #include <geos/util.h>
 
 #include <algorithm>
@@ -105,7 +105,11 @@ namespace geom {
         }
 
         void setPoints(const std::vector<Coordinate> & v) final override {
-            std::copy(v.begin(), v.end(), m_data.begin());
+            assert(v.size() == N);
+            if (N > 0) {
+                std::copy(v.begin(), v.end(), m_data.begin());
+            }
+
         }
 
         void apply_ro(CoordinateFilter* filter) const final override {
@@ -126,5 +130,3 @@ namespace geom {
 
 }
 }
-
-#endif

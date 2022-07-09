@@ -17,8 +17,7 @@
  *
  **********************************************************************/
 
-#ifndef GEOS_ALGORITHM_MINIMUMDIAMETER_H
-#define GEOS_ALGORITHM_MINIMUMDIAMETER_H
+#pragma once
 
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/LineSegment.h>
@@ -29,6 +28,7 @@
 // Forward declarations
 namespace geos {
 namespace geom {
+class GeometryFactory;
 class Geometry;
 class LineString;
 class CoordinateSequence;
@@ -92,6 +92,10 @@ private:
     static double computeC(double a, double b, const geom::Coordinate& p);
 
     static geom::LineSegment computeSegmentForLine(double a, double b, double c);
+
+    static std::unique_ptr<geom::Geometry> computeMaximumLine(
+                        const geom::CoordinateSequence* pts,
+                        const geom::GeometryFactory* factory);
 
 public:
     ~MinimumDiameter() = default;
@@ -175,6 +179,3 @@ public:
 
 } // namespace geos::algorithm
 } // namespace geos
-
-#endif // GEOS_ALGORITHM_MINIMUMDIAMETER_H
-
