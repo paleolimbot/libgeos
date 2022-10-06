@@ -43,7 +43,7 @@ using std::size_t;
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
 
 // the runtime version of libgeos
-extern int (*libgeos_version_int)();
+extern int (*libgeos_version_int)(void);
 
 // the compile-time version of libgeos
 #define LIBGEOS_VERSION_COMPILE_INT LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH)
@@ -431,6 +431,6 @@ extern GEOSGeometry* (*GEOSGeomFromHEX_buf_r)( GEOSContextHandle_t, const unsign
 extern unsigned char* (*GEOSGeomToHEX_buf_r)( GEOSContextHandle_t, const GEOSGeometry*, size_t*);
 extern GEOSGeometry* (*GEOSUnionCascaded_r)( GEOSContextHandle_t, const GEOSGeometry*);
 
-void libgeos_init_api();
+void libgeos_init_api(void);
 
 #endif

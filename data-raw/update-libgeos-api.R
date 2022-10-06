@@ -104,7 +104,7 @@ using std::size_t;
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
 
 // the runtime version of libgeos
-extern int (*libgeos_version_int)();
+extern int (*libgeos_version_int)(void);
 
 // the compile-time version of libgeos
 #define LIBGEOS_VERSION_COMPILE_INT LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH)
@@ -115,7 +115,7 @@ extern int (*libgeos_version_int)();
 
 { paste0(header_def, collapse = "\n") }
 
-void libgeos_init_api();
+void libgeos_init_api(void);
 
 #endif
 
