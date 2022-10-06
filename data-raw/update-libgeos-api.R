@@ -160,12 +160,12 @@ libgeos_c <- with(
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-int (*libgeos_version_int)() = NULL;
+int (*libgeos_version_int)(void) = NULL;
 
 { paste0(function_header_defs$impl_def, collapse = "\n") }
 
 void libgeos_init_api() {{
-  libgeos_version_int = (int (*)()) R_GetCCallable("libgeos", "libgeos_version_int");
+  libgeos_version_int = (int (*)(void)) R_GetCCallable("libgeos", "libgeos_version_int");
 
   // exported in libgeos >= 3.8.1
 { paste0(function_header_defs_common$init_def, collapse = "\n") }
@@ -207,7 +207,7 @@ libgeos_init_c <- with(
 // lets newer packages link to multiple versions of libgeos.
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
 
-int libgeos_version_int() {{
+int libgeos_version_int(void) {{
   return LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH);
 }}
 

@@ -38,7 +38,7 @@
 // lets newer packages link to multiple versions of libgeos.
 #define LIBGEOS_VERSION_INT(major, minor, patch) (patch + minor * 100 + major * 10000)
 
-int libgeos_version_int() {
+int libgeos_version_int(void) {
   return LIBGEOS_VERSION_INT(GEOS_VERSION_MAJOR, GEOS_VERSION_MINOR, GEOS_VERSION_PATCH);
 }
 

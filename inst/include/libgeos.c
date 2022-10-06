@@ -5,7 +5,7 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
-int (*libgeos_version_int)() = NULL;
+int (*libgeos_version_int)(void) = NULL;
 
 GEOSContextHandle_t (*GEOS_init_r)(void) = NULL;
 void (*GEOS_finish_r)(GEOSContextHandle_t) = NULL;
@@ -260,7 +260,7 @@ unsigned char* (*GEOSGeomToHEX_buf_r)( GEOSContextHandle_t, const GEOSGeometry*,
 GEOSGeometry* (*GEOSUnionCascaded_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 
 void libgeos_init_api() {
-  libgeos_version_int = (int (*)()) R_GetCCallable("libgeos", "libgeos_version_int");
+  libgeos_version_int = (int (*)(void)) R_GetCCallable("libgeos", "libgeos_version_int");
 
   // exported in libgeos >= 3.8.1
   GEOS_init_r = (GEOSContextHandle_t (*)(void)) R_GetCCallable("libgeos", "GEOS_init_r");
