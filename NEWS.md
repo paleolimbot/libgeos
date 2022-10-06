@@ -1,4 +1,6 @@
-# libgeos (development version)
+# libgeos 3.11.0-2
+
+* Fixes warnings when compiling with `-Wstrict-prototypes`.
 
 # libgeos 3.11.0-1
 

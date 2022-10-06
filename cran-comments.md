@@ -1,5 +1,6 @@
 
-This submission updates the internal version of GEOS to 3.11.0.
+This submission fixes warnings when compiling with `-Wstrict-prototypes`
+as shown on the package check page.
 
 ## Test environments
 
