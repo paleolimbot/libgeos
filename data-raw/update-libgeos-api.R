@@ -164,7 +164,7 @@ int (*libgeos_version_int)(void) = NULL;
 
 { paste0(function_header_defs$impl_def, collapse = "\n") }
 
-void libgeos_init_api() {{
+void libgeos_init_api(void) {{
   libgeos_version_int = (int (*)(void)) R_GetCCallable("libgeos", "libgeos_version_int");
 
   // exported in libgeos >= 3.8.1

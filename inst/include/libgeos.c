@@ -259,7 +259,7 @@ GEOSGeometry* (*GEOSGeomFromHEX_buf_r)( GEOSContextHandle_t, const unsigned char
 unsigned char* (*GEOSGeomToHEX_buf_r)( GEOSContextHandle_t, const GEOSGeometry*, size_t*) = NULL;
 GEOSGeometry* (*GEOSUnionCascaded_r)( GEOSContextHandle_t, const GEOSGeometry*) = NULL;
 
-void libgeos_init_api() {
+void libgeos_init_api(void) {
   libgeos_version_int = (int (*)(void)) R_GetCCallable("libgeos", "libgeos_version_int");
 
   // exported in libgeos >= 3.8.1
