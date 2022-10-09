@@ -12,3 +12,4 @@
 ^LICENSE\.md$
 ^\.vscode$
 ^CRAN-RELEASE$
+^CRAN-SUBMISSION$
