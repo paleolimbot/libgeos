@@ -2,7 +2,7 @@ PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY
 PKG_CXXFLAGS = -I../src/geos_include
 CXX_STD = CXX11
 
-OBJECTS = geos/algorithm/Angle.o \
+OBJECTS =      geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
      geos/algorithm/Centroid.o \
@@ -216,6 +216,7 @@ OBJECTS = geos/algorithm/Angle.o \
      geos/noding/snapround/SnapRoundingIntersectionAdder.o \
      geos/noding/snapround/SnapRoundingNoder.o \
      geos/noding/ValidatingNoder.o \
+     geos/operation/BoundaryOp.o \
      geos/operation/buffer/BufferBuilder.o \
      geos/operation/buffer/BufferCurveSetBuilder.o \
      geos/operation/buffer/BufferInputLineSimplifier.o \

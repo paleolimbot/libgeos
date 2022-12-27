@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # download GEOS
-source_url <- "http://download.osgeo.org/geos/geos-3.11.0.tar.bz2"
+source_url <- "http://download.osgeo.org/geos/geos-3.11.1.tar.bz2"
 curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
 
@@ -75,7 +75,7 @@ stopifnot(
   )
 )
 
-# we need to point this to our own version of nlohmann_json
+# we need to point this to our own version of nlohmann_json at "nlohmann_json.hpp"
 # which we've modified to pass the cran checks
 usethis::edit_file("src/geos_include/geos/vend/include_nlohmann_json.hpp")
 
