@@ -223,7 +223,7 @@ int libgeos_version_int(void) {{
 { paste0(def, collapse = "\n") }
 
 // need at least one function passed to R to avoid a NOTE
-SEXP libgeos_geos_version() {{
+SEXP libgeos_geos_version(void) {{
   SEXP out = PROTECT(Rf_allocVector(STRSXP, 1));
   SET_STRING_ELT(out, 0, Rf_mkChar(GEOSversion()));
   UNPROTECT(1);
