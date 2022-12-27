@@ -84,7 +84,7 @@ void
 ElevationMatrixFilter::filter_ro(const Coordinate* c)
 {
 #if GEOS_DEBUG
-  cpp_compat_cerr << "ElevationMatrixFilter::filter_ro(" << c->toString() << ") called"
+    cpp_compat_cerr << "ElevationMatrixFilter::filter_ro(" << c->toString() << ") called"
          << std::endl;
 #endif
     em.add(*c);
@@ -113,7 +113,7 @@ void
 ElevationMatrix::add(const Geometry* geom)
 {
 #if GEOS_DEBUG
-  cpp_compat_cerr << "ElevationMatrix::add(Geometry *) called" << std::endl;
+    cpp_compat_cerr << "ElevationMatrix::add(Geometry *) called" << std::endl;
 #endif // GEOS_DEBUG
 
     // Cannot add Geometries to an ElevationMatrix after it's average

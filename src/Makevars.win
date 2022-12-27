@@ -4,7 +4,7 @@ CXX_STD = CXX11
 
 STATLIB = geos/libstaticgeos.a
 
-GEOS_OBJECTS = geos/algorithm/Angle.o \
+GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
      geos/algorithm/Centroid.o \
@@ -218,6 +218,7 @@ GEOS_OBJECTS = geos/algorithm/Angle.o \
      geos/noding/snapround/SnapRoundingIntersectionAdder.o \
      geos/noding/snapround/SnapRoundingNoder.o \
      geos/noding/ValidatingNoder.o \
+     geos/operation/BoundaryOp.o \
      geos/operation/buffer/BufferBuilder.o \
      geos/operation/buffer/BufferCurveSetBuilder.o \
      geos/operation/buffer/BufferInputLineSimplifier.o \
@@ -386,6 +387,8 @@ GEOS_OBJECTS = geos/algorithm/Angle.o \
      geos/util/Interrupt.o \
      geos/util/math.o \
      geos/util/Profiler.o \
+     libgeos-cpp-compat.o \
+     libgeos-init.o \
      ryu/d2s.o
 
 $(SHLIB): $(STATLIB)

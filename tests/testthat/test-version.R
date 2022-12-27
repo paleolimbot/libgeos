@@ -1,6 +1,6 @@
 
 test_that("libgeos_version() works", {
-  expect_identical(libgeos_version(), "3.11.0-CAPI-1.17.0")
+  expect_identical(libgeos_version(), "3.11.1-CAPI-1.17.1")
 })
 
 test_that("libgeos can be linked to", {
