@@ -26,6 +26,7 @@
 
 #include <iosfwd> // for operator<<
 #include <cassert>
+#include <cstdint>
 
 namespace geos {
 namespace geomgraph { // geos.geomgraph

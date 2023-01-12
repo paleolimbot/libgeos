@@ -18,6 +18,8 @@
 #include <geos/geom/Position.h>
 #include <geos/export.h>
 
+#include <cstdint>
+
 using geos::geom::Location;
 using geos::geom::Position;
 
