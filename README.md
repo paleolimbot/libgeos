@@ -85,7 +85,7 @@ std::string version() {
 ``` r
 cpp_libgeos_init_api()
 version()
-#> [1] "3.11.0-CAPI-1.17.0"
+#> [1] "3.11.1-CAPI-1.17.1"
 ```
 
 You can link to libegeos interactively from cpp11 using
@@ -121,5 +121,5 @@ std::string version() {
 ``` r
 cpp_libgeos_init_api()
 version()
-#> [1] "3.11.0-CAPI-1.17.0"
+#> [1] "3.11.1-CAPI-1.17.1"
 ```
