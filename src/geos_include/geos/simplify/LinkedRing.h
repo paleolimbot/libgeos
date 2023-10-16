@@ -17,20 +17,11 @@
 #include <memory>
 
 #include <geos/geom/Coordinate.h>
-
-namespace geos {
-namespace geom {
-class Coordinate;
-class CoordinateArraySequence;
-}
-namespace triangulate {
-namespace quadedge {
-}
-}
-}
+#include <geos/geom/CoordinateSequence.h>
+#include <geos/constants.h>
 
 using geos::geom::Coordinate;
-using geos::geom::CoordinateArraySequence;
+using geos::geom::CoordinateSequence;
 
 namespace geos {
 namespace simplify { // geos::simplify
@@ -41,10 +32,7 @@ class LinkedRing
 {
     private:
 
-        static constexpr std::size_t
-            NO_COORD_INDEX = std::numeric_limits<std::size_t>::max();
-
-        const std::vector<Coordinate>& m_coord;
+        const CoordinateSequence& m_coord;
         std::size_t m_size;
         std::vector<std::size_t> m_next;
         std::vector<std::size_t> m_prev;
@@ -55,7 +43,7 @@ class LinkedRing
 
     public:
 
-        LinkedRing(const std::vector<Coordinate>& cs)
+        LinkedRing(const CoordinateSequence& cs)
             : m_coord(cs)
             , m_size(cs.size()-1)
             , m_next(createNextLinks(m_size))
@@ -70,7 +58,7 @@ class LinkedRing
         const Coordinate& nextCoordinate(std::size_t index) const;
         bool hasCoordinate(std::size_t index) const;
         void remove(std::size_t index);
-        std::unique_ptr<CoordinateArraySequence> getCoordinates() const;
+        std::unique_ptr<CoordinateSequence> getCoordinates() const;
 
 
 }; // LinkedRing

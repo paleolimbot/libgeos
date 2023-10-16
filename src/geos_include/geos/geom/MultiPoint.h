@@ -31,7 +31,6 @@
 namespace geos {
 namespace geom { // geos::geom
 class Coordinate;
-class CoordinateArraySequence;
 }
 }
 
@@ -60,6 +59,10 @@ public:
     Dimension::DimensionType getDimension() const override;
 
     bool isDimensionStrict(Dimension::DimensionType d) const override {
+        return d == Dimension::P;
+    }
+
+    bool hasDimension(Dimension::DimensionType d) const override {
         return d == Dimension::P;
     }
 
@@ -113,8 +116,6 @@ protected:
      *	Caller must keep the factory alive for the life-time
      *	of the constructed MultiPoint.
      */
-    MultiPoint(std::vector<Geometry*>* newPoints, const GeometryFactory* newFactory);
-
     MultiPoint(std::vector<std::unique_ptr<Point>> && newPoints, const GeometryFactory& newFactory);
 
     MultiPoint(std::vector<std::unique_ptr<Geometry>> && newPoints, const GeometryFactory& newFactory);
@@ -125,7 +126,7 @@ protected:
 
     MultiPoint* reverseImpl() const override { return new MultiPoint(*this); }
 
-    const Coordinate* getCoordinateN(std::size_t n) const;
+    const CoordinateXY* getCoordinateN(std::size_t n) const;
 
     int
     getSortIndex() const override

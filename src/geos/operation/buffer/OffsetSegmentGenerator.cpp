@@ -28,7 +28,6 @@
 #include <geos/operation/buffer/BufferInputLineSimplifier.h>
 #include <geos/operation/buffer/BufferParameters.h>
 #include <geos/geom/Position.h>
-#include <geos/geom/CoordinateArraySequence.h>
 #include <geos/geom/CoordinateSequence.h>
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/PrecisionModel.h>
@@ -484,10 +483,10 @@ OffsetSegmentGenerator::addMitreJoin(const geom::Coordinate& cornerPt,
      * However, this situation should have been eliminated earlier by the check
      * for whether the offset segment endpoints are almost coincident
      */
-    Coordinate intPt = algorithm::Intersection::intersection(p_offset0.p0, p_offset0.p1, p_offset1.p0, p_offset1.p1);
+    CoordinateXY intPt = algorithm::Intersection::intersection(p_offset0.p0, p_offset0.p1, p_offset1.p0, p_offset1.p1);
 
     if (!intPt.isNull() && intPt.distance(cornerPt) <= mitreLimitDistance) {
-        segList.addPt(intPt);
+        segList.addPt(Coordinate(intPt));
         return;
     }
     /**

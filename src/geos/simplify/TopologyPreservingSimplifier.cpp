@@ -1,4 +1,3 @@
-#include "libgeos-cpp-compat.h"
 /**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
@@ -90,7 +89,7 @@ LineStringTransformer::transformCoordinates(
     const Geometry* parent)
 {
 #if GEOS_DEBUG
-    cpp_compat_cerr << __FUNCTION__ << ": parent: " << parent
+    std::cerr << __FUNCTION__ << ": parent: " << parent
               << std::endl;
 #endif
     if(dynamic_cast<const LineString*>(parent)) {
@@ -99,7 +98,7 @@ LineStringTransformer::transformCoordinates(
 
         TaggedLineString* taggedLine = it->second;
 #if GEOS_DEBUG
-        cpp_compat_cerr << "LineStringTransformer[" << this << "] "
+        std::cerr << "LineStringTransformer[" << this << "] "
                   << " getting result Coordinates from "
                   << " TaggedLineString[" << taggedLine << "]"
                   << std::endl;
@@ -134,9 +133,6 @@ LineStringTransformer::transformCoordinates(
 class LineStringMapBuilderFilter: public geom::GeometryComponentFilter {
 
 public:
-
-    // no more needed
-    //friend class TopologyPreservingSimplifier;
 
     /**
      * Filters linear geometries.
@@ -173,16 +169,19 @@ LineStringMapBuilderFilter::LineStringMapBuilderFilter(LinesMap& nMap, std::vect
 void
 LineStringMapBuilderFilter::filter_ro(const Geometry* geom)
 {
-    TaggedLineString* taggedLine;
+    auto typ = geom->getGeometryTypeId();
+    bool preserveEndpoint = true;
 
-    if(const LineString* ls =
-                dynamic_cast<const LineString*>(geom)) {
-        std::size_t minSize = ls->isClosed() ? 4 : 2;
-        taggedLine = new TaggedLineString(ls, minSize);
-    }
-    else {
+    if (typ == GEOS_LINEARRING) {
+        preserveEndpoint = false;
+    } else if (typ != GEOS_LINESTRING) {
         return;
     }
+
+
+    auto ls = static_cast<const LineString*>(geom);
+    std::size_t minSize = ls->isClosed() ? 4 : 2;
+    TaggedLineString* taggedLine = new TaggedLineString(ls, minSize, preserveEndpoint);
 
     // Duplicated Geometry pointers shouldn't happen
     if(! linestringMap.insert(std::make_pair(geom, taggedLine)).second) {
@@ -249,7 +248,7 @@ TopologyPreservingSimplifier::getResultGeometry()
         inputGeom->apply_ro(&lsmbf);
 
 #if GEOS_DEBUG
-        cpp_compat_cerr << "LineStringMapBuilderFilter applied, "
+        std::cerr << "LineStringMapBuilderFilter applied, "
                   << " lineStringMap contains "
                   << linestringMap.size() << " elements\n";
 #endif
@@ -257,14 +256,14 @@ TopologyPreservingSimplifier::getResultGeometry()
         lineSimplifier->simplify(tlsVector.begin(), tlsVector.end());
 
 #if GEOS_DEBUG
-        cpp_compat_cerr << "all TaggedLineString simplified\n";
+        std::cerr << "all TaggedLineString simplified\n";
 #endif
 
         LineStringTransformer trans(linestringMap);
         result = trans.transform(inputGeom);
 
 #if GEOS_DEBUG
-        cpp_compat_cerr << "inputGeom transformed\n";
+        std::cerr << "inputGeom transformed\n";
 #endif
 
     }
@@ -289,7 +288,7 @@ TopologyPreservingSimplifier::getResultGeometry()
     }
 
 #if GEOS_DEBUG
-    cpp_compat_cerr << "returning result\n";
+    std::cerr << "returning result\n";
 #endif
 
     return result;

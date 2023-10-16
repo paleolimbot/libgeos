@@ -34,7 +34,6 @@
 namespace geos {
 namespace geom { // geos::geom
 class Coordinate;
-class CoordinateArraySequence;
 class MultiPoint;
 }
 }
@@ -65,6 +64,10 @@ public:
 
     /// Returns surface dimension (2)
     Dimension::DimensionType getDimension() const override;
+
+    bool hasDimension(Dimension::DimensionType d) const override {
+        return d == Dimension::A;
+    }
 
     bool isDimensionStrict(Dimension::DimensionType d) const override {
         return d == Dimension::A;
@@ -117,8 +120,6 @@ protected:
      *	Caller must keep the factory alive for the life-time
      *	of the constructed MultiPolygon.
      */
-    MultiPolygon(std::vector<Geometry*>* newPolys, const GeometryFactory* newFactory);
-
     MultiPolygon(std::vector<std::unique_ptr<Polygon>> && newPolys,
             const GeometryFactory& newFactory);
 

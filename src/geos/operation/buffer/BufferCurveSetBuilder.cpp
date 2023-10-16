@@ -14,7 +14,7 @@
  *
  **********************************************************************
  *
- * Last port: operation/buffer/BufferCurveSetBuilder.java r378 (JTS-1.12)
+ * Last port: operation/buffer/BufferCurveSetBuilder.java 4c343e79f (JTS-1.19)
  *
  **********************************************************************/
 
@@ -113,7 +113,7 @@ BufferCurveSetBuilder::addCurve(CoordinateSequence* coord,
     Label* newlabel = new Label(0, Location::BOUNDARY, leftLoc, rightLoc);
 
     // coord ownership transferred to SegmentString
-    SegmentString* e = new NodedSegmentString(coord, newlabel);
+    SegmentString* e = new NodedSegmentString(coord, coord->hasZ(), coord->hasM(), newlabel);
 
     // SegmentString doesnt own the sequence, so we need to delete in
     // the destructor
@@ -244,6 +244,10 @@ BufferCurveSetBuilder::addPolygon(const Polygon* p)
 
     auto shellCoord =
             operation::valid::RepeatedPointRemover::removeRepeatedAndInvalidPoints(shell->getCoordinatesRO());
+
+    if (shellCoord->isEmpty()) {
+        throw util::GEOSException("Shell empty after removing invalid points");
+    }
 
     // don't attempt to buffer a polygon
     // with too few distinct vertices
@@ -438,7 +442,7 @@ BufferCurveSetBuilder::isTriangleErodedCompletely(
 {
     Triangle tri(triangleCoord->getAt(0), triangleCoord->getAt(1), triangleCoord->getAt(2));
 
-    Coordinate inCentre;
+    CoordinateXY inCentre;
     tri.inCentre(inCentre);
     double distToCentre = Distance::pointToSegment(inCentre, tri.p0, tri.p1);
     bool ret = distToCentre < std::fabs(bufferDistance);

@@ -17,6 +17,7 @@
 #include <geos/index/VertexSequencePackedRtree.h>
 #include <geos/triangulate/tri/TriList.h>
 #include <geos/triangulate/tri/Tri.h>
+#include <geos/constants.h>
 
 #include <array>
 #include <memory>
@@ -69,8 +70,6 @@ private:
 
     // Members
 
-    static constexpr std::size_t NO_VERTEX_INDEX = std::numeric_limits<std::size_t>::max();
-
     bool isFlatCornersSkipped = false;
 
     /**
@@ -78,7 +77,7 @@ private:
     * Thus for convex interior angles
     * the vertices forming the angle are in CW orientation.
     */
-    std::vector<Coordinate> vertex;
+    const CoordinateSequence& vertex;
     std::vector<std::size_t> vertexNext;
     std::size_t vertexSize;
 
@@ -110,7 +109,7 @@ private:
     *
     * @param cornerIndex the index of the corner apex vertex
     * @param corner the corner vertices
-    * @return the index of an intersecting or duplicate vertex, or {@link #NO_VERTEX_INDEX} if none
+    * @return the index of an intersecting or duplicate vertex, or NO_COORD_INDEX if none
     */
     std::size_t findIntersectingVertex(std::size_t cornerIndex, const std::array<Coordinate, 3>& corner) const;
 
@@ -177,7 +176,7 @@ public:
     *
     * @param polyShell the polygon vertices to process
     */
-    PolygonEarClipper(std::vector<Coordinate>& polyShell);
+    PolygonEarClipper(const geom::CoordinateSequence& polyShell);
 
     /**
     * Triangulates a polygon via ear-clipping.
@@ -185,7 +184,7 @@ public:
     * @param polyShell the vertices of the polygon
     * @param triListResult vector to fill in with the resultant Tri s
     */
-    static void triangulate(std::vector<Coordinate>& polyShell, TriList<Tri>& triListResult);
+    static void triangulate(const geom::CoordinateSequence& polyShell, TriList<Tri>& triListResult);
 
     /**
     * Sets whether flat corners formed by collinear adjacent line segments

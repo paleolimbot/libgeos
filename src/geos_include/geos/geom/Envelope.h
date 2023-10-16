@@ -92,7 +92,7 @@ public:
      * @param  p1  the first Coordinate
      * @param  p2  the second Coordinate
      */
-    Envelope(const Coordinate& p1, const Coordinate& p2)
+    Envelope(const CoordinateXY& p1, const CoordinateXY& p2)
     {
         init(p1, p2);
     }
@@ -102,9 +102,12 @@ public:
      *
      * @param  p  the Coordinate
      */
-    explicit Envelope(const Coordinate& p)
+    explicit Envelope(const CoordinateXY& p)
+        : minx(p.x)
+        , maxx(p.x)
+        , miny(p.y)
+        , maxy(p.y)
     {
-        init(p);
     }
 
     /** \brief
@@ -122,8 +125,8 @@ public:
      * @param q the point to test for intersection
      * @return `true` if q intersects the envelope p1-p2
      */
-    static bool intersects(const Coordinate& p1, const Coordinate& p2,
-                           const Coordinate& q);
+    static bool intersects(const CoordinateXY& p1, const CoordinateXY& p2,
+                           const CoordinateXY& q);
 
     /** \brief
      * Test the envelope defined by `p1-p2` for intersection
@@ -137,8 +140,8 @@ public:
      * @return `true` if Q intersects P
      */
     static bool intersects(
-        const Coordinate& p1, const Coordinate& p2,
-        const Coordinate& q1, const Coordinate& q2)
+        const CoordinateXY& p1, const CoordinateXY& p2,
+        const CoordinateXY& q1, const CoordinateXY& q2)
     {
         double minq = std::min(q1.x, q2.x);
         double maxq = std::max(q1.x, q2.x);
@@ -171,7 +174,7 @@ public:
      * @param b another point
      * @return `true` if the extents intersect
      */
-    bool intersects(const Coordinate& a, const Coordinate& b) const;
+    bool intersects(const CoordinateXY& a, const CoordinateXY& b) const;
 
     /** \brief
      *  Initialize to a null Envelope.
@@ -215,7 +218,7 @@ public:
      * @param  p1  the first Coordinate
      * @param  p2  the second Coordinate
      */
-    void init(const Coordinate& p1, const Coordinate& p2)
+    void init(const CoordinateXY& p1, const CoordinateXY& p2)
     {
         init(p1.x, p2.x, p1.y, p2.y);
     };
@@ -225,7 +228,7 @@ public:
      *
      * @param  p  the Coordinate
      */
-    void init(const Coordinate& p)
+    void init(const CoordinateXY& p)
     {
         init(p.x, p.x, p.y, p.y);
     };
@@ -286,6 +289,15 @@ public:
     getArea() const
     {
         return getWidth() * getHeight();
+    }
+
+    /** \brief
+     * Returns true if this Envelope covers a finite region
+     */
+    bool
+    isFinite() const
+    {
+        return std::isfinite(getArea());
     }
 
     /** \brief
@@ -350,7 +362,7 @@ public:
      * @param centre The coordinate to write results into
      * @return `false` if the center could not be found (null envelope).
      */
-    bool centre(Coordinate& centre) const;
+    bool centre(CoordinateXY& centre) const;
 
     /** \brief
      * Computes the intersection of two [Envelopes](@ref Envelope).
@@ -399,7 +411,7 @@ public:
      *
      * @param  p the Coordinate to include
      */
-    void expandToInclude(const Coordinate& p)
+    void expandToInclude(const CoordinateXY& p)
     {
         expandToInclude(p.x, p.y);
     };
@@ -454,16 +466,16 @@ public:
             maxy = other->maxy;
         }
         else {
-            if(other->minx < minx) {
+            if(std::isless(other->minx, minx)) {
                 minx = other->minx;
             }
-            if(other->maxx > maxx) {
+            if(std::isgreater(other->maxx, maxx)) {
                 maxx = other->maxx;
             }
-            if(other->miny < miny) {
+            if(std::isless(other->miny, miny)) {
                 miny = other->miny;
             }
-            if(other->maxy > maxy) {
+            if(std::isgreater(other->maxy, maxy)) {
                 maxy = other->maxy;
             }
         }
@@ -506,7 +518,7 @@ public:
      *         of this Envelope.
      */
     bool
-    contains(const Coordinate& p) const
+    contains(const CoordinateXY& p) const
     {
         return covers(p.x, p.y);
     }
@@ -533,10 +545,10 @@ public:
      * @param other the Coordinate to be tested
      * @return true if the point intersects this Envelope
      */
-    bool intersects(const Coordinate& other) const
+    bool intersects(const CoordinateXY& other) const
     {
-        return (other.x <= maxx && other.x >= minx &&
-                other.y <= maxy && other.y >= miny);
+        return (std::islessequal(other.x, maxx) && std::isgreaterequal(other.x, minx) &&
+                std::islessequal(other.y, maxy) && std::isgreaterequal(other.y,  miny));
     }
 
     /** \brief
@@ -548,7 +560,10 @@ public:
      */
     bool intersects(double x, double y) const
     {
-        return (x <= maxx && x >= minx && y <= maxy && y >= miny);
+        return std::islessequal(x, maxx) &&
+               std::isgreaterequal(x, minx) &&
+               std::islessequal(y, maxy) &&
+               std::isgreaterequal(y, miny);
     }
 
     /** \brief
@@ -559,10 +574,10 @@ public:
      */
     bool intersects(const Envelope* other) const
     {
-        return other->minx <= maxx &&
-               other->maxx >= minx &&
-               other->miny <= maxy &&
-               other->maxy >= miny;
+        return std::islessequal(other->minx, maxx) &&
+               std::isgreaterequal(other->maxx, minx) &&
+               std::islessequal(other->miny, maxy) &&
+               std::isgreaterequal(other->maxy, miny);
     }
 
     bool intersects(const Envelope& other) const
@@ -579,15 +594,12 @@ public:
     */
     bool disjoint(const Envelope& other) const
     {
-        return disjoint(&other);
+        return !intersects(other);
     }
 
     bool disjoint(const Envelope* other) const
     {
-        return !(other->minx <= maxx ||
-                 other->maxx >= minx ||
-                 other->miny <= maxy ||
-                 other->maxy >= miny);
+        return !intersects(other);
     }
 
     /** \brief
@@ -597,7 +609,12 @@ public:
      * @param y the y-coordinate of the point which this Envelope is being checked for containing
      * @return `true` if `(x, y)` lies in the interior or on the boundary of this Envelope.
      */
-    bool covers(double x, double y) const;
+    bool covers(double x, double y) const {
+        return std::isgreaterequal(x,  minx) &&
+               std::islessequal(x, maxx) &&
+               std::isgreaterequal(y, miny) &&
+               std::islessequal(y,  maxy);
+    }
 
     /** \brief
      * Tests if the given point lies in or on the envelope.
@@ -605,7 +622,7 @@ public:
      * @param p the point which this Envelope is being checked for containing
      * @return `true` if the point lies in the interior or on the boundary of this Envelope.
      */
-    bool covers(const Coordinate* p) const
+    bool covers(const CoordinateXY* p) const
     {
         return covers(p->x, p->y);
     }
@@ -633,6 +650,13 @@ public:
      */
     bool equals(const Envelope* other) const;
 
+    /**
+     * Returns `true` if all the extents of the Envelope are finite and defined (not NaN)
+     *
+     * @return `true` if envelope has only finite/valid extents, `false` otherwise
+     */
+    bool isfinite() const;
+
     /** \brief
      * Returns a `string` of the form `Env[minx:maxx,miny:maxy]`.
      *
@@ -649,6 +673,16 @@ public:
     double distance(const Envelope& env) const
     {
         return std::sqrt(distanceSquared(env));
+    }
+
+    /** \brief
+     * Computes the maximum distance between points in this and another Envelope.
+     */
+    double maxDistance(const Envelope& other) const
+    {
+        Coordinate p(std::min(minx, other.minx), std::min(miny, other.miny));
+        Coordinate q(std::max(maxx, other.maxx), std::max(maxy, other.maxy));
+        return p.distance(q);
     }
 
     /** \brief
@@ -679,9 +713,9 @@ public:
      * @param p1 second coordinate defining an envelope.
      */
     static double distanceToCoordinate(
-        const Coordinate& c,
-        const Coordinate& p0,
-        const Coordinate& p1)
+        const CoordinateXY& c,
+        const CoordinateXY& p0,
+        const CoordinateXY& p1)
     {
         return std::sqrt(distanceSquaredToCoordinate(c, p0, p1));
     };
@@ -696,9 +730,9 @@ public:
      * @param p1 second coordinate defining an envelope.
      */
     static double distanceSquaredToCoordinate(
-        const Coordinate& c,
-        const Coordinate& p0,
-        const Coordinate& p1)
+        const CoordinateXY& c,
+        const CoordinateXY& p0,
+        const CoordinateXY& p1)
     {
         double xa = c.x - p0.x;
         double xb = c.x - p1.x;
@@ -712,7 +746,26 @@ public:
         return dx*dx + dy*dy;
     }
 
-    std::size_t hashCode() const;
+    std::size_t hashCode() const
+    {
+        auto hash = std::hash<double>{};
+
+        //Algorithm from Effective Java by Joshua Bloch [Jon Aquino]
+        std::size_t result = 17;
+        result = 37 * result + hash(minx);
+        result = 37 * result + hash(maxx);
+        result = 37 * result + hash(miny);
+        result = 37 * result + hash(maxy);
+        return result;
+    }
+
+    struct GEOS_DLL HashCode
+    {
+        std::size_t operator()(const Envelope& e) const
+        {
+            return e.hashCode();
+        };
+    };
 
     /// Checks if two Envelopes are equal (2D only check)
     // GEOS_DLL bool operator==(const Envelope& a, const Envelope& b);

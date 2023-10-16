@@ -19,12 +19,13 @@
 
 #include <geos/operation/valid/PolygonTopologyAnalyzer.h>
 #include <geos/operation/valid/TopologyValidationError.h>
+#include <geos/util.h>
 
 
 // Forward declarations
 namespace geos {
 namespace geom {
-class Coordinate;
+class CoordinateXY;
 class Geometry;
 class Point;
 class MultiPoint;
@@ -76,8 +77,7 @@ private:
         return validErr != nullptr;
     }
 
-
-    void logInvalid(int code, const geom::Coordinate* pt);
+    void logInvalid(int code, const geom::CoordinateXY& pt);
 
     bool isValidGeometry(const geom::Geometry* g);
 
@@ -182,7 +182,7 @@ private:
      * @param shell the polygon shell to test against
      * @return a hole point outside the shell, or null if it is inside
      */
-    const Coordinate * findHoleOutsideShellPoint(
+    const CoordinateXY* findHoleOutsideShellPoint(
         const geom::LinearRing* hole,
         const geom::LinearRing* shell);
 
@@ -266,7 +266,7 @@ public:
         return ivo.isValid();
     };
 
-    static bool isValid(const geom::Coordinate& coord)
+    static bool isValid(const geom::CoordinateXY& coord)
     {
         return isValid(&coord);
     }
@@ -286,7 +286,7 @@ public:
      * @param coord the coordinate to validate
      * @return <code>true</code> if the coordinate is valid
      */
-    static bool isValid(const geom::Coordinate* coord);
+    static bool isValid(const geom::CoordinateXY* coord);
 
     /**
      * Computes the validity of the geometry,
