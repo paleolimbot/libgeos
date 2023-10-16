@@ -27,7 +27,6 @@
 #include <geos/geom/LineString.h>
 #include <geos/geom/Polygon.h>
 #include <geos/geom/util/GeometryExtracter.h>
-#include <geos/operation/overlay/OverlayOp.h>
 #include <geos/operation/union/CascadedPolygonUnion.h>
 
 #ifdef _MSC_VER
@@ -71,7 +70,7 @@ namespace geounion {  // geos::operation::geounion
  *   or portions of line segments will be reduced to a single line segment
  *   in the output.
  *   This is consistent with the semantics of the
- *   [Geometry::Union(Geometry* )](@ref geom::Geometry::Union(const Geometry* other) const)
+ *   [Geometry::Union(Geometry* )](@ref geom::Geometry::Union())
  *   operation. If **merged** linework is required, the
  *   [LineMerger](@ref operation::linemerge::LineMerger) class
  *   can be used.
@@ -196,8 +195,6 @@ private:
     std::unique_ptr<geom::Geometry>
     unionNoOpt(const geom::Geometry& g0)
     {
-        using geos::operation::overlay::OverlayOp;
-
         if(! empty.get()) {
             empty = geomFact->createEmptyGeometry();
         }

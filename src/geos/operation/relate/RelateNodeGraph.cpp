@@ -72,8 +72,8 @@ RelateNodeGraph::build(GeometryGraph* geomGraph)
      * Build EdgeEnds for all intersections.
      */
     EdgeEndBuilder eeBuilder;
-    std::vector<EdgeEnd*> eeList = eeBuilder.computeEdgeEnds(geomGraph->getEdges());
-    insertEdgeEnds(&eeList);
+    auto&& eeList = eeBuilder.computeEdgeEnds(geomGraph->getEdges());
+    insertEdgeEnds(eeList);
 }
 
 /**
@@ -95,7 +95,7 @@ RelateNodeGraph::computeIntersectionNodes(GeometryGraph *geomGraph,
     for(; edgeIt < edges->end(); ++edgeIt) {
         Edge* e = *edgeIt;
         Location eLoc = e->getLabel().getLocation(argIndex);
-        EdgeIntersectionList& eiL = e->getEdgeIntersectionList();
+        const EdgeIntersectionList& eiL = e->getEdgeIntersectionList();
         for(const EdgeIntersection& ei : eiL) {
             RelateNode* n = detail::down_cast<RelateNode*>(nodes->addNode(ei.coord));
             if(eLoc == Location::BOUNDARY) {
@@ -122,19 +122,19 @@ RelateNodeGraph::computeIntersectionNodes(GeometryGraph *geomGraph,
 void
 RelateNodeGraph::copyNodesAndLabels(GeometryGraph *geomGraph, uint8_t argIndex)
 {
-    auto& nMap = geomGraph->getNodeMap()->nodeMap;
-    for(auto& entry : nMap) {
-        Node* graphNode = entry.second;
+    const auto& nMap = geomGraph->getNodeMap()->nodeMap;
+    for(const auto& entry : nMap) {
+        const Node* graphNode = entry.second.get();
         Node* newNode = nodes->addNode(graphNode->getCoordinate());
         newNode->setLabel(argIndex, graphNode->getLabel().getLocation(argIndex));
     }
 }
 
 void
-RelateNodeGraph::insertEdgeEnds(std::vector<EdgeEnd*>* ee)
+RelateNodeGraph::insertEdgeEnds(std::vector<std::unique_ptr<EdgeEnd>>& ee)
 {
-    for(EdgeEnd* e: *ee) {
-        nodes->add(e);
+    for(auto& e : ee) {
+        nodes->add(std::move(e));
     }
 }
 

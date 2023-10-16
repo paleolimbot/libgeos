@@ -21,7 +21,9 @@
 #pragma once
 
 #include <geos/export.h>
-#include <geos/noding/SegmentNodeList.h>
+#include <geos/geom/Coordinate.h>
+#include <geos/geom/CoordinateSequence.h>
+#include <geos/noding/Octant.h>
 
 #include <vector>
 
@@ -53,9 +55,11 @@ public:
     /// \brief Construct a SegmentString.
     ///
     /// @param newContext the context associated to this SegmentString
+    /// @param newSeq coordinates of this SegmentString
     ///
-    SegmentString(const void* newContext)
+    SegmentString(const void* newContext, geom::CoordinateSequence* newSeq)
         :
+        seq(newSeq),
         context(newContext)
     {}
 
@@ -84,10 +88,14 @@ public:
         context = data;
     }
 
+    std::size_t size() const {
+        return seq->size();
+    }
 
-    virtual std::size_t size() const = 0;
-
-    virtual const geom::Coordinate& getCoordinate(std::size_t i) const = 0;
+    template<typename CoordType = geom::Coordinate>
+    const CoordType& getCoordinate(std::size_t i) const {
+        return seq->getAt<CoordType>(i);
+    }
 
     /// \brief
     /// Return a pointer to the CoordinateSequence associated
@@ -95,15 +103,53 @@ public:
     ///
     /// @note The CoordinateSequence is owned by this SegmentString!
     ///
-    virtual geom::CoordinateSequence* getCoordinates() const = 0;
+    const geom::CoordinateSequence* getCoordinates() const {
+        return seq;
+    }
 
-    virtual bool isClosed() const = 0;
+    geom::CoordinateSequence* getCoordinates() {
+        return seq;
+    }
+
+    /** \brief
+     * Gets the octant of the segment starting at vertex index.
+     *
+     * @param index the index of the vertex starting the segment.
+     *              Must not be the last index in the vertex list
+     * @return the octant of the segment at the vertex
+     */
+    int getSegmentOctant(std::size_t index) const
+    {
+        if (index >= size() - 1) {
+            return -1;
+        }
+        return safeOctant(seq->getAt<geom::CoordinateXY>(index),
+                          seq->getAt<geom::CoordinateXY>(index + 1));
+    };
+
+    static int getSegmentOctant(const SegmentString& ss, std::size_t index) {
+        return ss.getSegmentOctant(index);
+    }
+
+    bool isClosed() const {
+        return seq->front<geom::CoordinateXY>().equals(seq->back<geom::CoordinateXY>());
+    }
 
     virtual std::ostream& print(std::ostream& os) const;
 
-private:
+protected:
+    geom::CoordinateSequence* seq;
 
+private:
     const void* context;
+
+    static int safeOctant(const geom::CoordinateXY& p0, const geom::CoordinateXY& p1)
+    {
+        if(p0.equals2D(p1)) {
+            return 0;
+        }
+        return Octant::octant(p0, p1);
+    };
 
     // Declare type as noncopyable
     SegmentString(const SegmentString& other) = delete;

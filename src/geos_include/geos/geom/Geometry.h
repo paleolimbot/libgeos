@@ -66,7 +66,7 @@ class Unload;
 } // namespace geos.io
 }
 
-namespace geos {
+namespace geos { // geos
 namespace geom { // geos::geom
 
 /// Geometry types
@@ -281,7 +281,7 @@ public:
     const PrecisionModel* getPrecisionModel() const;
 
     /// Returns a vertex of this Geometry, or NULL if this is the empty geometry.
-    virtual const Coordinate* getCoordinate() const = 0; //Abstract
+    virtual const CoordinateXY* getCoordinate() const = 0; //Abstract
 
     /**
      * \brief
@@ -342,6 +342,11 @@ public:
     /// Returns the dimension of this Geometry (0=point, 1=line, 2=surface)
     virtual Dimension::DimensionType getDimension() const = 0; //Abstract
 
+    /// Checks whether any component of this geometry has dimension d
+    virtual bool hasDimension(Dimension::DimensionType d) const {
+        return getDimension() == d;
+    }
+
     /// Checks whether this Geometry consists only of components having dimension d.
     virtual bool isDimensionStrict(Dimension::DimensionType d) const {
         return d == getDimension();
@@ -359,6 +364,9 @@ public:
         return isDimensionStrict(Dimension::A);
     }
 
+    bool isMixedDimension() const;
+    bool isMixedDimension(Dimension::DimensionType* baseDim) const;
+
     bool isCollection() const {
         int t = getGeometryTypeId();
         return t == GEOS_GEOMETRYCOLLECTION ||
@@ -367,8 +375,21 @@ public:
                t == GEOS_MULTIPOLYGON;
     }
 
-    /// Returns the coordinate dimension of this Geometry (2=XY, 3=XYZ, 4=XYZM in future).
+    static GeometryTypeId multiTypeId(GeometryTypeId typeId) {
+        switch (typeId) {
+            case GEOS_POINT: return GEOS_MULTIPOINT;
+            case GEOS_LINESTRING: return GEOS_MULTILINESTRING;
+            case GEOS_POLYGON: return GEOS_MULTIPOLYGON;
+            default: return typeId;
+        }
+    }
+
+    /// Returns the coordinate dimension of this Geometry (2=XY, 3=XYZ or XYM, 4=XYZM).
     virtual uint8_t getCoordinateDimension() const = 0; //Abstract
+
+    virtual bool hasZ() const = 0;
+
+    virtual bool hasM() const = 0;
 
     /**
      * \brief
@@ -398,7 +419,7 @@ public:
      * Returns the minimum and maximum x and y values in this Geometry,
      * or a null Envelope if this Geometry is empty.
      */
-    virtual const Envelope* getEnvelopeInternal() const;
+    virtual const Envelope* getEnvelopeInternal() const = 0;
 
     /**
      * Tests whether this geometry is disjoint from the specified geometry.
@@ -719,10 +740,18 @@ public:
 
     /** \brief
      * Returns true iff the two Geometrys are of the same type and their
-     * vertices corresponding by index are equal up to a specified tolerance.
+     * vertices corresponding by index are equal up to a specified distance
+     * tolerance. Geometries are not required to have the same dimemsion;
+     * any Z/M values are ignored.
      */
     virtual bool equalsExact(const Geometry* other, double tolerance = 0)
         const = 0; // Abstract
+
+    /** \brief
+     * Returns true if the two geometries are of the same type and their
+     * vertices corresponding by index are equal in all dimensions.
+     */
+    virtual bool equalsIdentical(const Geometry* other) const = 0;
 
     virtual void apply_rw(const CoordinateFilter* filter) = 0; //Abstract
     virtual void apply_ro(CoordinateFilter* filter) const = 0; //Abstract
@@ -777,17 +806,19 @@ public:
     /// Comparator for sorting geometry
     virtual int compareTo(const Geometry* geom) const;
 
-    /** \brief
-     * Returns the minimum distance between this Geometry
-     * and the Geometry g
-     */
-    virtual double distance(const Geometry* g) const;
-
     /// Returns the area of this Geometry.
     virtual double getArea() const;
 
     /// Returns the length of this Geometry.
     virtual double getLength() const;
+
+    /** Returns the minimum distance between this Geometry and the Geometry g
+     *
+     * @param g the Geometry to calculate distance to
+     * @return the distance in cartesian units
+     */
+    virtual double distance(const Geometry* g) const;
+
 
     /** \brief
      * Tests whether the distance from this Geometry  to another
@@ -818,7 +849,7 @@ public:
     //
     /// Returns false if centroid cannot be computed (EMPTY geometry)
     ///
-    virtual bool getCentroid(Coordinate& ret) const;
+    virtual bool getCentroid(CoordinateXY& ret) const;
 
     /** \brief
      * Computes an interior point of this <code>Geometry</code>.
@@ -844,13 +875,9 @@ public:
      * Notifies this Geometry that its Coordinates have been changed
      * by an external party.
      */
-    void geometryChangedAction();
+    virtual void geometryChangedAction() = 0;
 
 protected:
-
-    /// The bounding box of this Geometry
-    mutable std::unique_ptr<Envelope> envelope;
-
     /// Make a deep-copy of this Geometry
     virtual Geometry* cloneImpl() const = 0;
 
@@ -884,13 +911,6 @@ protected:
     virtual bool isEquivalentClass(const Geometry* other) const;
 
     static void checkNotGeometryCollection(const Geometry* g);
-    // throw(IllegalArgumentException *);
-
-    //virtual void checkEqualSRID(Geometry *other);
-
-    //virtual void checkEqualPrecisionModel(Geometry *other);
-
-    virtual Envelope::Ptr computeEnvelopeInternal() const = 0; //Abstract
 
     virtual int compareToSameClass(const Geometry* geom) const = 0; //Abstract
 
@@ -900,7 +920,7 @@ protected:
 
     int compare(const std::vector<std::unique_ptr<Geometry>> & a, const std::vector<std::unique_ptr<Geometry>> & b) const;
 
-    bool equal(const Coordinate& a, const Coordinate& b,
+    bool equal(const CoordinateXY& a, const CoordinateXY& b,
                double tolerance) const;
     int SRID;
 
@@ -925,6 +945,10 @@ protected:
             gv[i] = std::move(v[i]);
         }
         return gv;
+    }
+
+    static std::vector<std::unique_ptr<Geometry>> toGeometryArray(std::vector<std::unique_ptr<Geometry>> && v) {
+        return std::move(v);
     }
 
 protected:

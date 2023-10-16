@@ -15,7 +15,6 @@
 #include <geos/algorithm/Orientation.h>
 #include <geos/algorithm/LineIntersector.h>
 #include <geos/geom/CoordinateSequence.h>
-#include <geos/geom/CoordinateSequenceFactory.h>
 #include <geos/geom/Geometry.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/LinearRing.h>
@@ -23,6 +22,8 @@
 #include <geos/geom/Triangle.h>
 #include <geos/triangulate/tri/Tri.h>
 #include <geos/util/IllegalArgumentException.h>
+#include <geos/util/IllegalStateException.h>
+#include <geos/util.h>
 
 
 using geos::util::IllegalArgumentException;
@@ -61,7 +62,7 @@ Tri::setTri(TriIndex edgeIndex, Tri* tri)
         case 1: tri1 = tri; return;
         case 2: tri2 = tri; return;
     }
-    assert(false); // never reach here
+    throw util::IllegalArgumentException("Tri::setTri - invalid index");
 }
 
 /* private */
@@ -283,13 +284,12 @@ Tri::hasCoordinate(const Coordinate& v) const
 const Coordinate&
 Tri::getCoordinate(TriIndex i) const
 {
-    if ( i == 0 ) {
-        return p0;
+    switch(i) {
+    case 0: return p0;
+    case 1: return p1;
+    case 2: return p2;
     }
-    if ( i == 1 ) {
-        return p1;
-    }
-    return p2;
+    throw util::IllegalArgumentException("Tri::getCoordinate - invalid index");
 }
 
 /* public */
@@ -327,8 +327,7 @@ Tri::getAdjacent(TriIndex i) const
     case 1: return tri1;
     case 2: return tri2;
     }
-    assert(false); // Never get here
-    return nullptr;
+    throw util::IllegalArgumentException("Tri::getAdjacent - invalid index");
 }
 
 /* public */
@@ -377,6 +376,9 @@ Tri::isInteriorVertex(TriIndex index) const
         const Tri* adj = curr->getAdjacent(currIndex);
         if (adj == nullptr) return false;
         TriIndex adjIndex = adj->getIndex(curr);
+        if (adjIndex < 0) {
+            throw util::IllegalStateException("Inconsistent adjacency - invalid triangulation");
+        }
         curr = adj;
         currIndex = Tri::next(adjIndex);
     }
@@ -473,11 +475,13 @@ Tri::getLength(TriIndex i) const
 std::unique_ptr<geom::Polygon>
 Tri::toPolygon(const geom::GeometryFactory* gf) const
 {
-    std::vector<Coordinate> coords(4);
-    coords[0] = p0; coords[1] = p1;
-    coords[2] = p2; coords[3] = p0;
+    auto coords = detail::make_unique<geom::CoordinateSequence>(4u);
+    (*coords)[0] = p0;
+    (*coords)[1] = p1;
+    (*coords)[2] = p2;
+    (*coords)[3] = p0;
 
-    return gf->createPolygon(std::move(coords));
+    return gf->createPolygon(gf->createLinearRing(std::move(coords)));
 }
 
 /* public static */
@@ -508,4 +512,3 @@ operator<<(std::ostream& os, const Tri& tri)
 } // namespace geos.triangulate.tri
 } // namespace geos.triangulate
 } // namespace geos
-

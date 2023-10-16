@@ -1,10 +1,10 @@
 PKG_CPPFLAGS = -I../src/geos_include -DUSE_UNSTABLE_GEOS_CPP_API -DGEOS_USE_ONLY_R_API
 PKG_LIBS = -Lgeos -lstaticgeos
-CXX_STD = CXX11
+CXX_STD = CXX14
 
 STATLIB = geos/libstaticgeos.a
 
-GEOS_OBJECTS =      geos/algorithm/Angle.o \
+GEOS_OBJECTS =       geos/algorithm/Angle.o \
      geos/algorithm/Area.o \
      geos/algorithm/BoundaryNodeRule.o \
      geos/algorithm/Centroid.o \
@@ -30,25 +30,37 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/algorithm/locate/IndexedPointInAreaLocator.o \
      geos/algorithm/locate/PointOnGeometryLocator.o \
      geos/algorithm/locate/SimplePointInAreaLocator.o \
+     geos/algorithm/MinimumAreaRectangle.o \
      geos/algorithm/MinimumBoundingCircle.o \
      geos/algorithm/MinimumDiameter.o \
      geos/algorithm/NotRepresentableException.o \
      geos/algorithm/Orientation.o \
      geos/algorithm/PointLocation.o \
      geos/algorithm/PointLocator.o \
+     geos/algorithm/PolygonNodeTopology.o \
      geos/algorithm/RayCrossingCounter.o \
-     geos/algorithm/RayCrossingCounterDD.o \
+     geos/algorithm/Rectangle.o \
      geos/algorithm/RobustDeterminant.o \
      geos/algorithm/SimplePointInRing.o \
+     geos/coverage/Corner.o \
+     geos/coverage/CoverageBoundarySegmentFinder.o \
+     geos/coverage/CoverageEdge.o \
+     geos/coverage/CoverageGapFinder.o \
+     geos/coverage/CoveragePolygonValidator.o \
+     geos/coverage/CoverageRing.o \
+     geos/coverage/CoverageRingEdges.o \
+     geos/coverage/CoverageSimplifier.o \
+     geos/coverage/CoverageUnion.o \
+     geos/coverage/CoverageValidator.o \
+     geos/coverage/InvalidSegmentDetector.o \
+     geos/coverage/TPVWSimplifier.o \
+     geos/coverage/VertexRingCounter.o \
      geos/edgegraph/EdgeGraph.o \
      geos/edgegraph/EdgeGraphBuilder.o \
      geos/edgegraph/HalfEdge.o \
      geos/edgegraph/MarkHalfEdge.o \
      geos/geom/Coordinate.o \
-     geos/geom/CoordinateArraySequence.o \
-     geos/geom/CoordinateArraySequenceFactory.o \
      geos/geom/CoordinateSequence.o \
-     geos/geom/DefaultCoordinateSequenceFactory.o \
      geos/geom/Dimension.o \
      geos/geom/Envelope.o \
      geos/geom/Geometry.o \
@@ -172,8 +184,11 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/io/StringTokenizer.o \
      geos/io/Unload.o \
      geos/io/WKBReader.o \
+     geos/io/WKBStreamReader.o \
      geos/io/WKBWriter.o \
+     geos/io/WKTFileReader.o \
      geos/io/WKTReader.o \
+     geos/io/WKTStreamReader.o \
      geos/io/WKTWriter.o \
      geos/io/Writer.o \
      geos/linearref/ExtractLineByLocation.o \
@@ -187,6 +202,7 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/linearref/LocationIndexOfPoint.o \
      geos/math/DD.o \
      geos/noding/BasicSegmentString.o \
+     geos/noding/BoundaryChainNoder.o \
      geos/noding/FastNodingValidator.o \
      geos/noding/FastSegmentSetIntersectionFinder.o \
      geos/noding/GeometryNoder.o \
@@ -227,10 +243,16 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/operation/buffer/BufferSubgraph.o \
      geos/operation/buffer/OffsetCurve.o \
      geos/operation/buffer/OffsetCurveBuilder.o \
+     geos/operation/buffer/OffsetCurveSection.o \
      geos/operation/buffer/OffsetSegmentGenerator.o \
      geos/operation/buffer/RightmostEdgeFinder.o \
      geos/operation/buffer/SegmentMCIndex.o \
      geos/operation/buffer/SubgraphDepthLocater.o \
+     geos/operation/cluster/AbstractClusterFinder.o \
+     geos/operation/cluster/Clusters.o \
+     geos/operation/cluster/DBSCANClusterFinder.o \
+     geos/operation/cluster/GeometryFlattener.o \
+     geos/operation/cluster/UnionFind.o \
      geos/operation/distance/ConnectedElementLocationFilter.o \
      geos/operation/distance/ConnectedElementPointFilter.o \
      geos/operation/distance/DistanceOp.o \
@@ -248,15 +270,9 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/operation/linemerge/LineMergeGraph.o \
      geos/operation/linemerge/LineMerger.o \
      geos/operation/linemerge/LineSequencer.o \
-     geos/operation/overlay/EdgeSetNoder.o \
-     geos/operation/overlay/ElevationMatrix.o \
-     geos/operation/overlay/ElevationMatrixCell.o \
-     geos/operation/overlay/LineBuilder.o \
      geos/operation/overlay/MaximalEdgeRing.o \
      geos/operation/overlay/MinimalEdgeRing.o \
      geos/operation/overlay/OverlayNodeFactory.o \
-     geos/operation/overlay/OverlayOp.o \
-     geos/operation/overlay/PointBuilder.o \
      geos/operation/overlay/PolygonBuilder.o \
      geos/operation/overlay/snap/GeometrySnapper.o \
      geos/operation/overlay/snap/LineStringSnapper.o \
@@ -324,7 +340,6 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/operation/valid/IsValidOp.o \
      geos/operation/valid/MakeValid.o \
      geos/operation/valid/PolygonIntersectionAnalyzer.o \
-     geos/operation/valid/PolygonNode.o \
      geos/operation/valid/PolygonRing.o \
      geos/operation/valid/PolygonRingSelfNode.o \
      geos/operation/valid/PolygonRingTouch.o \
@@ -356,6 +371,7 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/simplify/DouglasPeuckerLineSimplifier.o \
      geos/simplify/DouglasPeuckerSimplifier.o \
      geos/simplify/LineSegmentIndex.o \
+     geos/simplify/LinkedLine.o \
      geos/simplify/LinkedRing.o \
      geos/simplify/PolygonHullSimplifier.o \
      geos/simplify/RingHull.o \
@@ -370,6 +386,7 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/triangulate/polygon/ConstrainedDelaunayTriangulator.o \
      geos/triangulate/polygon/PolygonEarClipper.o \
      geos/triangulate/polygon/PolygonHoleJoiner.o \
+     geos/triangulate/polygon/PolygonNoder.o \
      geos/triangulate/polygon/PolygonTriangulator.o \
      geos/triangulate/polygon/TriDelaunayImprover.o \
      geos/triangulate/quadedge/LastFoundQuadEdgeLocator.o \
@@ -387,6 +404,7 @@ GEOS_OBJECTS =      geos/algorithm/Angle.o \
      geos/util/Interrupt.o \
      geos/util/math.o \
      geos/util/Profiler.o \
+     geos/util/string.o \
      libgeos-cpp-compat.o \
      libgeos-init.o \
      ryu/d2s.o

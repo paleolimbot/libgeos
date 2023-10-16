@@ -34,7 +34,6 @@
 namespace geos {
 namespace geom { // geos::geom
 class Coordinate;
-class CoordinateArraySequence;
 }
 }
 
@@ -57,6 +56,10 @@ public:
 
     /// Returns line dimension (1)
     Dimension::DimensionType getDimension() const override;
+
+    bool hasDimension(Dimension::DimensionType d) const override {
+        return d == Dimension::L;
+    }
 
     bool isDimensionStrict(Dimension::DimensionType d) const override {
         return d == Dimension::L;
@@ -115,9 +118,6 @@ protected:
      *       the vector and its elements.
      *
      */
-    MultiLineString(std::vector<Geometry*>* newLines,
-                    const GeometryFactory* newFactory);
-
     MultiLineString(std::vector<std::unique_ptr<LineString>> && newLines,
             const GeometryFactory& newFactory);
 

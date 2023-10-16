@@ -184,8 +184,6 @@ OverlayNG::getResult()
 
 #if GEOS_DEBUG
     io::WKTWriter w;
-    w.setOutputDimension(3);
-    w.setTrim(true);
 
     std::cerr << "Before populatingZ: " << w.write(result.get()) << std::endl;
 #endif
@@ -249,8 +247,8 @@ OverlayNG::computeEdgeOverlay()
     // std::sort(edges.begin(), edges.end(), EdgeComparator);
     OverlayGraph graph;
     for (Edge* e : edges) {
-        // Write out edge graph as hex for examination
-        // std::cout << *e << std::endl;
+        // Write out edge coordinates
+        // std::cout << *e->getCoordinatesRO() << std::endl;
         graph.addEdge(e);
     }
 

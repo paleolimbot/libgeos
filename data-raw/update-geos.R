@@ -2,7 +2,7 @@
 library(tidyverse)
 
 # download GEOS
-source_url <- "http://download.osgeo.org/geos/geos-3.11.1.tar.bz2"
+source_url <- "http://download.osgeo.org/geos/geos-3.12.0.tar.bz2"
 curl::curl_download(source_url, "data-raw/geos-source.tar.bz2")
 untar("data-raw/geos-source.tar.bz2", exdir = "data-raw")
 

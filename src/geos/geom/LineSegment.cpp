@@ -22,12 +22,12 @@
 #include <geos/geom/LineSegment.h>
 #include <geos/geom/LineString.h> // for toGeometry
 #include <geos/geom/CoordinateSequence.h>
-#include <geos/geom/CoordinateSequenceFactory.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/algorithm/LineIntersector.h>
 #include <geos/algorithm/Intersection.h>
 #include <geos/util/IllegalStateException.h>
 #include <geos/profiler.h>
+#include <geos/util.h>
 
 #include <algorithm> // for max
 #include <sstream>
@@ -47,13 +47,16 @@ LineSegment::reverse()
 
 /*public*/
 double
-LineSegment::projectionFactor(const Coordinate& p) const
+LineSegment::projectionFactor(const CoordinateXY& p) const
 {
     if(p == p0) {
         return 0.0;
     }
     if(p == p1) {
         return 1.0;
+    }
+    if(p0 == p1) {
+        return 0.0;
     }
     // Otherwise, use comp.graphics.algorithms Frequently Asked Questions method
     /*(1)     	      AC dot AB
@@ -75,7 +78,7 @@ LineSegment::projectionFactor(const Coordinate& p) const
 
 /*public*/
 double
-LineSegment::segmentFraction(const Coordinate& inputPt) const
+LineSegment::segmentFraction(const CoordinateXY& inputPt) const
 {
     double segFrac = projectionFactor(inputPt);
     if(segFrac < 0.0) {
@@ -93,19 +96,34 @@ LineSegment::project(const Coordinate& p, Coordinate& ret) const
 {
     if(p == p0 || p == p1) {
         ret = p;
+        return;
     }
     double r = projectionFactor(p);
     ret = Coordinate(p0.x + r * (p1.x - p0.x), p0.y + r * (p1.y - p0.y));
 }
 
+CoordinateXY
+LineSegment::project(const CoordinateXY& p) const
+{
+    if(p == p0 || p == p1) {
+        return p;
+    }
+    double r = projectionFactor(p);
+    double x = p0.x + r * (p1.x - p0.x);
+    double y = p0.y + r * (p1.y - p0.y);
+    return CoordinateXY(x, y);
+}
+
+
+
 /*private*/
 void
-LineSegment::project(double factor, Coordinate& ret) const
+LineSegment::project(double factor, CoordinateXY& ret) const
 {
     if( factor == 1.0 )
         ret = p1;
     else
-        ret = Coordinate(p0.x + factor * (p1.x - p0.x), p0.y + factor * (p1.y - p0.y));
+        ret = CoordinateXY(p0.x + factor * (p1.x - p0.x), p0.y + factor * (p1.y - p0.y));
 }
 
 bool
@@ -125,8 +143,13 @@ LineSegment::project(const LineSegment& seg, LineSegment& ret) const
 
     Coordinate newp0;
     project(pf0, newp0);
+    if (pf0 < 0.0) newp0 = p0;
+    if (pf0 > 1.0) newp0 = p1;
+
     Coordinate newp1;
     project(pf1, newp1);
+    if (pf1 < 0.0) newp1 = p0;
+    if (pf1 > 1.0) newp1 = p1;
 
     ret.setCoordinates(newp0, newp1);
 
@@ -135,7 +158,7 @@ LineSegment::project(const LineSegment& seg, LineSegment& ret) const
 
 //Coordinate*
 void
-LineSegment::closestPoint(const Coordinate& p, Coordinate& ret) const
+LineSegment::closestPoint(const CoordinateXY& p, CoordinateXY& ret) const
 {
     double factor = projectionFactor(p);
     if(factor > 0 && factor < 1) {
@@ -149,17 +172,6 @@ LineSegment::closestPoint(const Coordinate& p, Coordinate& ret) const
         return;
     }
     ret = p1;
-}
-
-/*public*/
-int
-LineSegment::compareTo(const LineSegment& other) const
-{
-    int comp0 = p0.compareTo(other.p0);
-    if(comp0 != 0) {
-        return comp0;
-    }
-    return p1.compareTo(other.p1);
 }
 
 /*public*/
@@ -256,7 +268,8 @@ LineSegment::intersection(const LineSegment& line) const
 Coordinate
 LineSegment::lineIntersection(const LineSegment& line) const
 {
-    return algorithm::Intersection::intersection(p0, p1, line.p0, line.p1);
+    // TODO return a CoordinateXY here.
+    return Coordinate(algorithm::Intersection::intersection(p0, p1, line.p0, line.p1));
 }
 
 
@@ -306,23 +319,40 @@ LineSegment::offset(double offsetDistance)
     return ls;
 }
 
+/* public */
+double
+LineSegment::distancePerpendicularOriented(const CoordinateXY& p) const
+{
+    if (p0.equals2D(p1))
+        return p0.distance(p);
+    double dist = distancePerpendicular(p);
+    if (orientationIndex(p) < 0)
+        return -dist;
+    return dist;
+}
 
 /* public */
 std::unique_ptr<LineString>
 LineSegment::toGeometry(const GeometryFactory& gf) const
 {
-    auto cl = gf.getCoordinateSequenceFactory()->create(2, 0);
+    auto cl = detail::make_unique<CoordinateSequence>(2u);
 
     cl->setAt(p0, 0);
     cl->setAt(p1, 1);
     return gf.createLineString(std::move(cl));
 }
 
+/* public */
 std::ostream&
-operator<< (std::ostream& o, const LineSegment& l)
+LineSegment::operator<< (std::ostream& os)
 {
-    return o << "LINESEGMENT(" << l.p0.x << " " << l.p0.y << "," << l.p1.x << " " << l.p1.y << ")";
+    return os << "LINESEGMENT("
+        << p0.x << " " << p0.y << ","
+        << p1.x << " " << p1.y << ")";
 }
+
+
+
 
 } // namespace geos::geom
 } // namespace geos

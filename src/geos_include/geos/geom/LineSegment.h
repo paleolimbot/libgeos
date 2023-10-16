@@ -31,6 +31,7 @@
 #include <functional> // for std::hash
 #include <memory> // for unique_ptr
 #include <cassert>
+#include <unordered_set>
 
 // Forward declarations
 namespace geos {
@@ -60,16 +61,9 @@ namespace geom { // geos::geom
 class GEOS_DLL LineSegment {
 public:
 
+
     Coordinate p0; /// Segment start
     Coordinate p1; /// Segment end
-
-    friend std::ostream& operator<< (std::ostream& o, const LineSegment& l);
-
-    /// Checks if two LineSegment are equal (2D only check)
-    friend bool operator==(const LineSegment& a, const LineSegment& b)
-    {
-        return a.p0 == b.p0 && a.p1 == b.p1;
-    };
 
     LineSegment(const Coordinate& c0, const Coordinate& c1)
         : p0(c0)
@@ -194,7 +188,21 @@ public:
         return orientationIndex(*seg);
     };
 
-
+    /**
+    * Determines the orientation index of a Coordinate relative to this segment.
+    * The orientation index is as defined in Orientation::index(Coordinate, Coordinate, Coordinate).
+    *
+    * @param p the coordinate to compare
+    *
+    * @return 1 (LEFT) if "p" is to the left of this segment
+    * @return -1 (RIGHT) if "p" is to the right of this segment
+    * @return 0 (COLLINEAR) if "p" is collinear with this segment
+    *
+    */
+    int orientationIndex(const CoordinateXY& p) const
+    {
+        return algorithm::Orientation::index(p0, p1, p);
+    }
 
     /** \brief
      * Determines the orientation index of a Coordinate
@@ -256,19 +264,39 @@ public:
     };
 
     /// Computes the distance between this line segment and a point.
-    double distance(const Coordinate& p) const
+    double distance(const CoordinateXY& p) const
     {
         return algorithm::Distance::pointToSegment(p, p0, p1);
     };
 
-    /** \brief
+    /**
      * Computes the perpendicular distance between the (infinite)
      * line defined by this line segment and a point.
+     * If the segment has zero length this returns the distance between
+     * the segment and the point.
+     *
+     * @param p the point to compute the distance to
+     * @return the perpendicular distance between the line and point
      */
-    double distancePerpendicular(const Coordinate& p) const
+    double distancePerpendicular(const CoordinateXY& p) const
     {
+        if (p0.equals2D(p1))
+            return p0.distance(p);
         return algorithm::Distance::pointToLinePerpendicular(p, p0, p1);
     };
+
+    /**
+     * Computes the oriented perpendicular distance between the (infinite) line
+     * defined by this line segment and a point.
+     * The oriented distance is positive if the point on the left of the line,
+     * and negative if it is on the right.
+     * If the segment has zero length this returns the distance between
+     * the segment and the point.
+     *
+     * @param p the point to compute the distance to
+     * @return the oriented perpendicular distance between the line and point
+     */
+    double distancePerpendicularOriented(const CoordinateXY& p) const;
 
     /** \brief
      * Computes the Coordinate that lies a given
@@ -352,7 +380,7 @@ public:
      * @return the projection factor for the point
      *
      */
-    double projectionFactor(const Coordinate& p) const;
+    double projectionFactor(const CoordinateXY& p) const;
 
     /** \brief
      * Computes the fraction of distance (in <tt>[0.0, 1.0]</tt>)
@@ -369,7 +397,7 @@ public:
      * @return the fraction along the line segment the projection
      *         of the point occurs
      */
-    double segmentFraction(const Coordinate& inputPt) const;
+    double segmentFraction(const CoordinateXY& inputPt) const;
 
     /** \brief
      * Compute the projection of a point onto the line determined
@@ -380,6 +408,8 @@ public:
      * the projection factor will lie outside the range [0.0, 1.0].
      */
     void project(const Coordinate& p, Coordinate& ret) const;
+
+    CoordinateXY project(const CoordinateXY& p) const;
 
     /** \brief
      * Project a line segment onto this line segment and return the resulting
@@ -404,20 +434,7 @@ public:
     /// @param ret the Coordinate to which the closest point on the line segment
     ///            to the point p will be written
     ///
-    void closestPoint(const Coordinate& p, Coordinate& ret) const;
-
-    /** \brief
-     * Compares this object with the specified object for order.
-     *
-     * Uses the standard lexicographic ordering for the points in the LineSegment.
-     *
-     * @param  other  the LineSegment with which this LineSegment
-     *            is being compared
-     * @return a negative integer, zero, or a positive integer as this
-     *         LineSegment is less than, equal to, or greater than the
-     *         specified LineSegment
-     */
-    int compareTo(const LineSegment& other) const;
+    void closestPoint(const CoordinateXY& p, CoordinateXY& ret) const;
 
     /** \brief
      *  Returns <code>true</code> if <code>other</code> is
@@ -484,22 +501,68 @@ public:
      */
     std::unique_ptr<LineString> toGeometry(const GeometryFactory& gf) const;
 
+
+    /** \brief
+     * Compares this object with the specified object for order.
+     *
+     * Uses the standard lexicographic ordering for the points in the LineSegment.
+     *
+     * @param  other  the LineSegment with which this LineSegment
+     *            is being compared
+     * @return a negative integer, zero, or a positive integer as this
+     *         LineSegment is less than, equal to, or greater than the
+     *         specified LineSegment
+     */
+    inline int compareTo(const LineSegment& other) const
+    {
+        int comp0 = p0.compareTo(other.p0);
+        if (comp0 != 0) {
+            return comp0;
+        }
+        return p1.compareTo(other.p1);
+    }
+
+    std::ostream& operator<< (std::ostream& o);
+
+    inline bool operator==(const LineSegment& rhs) const {
+        return compareTo(rhs) == 0;
+    };
+
+    inline bool operator<(const LineSegment& rhs) const {
+        return compareTo(rhs) < 0;
+    };
+
+    inline bool operator>(const LineSegment& rhs) const {
+        return compareTo(rhs) > 0;
+    };
+
     struct HashCode {
-        std::size_t operator()(const LineSegment & s) const {
+        inline std::size_t operator()(const LineSegment & s) const {
             std::size_t h = std::hash<double>{}(s.p0.x);
             h ^= (std::hash<double>{}(s.p0.y) << 1);
             h ^= (std::hash<double>{}(s.p1.x) << 1);
             return h ^ (std::hash<double>{}(s.p1.y) << 1);
         }
+
+        inline std::size_t operator()(const LineSegment * s) const {
+            std::size_t h = std::hash<double>{}(s->p0.x);
+            h ^= (std::hash<double>{}(s->p0.y) << 1);
+            h ^= (std::hash<double>{}(s->p1.x) << 1);
+            return h ^ (std::hash<double>{}(s->p1.y) << 1);
+        }
+
     };
 
+    using UnorderedSet = std::unordered_set<LineSegment, HashCode>;
+
+
 private:
-    void project(double factor, Coordinate& ret) const;
+    void project(double factor, CoordinateXY& ret) const;
 
 };
 
-// std::ostream& operator<< (std::ostream& o, const LineSegment& l);
 
+// std::ostream& operator<< (std::ostream& o, const LineSegment& l);
 
 
 } // namespace geos::geom

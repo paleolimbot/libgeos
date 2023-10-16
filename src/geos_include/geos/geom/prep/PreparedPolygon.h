@@ -53,6 +53,7 @@ private:
     bool isRectangle;
     mutable std::unique_ptr<noding::FastSegmentSetIntersectionFinder> segIntFinder;
     mutable std::unique_ptr<algorithm::locate::PointOnGeometryLocator> ptOnGeomLoc;
+    mutable std::unique_ptr<algorithm::locate::PointOnGeometryLocator> indexedPtOnGeomLoc;
     mutable noding::SegmentString::ConstVect segStrings;
     mutable std::unique_ptr<operation::distance::IndexedFacetDistance> indexedDistance;
 
@@ -70,6 +71,7 @@ public:
     bool covers(const geom::Geometry* g) const override;
     bool intersects(const geom::Geometry* g) const override;
     double distance(const geom::Geometry* g) const override;
+    bool isWithinDistance(const geom::Geometry* g, double d) const override;
 
 };
 

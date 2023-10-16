@@ -34,7 +34,6 @@
 namespace geos {
 namespace geom { // geos::geom
 class Coordinate;
-class CoordinateArraySequence;
 class CoordinateSequenceFilter;
 class LineString;
 }
@@ -90,6 +89,10 @@ public:
     /// Returns coordinate dimension.
     uint8_t getCoordinateDimension() const override;
 
+    bool hasM() const override;
+
+    bool hasZ() const override;
+
     /// Returns 1 (Polygon boundary is a MultiLineString)
     int getBoundaryDimension() const override;
 
@@ -135,6 +138,7 @@ public:
     std::string getGeometryType() const override;
     GeometryTypeId getGeometryTypeId() const override;
     bool equalsExact(const Geometry* other, double tolerance = 0) const override;
+    bool equalsIdentical(const Geometry* other) const override;
     void apply_rw(const CoordinateFilter* filter) override;
     void apply_ro(CoordinateFilter* filter) const override;
     void apply_rw(GeometryFilter* filter) override;
@@ -148,9 +152,19 @@ public:
 
     void normalize() override;
 
+    /**
+     * \brief
+     * Apply a ring ordering convention to this polygon, with
+     * interior rings having an opposite orientation to the
+     * specified exterior orientation.
+     *
+     * \param exteriorCW should exterior ring be clockwise?
+     */
+    void orientRings(bool exteriorCW);
+
     std::unique_ptr<Polygon> reverse() const { return std::unique_ptr<Polygon>(reverseImpl()); }
 
-    const Coordinate* getCoordinate() const override;
+    const CoordinateXY* getCoordinate() const override;
 
     double getArea() const override;
 
@@ -158,6 +172,10 @@ public:
     double getLength() const override;
 
     bool isRectangle() const override;
+
+    const Envelope* getEnvelopeInternal() const override {
+        return shell->getEnvelopeInternal();
+    }
 
 protected:
 
@@ -184,14 +202,11 @@ protected:
      *
      * Polygon will take ownership of Shell and Holes LinearRings
      */
-    Polygon(LinearRing* newShell, std::vector<LinearRing*>* newHoles,
-            const GeometryFactory* newFactory);
-
     Polygon(std::unique_ptr<LinearRing> && newShell,
+            std::vector<std::unique_ptr<LinearRing>> && newHoles,
             const GeometryFactory& newFactory);
 
     Polygon(std::unique_ptr<LinearRing> && newShell,
-            std::vector<std::unique_ptr<LinearRing>> && newHoles,
             const GeometryFactory& newFactory);
 
     Polygon* cloneImpl() const override { return new Polygon(*this); }
@@ -202,7 +217,7 @@ protected:
 
     std::vector<std::unique_ptr<LinearRing>> holes;
 
-    Envelope::Ptr computeEnvelopeInternal() const override;
+    void geometryChangedAction() override {}
 
     int
     getSortIndex() const override

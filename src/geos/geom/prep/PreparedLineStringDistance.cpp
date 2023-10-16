@@ -40,6 +40,18 @@ PreparedLineStringDistance::distance(const geom::Geometry* g) const
     return idf->distance(g);
 }
 
+bool
+PreparedLineStringDistance::isWithinDistance(const geom::Geometry* g, double d) const
+{
+    if ( prepLine.getGeometry().isEmpty() || g->isEmpty() )
+    {
+        return false;
+    }
+
+    operation::distance::IndexedFacetDistance *idf = prepLine.getIndexedFacetDistance();
+    return idf->isWithinDistance(g, d);
+}
+
 
 } // namespace geos.geom.prep
 } // namespace geos.geom
