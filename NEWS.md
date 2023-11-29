@@ -1,4 +1,4 @@
-# libgeos (development version)
+# libgeos 3.11.1-2
 
 * Fix format arguments to `REprintf()`.
 
