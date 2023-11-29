@@ -1,6 +1,5 @@
 
-This submission fixes warnings when compiling with gcc13 and MacOS M1
-as shown on the package check page.
+This submission fixes warnings as shown on the package check page.
 
 ## Test environments
 
