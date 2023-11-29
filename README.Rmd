@@ -31,7 +31,7 @@ You can install the released version of libgeos from [CRAN](https://cran.r-proje
 install.packages("libgeos")
 ```
 
-To install a binary on supported Linux platforms, you can use [RStudio Package Manager's public instance](https://packagemanager.rstudio.com/) (see [here](https://packagemanager.rstudio.com/client/#/repos/1/overview) for how to configure on your platform).
+To install a binary on supported Linux platforms, you can use [RStudio Package Manager's public instance](https://packagemanager.rstudio.com/) (see [here](https://packagemanager.posit.co/client/#/repos/cran/setup) for how to configure on your platform).
 
 You can install the development version from [RUniverse](https://r-universe.dev/) with:
 
