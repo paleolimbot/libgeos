@@ -10,7 +10,7 @@ public:
 
 protected:
   virtual std::streamsize xsputn(const char *s, std::streamsize n) {
-    REprintf("%.*s", n, s);
+    REprintf("%.*s", (int)n, s);
     return n;
   }
 
