@@ -1,3 +1,7 @@
+# libgeos 3.11.1-3
+
+* Fix deprecated literal syntax (#22)
+
 # libgeos 3.11.1-2
 
 * Fix format arguments to `REprintf()`.
@@ -23,7 +27,7 @@
 
 * Update to GEOS 3.9.1 (#3).
 * Added an exported callable `libgeos_version_int()` that can be used
-  to resolve runtime/compile-time differences 
+  to resolve runtime/compile-time differences
   when loading the exported GEOS callables (#4).
 * Removed C++ helpers and simplified linking tests (#4).
 * Simplified pattern for removing references to `std::cerr` from
@@ -36,8 +40,8 @@
 
 # libgeos 3.8.1-3
 
-* Fixed warnings from the link-time optimizer, which reported naming 
-  conflicts between the C++ header types and the abstract C types 
+* Fixed warnings from the link-time optimizer, which reported naming
+  conflicts between the C++ header types and the abstract C types
   used in the header API.
 
 # libgeos 3.8.1-2
