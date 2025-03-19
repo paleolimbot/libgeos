@@ -8,6 +8,9 @@ on:
 
 name: R-CMD-check
 
+permissions:
+  contents: read
+
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
@@ -19,7 +22,6 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: '3.6'}
           - {os: windows-latest, r: '4.1'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
@@ -31,7 +33,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -43,7 +45,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck
+          extra-packages: rcmdcheck, wk, vctrs, sf
 
       - uses: r-lib/actions/check-r-package@v2
 
@@ -66,7 +68,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Checkout paleolimbot/geos
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: paleolimbot/geos
           ref: master
@@ -77,7 +79,6 @@ jobs:
           _R_CHECK_CRAN_INCOMING_: false
           _R_CHECK_FORCE_SUGGESTS_: false
         run: |
-          install.packages("wk")
           rcmdcheck::rcmdcheck("geos", args = c("--no-manual", "--as-cran"), error_on = "warning", check_dir = "check_geos")
         shell: Rscript {0}
 
